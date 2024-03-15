@@ -17,13 +17,13 @@ public class Nodes {
         nodeList = new ArrayList<>();
     }
 
-    public void addNode(Position position) {
+    public void addNode(Position position, boolean extra) {
         String id = nodeIdGenerator.generateAndPut();
-        addNode(id, position);
+        addNode(id, position, extra);
     }
 
-    public void addNode(String id, Position position) {
-        Node node = new Node(id, position);
+    public void addNode(String id, Position position, boolean extra) {
+        Node node = new Node(id, position, extra);
         nodeList.add(node);
         drawManager.onAdd(node);
     }

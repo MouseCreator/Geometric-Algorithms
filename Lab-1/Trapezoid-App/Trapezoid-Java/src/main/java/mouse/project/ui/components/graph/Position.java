@@ -1,8 +1,10 @@
 package mouse.project.ui.components.graph;
 
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 @EqualsAndHashCode
+@ToString
 public class Position {
     private final int x;
     private final int y;

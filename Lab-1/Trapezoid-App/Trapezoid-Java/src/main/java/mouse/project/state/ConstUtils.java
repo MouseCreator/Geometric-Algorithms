@@ -6,6 +6,7 @@ public class ConstUtils {
     public static final Color EDGE_COLOR = Color.BLACK;
     public static final Color EXTRA_EDGE_COLOR = Color.GRAY;
     public static final Color NODE_COLOR = Color.BLUE;
+    public static final Color EXTRA_NODE_COLOR = new Color(151, 168, 226);
     public static final Color INVALID_COLOR = Color.RED;
     public static final Color TARGET_COLOR = Color.RED;
     public static final int NODE_DIAMETER = 10;

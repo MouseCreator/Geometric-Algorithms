@@ -13,14 +13,21 @@ public class Node implements Drawable {
     private Position position;
 
     private final String id;
-    public Node(String id, Position position) {
+
+    private final boolean isExtra;
+    public Node(String id, Position position, boolean isExtra) {
         this.position = position;
+        this.isExtra = isExtra;
         this.id = id;
     }
 
     @Override
     public void draw(Graphics2D g2d) {
-        g2d.setColor(ConstUtils.NODE_COLOR);
+        if (isExtra) {
+            g2d.setColor(ConstUtils.EXTRA_NODE_COLOR);
+        } else {
+            g2d.setColor(ConstUtils.NODE_COLOR);
+        }
         int diameter = ConstUtils.NODE_DIAMETER;
         int radius = diameter >> 1;
         g2d.fillOval(position.x() - radius, position.y() - radius, diameter, diameter);
