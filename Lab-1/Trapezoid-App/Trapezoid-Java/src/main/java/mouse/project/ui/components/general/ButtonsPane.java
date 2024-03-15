@@ -46,16 +46,22 @@ public class ButtonsPane implements AppComponent {
     private class ButtonsFlow extends JPanel {
 
         public ButtonsFlow() {
+            int buttonHeight = 50;
+            int buttonCount = 6;
+            int gap = 10;
+
             setPreferredSize(new Dimension(ConstUtils.BUTTON_PANE_WIDTH, ConstUtils.BUTTON_PANE_HEIGHT));
             setLayout(new FlowLayout());
             JPanel main = new JPanel();
             main.setBackground(ConstUtils.TRANSPARENT);
             main.setPreferredSize(new Dimension(ConstUtils.BUTTON_PANE_WIDTH, ConstUtils.BUTTON_PANE_HEIGHT));
-            main.setLayout(new GridLayout(2,1, 10, 10));
+            main.setLayout(new GridLayout(2,1, 10, gap));
             JPanel topSubpane = createTopSubpane();
             JPanel bottomSubpane = createBottomSubpane();
-            main.add(wrapped(topSubpane));
-            main.add(wrapped(bottomSubpane));
+            main.add(topSubpane);
+            main.add(bottomSubpane);
+            int height = buttonCount * buttonHeight + (buttonCount - 1) * gap;
+            main.setPreferredSize(new Dimension(ConstUtils.BUTTON_PANE_WIDTH - 30, height));
             add(main);
         }
 
@@ -116,7 +122,6 @@ public class ButtonsPane implements AppComponent {
             Border margin = new EmptyBorder(15, 15, 15, 15);
             Border compound = new CompoundBorder(line, margin);
             button.setBorder(compound);
-            button.setSize(new Dimension(200, 50));
         }
 
         private JButton createButton(String text, Runnable action) {
