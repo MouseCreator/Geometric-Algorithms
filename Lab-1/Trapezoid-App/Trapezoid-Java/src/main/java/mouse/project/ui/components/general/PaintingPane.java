@@ -16,17 +16,14 @@ public class PaintingPane implements AppComponent {
     public PaintingPane() {
         this.drawPanel = new DrawPanel();
     }
-
     @Override
     public void redraw() {
         drawPanel.repaint();
     }
-
     @Override
     public Component getComponent() {
         return drawPanel;
     }
-
     @Override
     public void update() {
 

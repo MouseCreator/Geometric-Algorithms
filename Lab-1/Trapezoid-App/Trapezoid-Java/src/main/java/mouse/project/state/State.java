@@ -12,7 +12,7 @@ public class State {
         }
         instance = stateHolder;
     }
-    public static StateHolder getInstance() {
+    public static StateHolder get() {
         if (instance == null) {
             throw new IllegalStateException("No state holder defined");
         }

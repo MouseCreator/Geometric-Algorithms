@@ -3,11 +3,11 @@ package mouse.project.state;
 import java.awt.*;
 
 public class ConstUtils {
-    public static final Paint EDGE_COLOR = Color.BLACK;
-    public static final Paint NODE_COLOR = Color.BLUE;
-    public static final Paint INVALID_COLOR = Color.RED;
-    public static final Paint TARGET_COLOR = Color.RED;
-    public static final double NODE_RADIUS = 10.0;
+    public static final Color EDGE_COLOR = Color.BLACK;
+    public static final Color NODE_COLOR = Color.BLUE;
+    public static final Color INVALID_COLOR = Color.RED;
+    public static final Color TARGET_COLOR = Color.RED;
+    public static final int NODE_DIAMETER = 10;
     public static final int FPS = 60;
     public static final int WINDOW_WIDTH = 1280;
     public static final int WINDOW_HEIGHT = 720;

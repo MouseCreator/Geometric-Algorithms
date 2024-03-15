@@ -6,6 +6,6 @@ import java.awt.*;
 
 public interface DrawManager {
     void onAdd(Drawable drawable);
-    void drawAll(Graphics2D g2d);
+    void drawAll(Graphics2D g);
     void onRemove(Drawable drawable);
 }

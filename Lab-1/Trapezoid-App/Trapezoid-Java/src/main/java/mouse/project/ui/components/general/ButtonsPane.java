@@ -1,6 +1,8 @@
 package mouse.project.ui.components.general;
 
 import mouse.project.state.ConstUtils;
+import mouse.project.state.ProgramMode;
+import mouse.project.state.State;
 import mouse.project.ui.components.main.AppComponent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -21,12 +23,15 @@ public class ButtonsPane implements AppComponent {
 
     private void onNodeButton() {
         logger.debug("Nodes pressed!");
+        State.get().getProgramState().setMode(ProgramMode.NODE);
     }
     private void onEdgeButton() {
         logger.debug("Edges pressed!");
+        State.get().getProgramState().setMode(ProgramMode.EDGE);
     }
     private void onTargetButton() {
         logger.debug("Target pressed!");
+        State.get().getProgramState().setMode(ProgramMode.TARGET);
     }
     private void onSaveButton() {
         logger.debug("Save pressed!");
