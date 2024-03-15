@@ -33,6 +33,10 @@ public class ButtonsPane implements AppComponent {
         logger.debug("Target pressed!");
         State.get().getProgramState().setMode(ProgramMode.TARGET);
     }
+    private void onEraseButton() {
+        logger.debug("Erase pressed!");
+        State.get().getProgramState().setMode(ProgramMode.ERASE);
+    }
     private void onSaveButton() {
         logger.debug("Save pressed!");
     }
@@ -52,7 +56,7 @@ public class ButtonsPane implements AppComponent {
 
         public ButtonsFlow() {
             int buttonHeight = 50;
-            int buttonCount = 6;
+            int buttonCount = 7;
             int gap = 10;
             int spaceGap = 40;
 
@@ -83,15 +87,18 @@ public class ButtonsPane implements AppComponent {
             JToggleButton nodesBtn = createToggleButton("Nodes", ButtonsPane.this::onNodeButton);
             JToggleButton edgesBtn = createToggleButton("Edges", ButtonsPane.this::onEdgeButton);
             JToggleButton targetBtn = createToggleButton("Target", ButtonsPane.this::onTargetButton);
+            JToggleButton eraseBtn = createToggleButton("Erase", ButtonsPane.this::onEraseButton);
 
             ButtonGroup btnGroup = new ButtonGroup();
             btnGroup.add(nodesBtn);
             btnGroup.add(edgesBtn);
             btnGroup.add(targetBtn);
+            btnGroup.add(eraseBtn);
 
             subpanel.add(nodesBtn);
             subpanel.add(edgesBtn);
             subpanel.add(targetBtn);
+            subpanel.add(eraseBtn);
             return subpanel;
         }
 
@@ -135,6 +142,8 @@ public class ButtonsPane implements AppComponent {
 
 
     }
+
+
 
     private static JPanel createSapce(int spaceGap, int gap) {
         JPanel space = new JPanel();
