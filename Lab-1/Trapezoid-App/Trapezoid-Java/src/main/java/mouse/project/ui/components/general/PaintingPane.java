@@ -18,17 +18,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class PaintingPane implements AppComponent {
+public class PaintingPane implements AppComponent, ProgramModeListener {
     private final DrawPanel drawPanel;
     private final UIGraph graph;
     private static final Logger logger = LogManager.getLogger(PaintingPane.class);
     private final DrawManager drawManager;
+    private ClickHandler clickHandler = new ClickHandler() {};
     private final List<ClickHandler> clickHandlers;
     public PaintingPane() {
         this.drawPanel = new DrawPanel();
         graph = new UIGraph();
         drawManager = State.get().getProgramState().getDrawManager();
         clickHandlers = createClickHandlers();
+        State.get().getProgramState().registerListener(this);
     }
 
     private List<ClickHandler> createClickHandlers() {
@@ -49,6 +51,12 @@ public class PaintingPane implements AppComponent {
     @Override
     public void update() {
 
+    }
+
+    @Override
+    public void onProgramModeChange(ProgramMode programMode) {
+        Optional<ClickHandler> handler = clickHandlers.stream().filter(s -> s.isApplied(programMode)).findFirst();
+        clickHandler = handler.orElse(new ClickHandler() {});
     }
 
     private class DrawPanel extends JPanel {
@@ -110,22 +118,23 @@ public class PaintingPane implements AppComponent {
         }
     }
     private void onAction(MouseAction mouseAction, Position pos) {
-        ProgramMode mode = State.get().getProgramState().getMode();
-        Optional<ClickHandler> handler = clickHandlers.stream().filter(s -> s.isApplied(mode)).findFirst();
-        handler.ifPresent(h -> {switch (mouseAction) {
-            case CLICK -> h.click(pos);
-            case DRAG -> h.drag(pos);
-            case RELEASE -> h.release(pos);
-            case PRESS -> h.press(pos);
-        }});
+
+        switch (mouseAction) {
+            case CLICK -> clickHandler.click(pos);
+            case DRAG -> clickHandler.drag(pos);
+            case RELEASE -> clickHandler.release(pos);
+            case PRESS -> clickHandler.press(pos);
+        }
     }
 
     private interface ClickHandler {
-        boolean isApplied(ProgramMode mode);
+        default boolean isApplied(ProgramMode mode) {return false;}
         default void click(Position position) {}
         default void drag(Position position) {}
         default void release(Position position) {}
         default void press(Position position) {}
+        default void onEnable() {}
+        default void onDisable() {}
     }
 
     private class NodesClickHandler implements ClickHandler {

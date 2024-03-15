@@ -2,15 +2,15 @@ package mouse.project.ui.components.graph;
 
 import mouse.project.ui.components.draw.DrawManager;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 public class Edges {
-    private final List<Edge> edges;
+    private final Set<Edge> edges;
     private final DrawManager drawManager;
     public Edges(DrawManager drawManager) {
         this.drawManager = drawManager;
-        this.edges = new ArrayList<>();
+        this.edges = new HashSet<>();
     }
 
     public void add(Node node1, Node node2, boolean extra) {

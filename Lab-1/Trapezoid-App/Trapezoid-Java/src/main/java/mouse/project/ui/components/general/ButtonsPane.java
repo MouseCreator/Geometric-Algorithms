@@ -23,19 +23,19 @@ public class ButtonsPane implements AppComponent {
 
     private void onNodeButton() {
         logger.debug("Nodes pressed!");
-        State.get().getProgramState().setMode(ProgramMode.NODE);
+        State.get().getProgramState().updateMode(ProgramMode.NODE);
     }
     private void onEdgeButton() {
         logger.debug("Edges pressed!");
-        State.get().getProgramState().setMode(ProgramMode.EDGE);
+        State.get().getProgramState().updateMode(ProgramMode.EDGE);
     }
     private void onTargetButton() {
         logger.debug("Target pressed!");
-        State.get().getProgramState().setMode(ProgramMode.TARGET);
+        State.get().getProgramState().updateMode(ProgramMode.TARGET);
     }
     private void onEraseButton() {
         logger.debug("Erase pressed!");
-        State.get().getProgramState().setMode(ProgramMode.ERASE);
+        State.get().getProgramState().updateMode(ProgramMode.ERASE);
     }
     private void onSaveButton() {
         logger.debug("Save pressed!");
