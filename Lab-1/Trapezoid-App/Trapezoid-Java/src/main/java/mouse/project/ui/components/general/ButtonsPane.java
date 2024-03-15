@@ -65,11 +65,6 @@ public class ButtonsPane implements AppComponent {
             add(main);
         }
 
-        private JPanel wrapped(JPanel pan) {
-            JPanel jPanel = new JPanel();
-            jPanel.add(pan);
-            return jPanel;
-        }
 
         private JPanel createTopSubpane() {
             JPanel subpanel = new JPanel();
