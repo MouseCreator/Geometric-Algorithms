@@ -32,16 +32,17 @@ class NodeIdGeneratorTest {
                Pair.of(2, "B"),
                Pair.of(3, "C"),
                Pair.of(26, "Z"),
-               Pair.of(27, "AA"),
-               Pair.of(28, "AB"),
-               Pair.of(52, "AZ"),
-               Pair.of(53, "BA")
+               Pair.of(27, "A_"),
+               Pair.of(28, "AA"),
+               Pair.of(29, "AB"),
+               Pair.of(53, "AZ"),
+               Pair.of(54, "B_"),
+               Pair.of(55, "BA")
            );
 }
 
     @Test
     void testKeyValue() {
-        toKeyValue(27, "AA");
         for (Pair pair : pairList) {
             toKeyValue(pair.key, pair.str);
         }
@@ -51,7 +52,6 @@ class NodeIdGeneratorTest {
     }
     @Test
     void testFromKey() {
-        fromKeyValue(27, "AA");
         for (Pair pair : pairList) {
             fromKeyValue(pair.key, pair.str);
         }

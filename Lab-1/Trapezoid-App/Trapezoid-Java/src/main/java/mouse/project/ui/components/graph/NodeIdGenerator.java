@@ -35,34 +35,35 @@ public class NodeIdGenerator {
     }
 
     protected int keyValue(String key1) {
-        if (key1.equals("_")) {
-            return 0;
-        }
         char[] charArray = key1.toCharArray();
         int sum = 0;
         int multiply = 27;
         int power = 1;
         for(int i = charArray.length - 1; i > -1; i--) {
             char ch = charArray[i];
-            int charId = ch - 'A' + 1;
+            int charId = mapChar(ch);
             sum += power * charId;
             power *= multiply;
         }
-        return sum + 1;
+        return sum;
+    }
+
+    private int mapChar(char ch) {
+        return ch == '_' ? 0 : ch - 'A' + 1;
+    }
+    private char fromChar(int k) {
+        return k == 0 ? '_' : (char) (k + 'A' - 1);
     }
 
     protected String fromKey(int key) {
-        if (key == 0) {
-            return "_";
-        }
-        int modulo = 26;
-        int current = key - 1;
+        int modulo = 27;
+        int current = key;
         StringBuilder result = new StringBuilder();
         do {
             int dif = current / modulo;
             int charId = current - dif * modulo;
             current = dif;
-            char ch = (char) (charId + 'A');
+            char ch = fromChar(charId);
             result.insert(0, ch);
         } while (current > 0);
         return result.toString();
