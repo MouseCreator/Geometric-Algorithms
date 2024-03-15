@@ -1,0 +1,4 @@
+# Example 1
+node A 10 20
+node B 30 40
+edge A B
