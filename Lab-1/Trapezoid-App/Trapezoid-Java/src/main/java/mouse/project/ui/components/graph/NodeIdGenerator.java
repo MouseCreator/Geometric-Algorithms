@@ -1,6 +1,7 @@
 package mouse.project.ui.components.graph;
 
 import java.util.*;
+import java.util.regex.Pattern;
 
 public class NodeIdGenerator {
     private final Set<String> foreignKeys;
@@ -9,7 +10,13 @@ public class NodeIdGenerator {
         foreignKeys = new HashSet<>();
         localKeys = new ArrayList<>();
     }
-    public String generate() {
+    public String generateAndPut() {
+        String newKey = generateNext();
+        put(newKey);
+        return newKey;
+    }
+
+    private String generateNext() {
         String current = "_";
         for (String key : localKeys) {
             if (keyDistance(current, key) < 2) {
@@ -18,9 +25,7 @@ public class NodeIdGenerator {
                 break;
             }
         }
-        String newKey = nextKey(current);
-        put(newKey);
-        return newKey;
+        return nextKey(current);
     }
 
     private String nextKey(String current) {
@@ -68,11 +73,28 @@ public class NodeIdGenerator {
         } while (current > 0);
         return result.toString();
     }
-
+    private boolean isLocalKey(String s) {
+        String regex = "^[A-Z_]{3}$";
+        Pattern pattern = Pattern.compile(regex);
+        return pattern.matcher(s).matches();
+    }
     public void put(String id) {
-
+        if (isLocalKey(id)) {
+            localKeys.add(id);
+        } else {
+            foreignKeys.add(id);
+        }
     }
     public void free(String id) {
+        foreignKeys.remove(id);
+        localKeys.remove(id);
+    }
 
+    public boolean has(String key) {
+        if (isLocalKey(key)) {
+            return localKeys.contains(key);
+        } else {
+            return foreignKeys.contains(key);
+        }
     }
 }
