@@ -1,5 +1,7 @@
 package mouse.project.ui;
 
+import mouse.project.state.DefaultStateHolder;
+import mouse.project.state.State;
 import mouse.project.ui.components.general.GeneralPane;
 
 import java.awt.*;
@@ -11,6 +13,7 @@ public class DrawApplication implements Application {
     @Override
     public void init() {
         mainPanel = new GeneralPane();
+        State.use(new DefaultStateHolder());
     }
 
     @Override

@@ -49,18 +49,21 @@ public class ButtonsPane implements AppComponent {
             int buttonHeight = 50;
             int buttonCount = 6;
             int gap = 10;
+            int spaceGap = 40;
 
             setPreferredSize(new Dimension(ConstUtils.BUTTON_PANE_WIDTH, ConstUtils.BUTTON_PANE_HEIGHT));
             setLayout(new FlowLayout());
             JPanel main = new JPanel();
             main.setBackground(ConstUtils.TRANSPARENT);
             main.setPreferredSize(new Dimension(ConstUtils.BUTTON_PANE_WIDTH, ConstUtils.BUTTON_PANE_HEIGHT));
-            main.setLayout(new GridLayout(2,1, 10, gap));
+            main.setLayout(new BoxLayout(main, BoxLayout.Y_AXIS));
             JPanel topSubpane = createTopSubpane();
             JPanel bottomSubpane = createBottomSubpane();
             main.add(topSubpane);
+            JPanel space = createSapce(spaceGap, gap);
+            main.add(space);
             main.add(bottomSubpane);
-            int height = buttonCount * buttonHeight + (buttonCount - 1) * gap;
+            int height = buttonCount * buttonHeight + (buttonCount - 1) * gap + spaceGap;
             main.setPreferredSize(new Dimension(ConstUtils.BUTTON_PANE_WIDTH - 30, height));
             add(main);
         }
@@ -126,6 +129,13 @@ public class ButtonsPane implements AppComponent {
         }
 
 
+    }
+
+    private static JPanel createSapce(int spaceGap, int gap) {
+        JPanel space = new JPanel();
+        space.setPreferredSize(new Dimension(0, spaceGap - gap));
+        space.setBackground(ConstUtils.TRANSPARENT);
+        return space;
     }
 
 }
