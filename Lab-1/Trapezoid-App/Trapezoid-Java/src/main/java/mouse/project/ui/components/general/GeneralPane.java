@@ -1,12 +1,12 @@
 package mouse.project.ui.components.general;
 
 import mouse.project.state.ConstUtils;
-import mouse.project.ui.components.main.Model;
+import mouse.project.ui.components.main.AppComponent;
 
 import javax.swing.*;
 import java.awt.*;
 
-public class GeneralPane implements Model {
+public class GeneralPane implements AppComponent {
 
     private final ButtonsPane buttonsPane;
     private final PaintingPane paintingPane;

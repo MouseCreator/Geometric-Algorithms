@@ -1,7 +1,7 @@
 package mouse.project.ui.components.general;
 
 import mouse.project.state.ConstUtils;
-import mouse.project.ui.components.main.Model;
+import mouse.project.ui.components.main.AppComponent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -12,7 +12,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import java.awt.*;
 
-public class ButtonsPane implements Model {
+public class ButtonsPane implements AppComponent {
     private final JPanel panel;
     private final static Logger logger = LogManager.getLogger(ButtonsPane.class);
     public ButtonsPane() {
