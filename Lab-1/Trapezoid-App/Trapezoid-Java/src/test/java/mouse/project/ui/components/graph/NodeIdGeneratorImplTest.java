@@ -7,8 +7,8 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class NodeIdGeneratorTest {
-    private NodeIdGenerator nodeIdGenerator;
+class NodeIdGeneratorImplTest {
+    private NodeIdGeneratorImpl nodeIdGenerator;
     private List<Pair> pairList;
     private static class Pair {
         int key;
@@ -25,7 +25,7 @@ class NodeIdGeneratorTest {
     }
     @BeforeEach
     void setUp() {
-       nodeIdGenerator = new NodeIdGenerator();
+       nodeIdGenerator = new NodeIdGeneratorImpl();
        pairList = List.of(
                Pair.of(0, "_"),
                Pair.of(1, "A"),
@@ -58,5 +58,21 @@ class NodeIdGeneratorTest {
     }
     void fromKeyValue(int key, String v) {
         assertEquals(v, nodeIdGenerator.fromKey(key));
+    }
+    @Test
+    void testPut() {
+        nodeIdGenerator.put("A");
+        nodeIdGenerator.put("C");
+        nodeIdGenerator.put("B");
+        List<String> keys = nodeIdGenerator.keys();
+        assertEquals(3, keys.size());
+        assertEquals("A", keys.get(0));
+        assertEquals("B", keys.get(1));
+        assertEquals("C", keys.get(2));
+    }
+    @Test
+    void testPutDuplicate() {
+        nodeIdGenerator.put("A");
+        assertThrows(IllegalArgumentException.class, () -> nodeIdGenerator.put("A"));
     }
 }
