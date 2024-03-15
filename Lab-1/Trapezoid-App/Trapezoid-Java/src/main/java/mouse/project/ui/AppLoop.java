@@ -1,32 +1,27 @@
 package mouse.project.ui;
 
 import mouse.project.state.ConstUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.awt.*;
 
 public class AppLoop implements Runnable {
     private Thread gameThread;
-    private DrawPanel gamePanel = null;
     private final Application app;
+    private static final Logger logger = LogManager.getLogger(AppLoop.class);
     public AppLoop() {
         app = new DrawApplication();
     }
 
-    public DrawPanel getGamePanel() {
-        if (gamePanel == null) {
-            throw new IllegalStateException("Game loop is not initialized!");
-        }
-        return gamePanel;
+    public Component getGamePanel() {
+        return app.core();
     }
 
     public void init() {
-        initGamePanel();
         app.init();
     }
 
-    private void initGamePanel() {
-        gamePanel = new DrawPanel(this);
-    }
 
     public void startGameThread() {
         gameThread = new Thread(this);
@@ -47,20 +42,16 @@ public class AppLoop implements Runnable {
                 }
                 nextDrawTime += drawInterval;
             } catch (InterruptedException e) {
-                return;
+                logger.debug("Game loop interrupted.");
             }
         }
     }
 
     private void repaint() {
-        gamePanel.repaint();
+        app.draw();
     }
 
     public void update() {
         app.update();
-    }
-
-    public void draw(Graphics2D g2d) {
-        app.draw(g2d);
     }
 }

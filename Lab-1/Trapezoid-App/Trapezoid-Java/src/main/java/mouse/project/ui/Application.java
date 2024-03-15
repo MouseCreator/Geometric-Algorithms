@@ -4,6 +4,7 @@ import java.awt.*;
 
 public interface Application {
     void init() ;
-    void draw(Graphics2D g2d);
+    void draw();
     void update();
+    Component core();
 }

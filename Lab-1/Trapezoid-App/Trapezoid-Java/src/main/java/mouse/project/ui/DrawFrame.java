@@ -1,9 +1,11 @@
 package mouse.project.ui;
 
+import mouse.project.state.ConstUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.swing.*;
+import java.awt.*;
 
 public class DrawFrame extends JFrame {
 
@@ -15,9 +17,11 @@ public class DrawFrame extends JFrame {
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setResizable(true);
         this.setTitle("Trapezoid Method");
+        this.setSize(new Dimension(ConstUtils.WINDOW_WIDTH, ConstUtils.WINDOW_HEIGHT));
+        this.setResizable(false);
         AppLoop loop = new AppLoop();
         loop.init();
-        DrawPanel gamePanel =  loop.getGamePanel();
+        Component gamePanel =  loop.getGamePanel();
         this.add(gamePanel);
 
         pack();
