@@ -1,20 +1,25 @@
 package mouse.project.ui.components.general;
 
 import mouse.project.state.ConstUtils;
+import mouse.project.state.State;
+import mouse.project.ui.components.draw.DrawManager;
+import mouse.project.ui.components.graph.UIGraph;
 import mouse.project.ui.components.main.AppComponent;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.ArrayList;
-import java.util.List;
+
 
 public class PaintingPane implements AppComponent {
-
     private final DrawPanel drawPanel;
+    private final UIGraph graph;
+    private DrawManager drawManager;
     public PaintingPane() {
         this.drawPanel = new DrawPanel();
+        graph = new UIGraph();
+        drawManager = State.get().getProgramState().getDrawManager();
     }
     @Override
     public void redraw() {
@@ -29,8 +34,7 @@ public class PaintingPane implements AppComponent {
 
     }
 
-    private static class DrawPanel extends JPanel {
-        private final List<Point> points = new ArrayList<>();
+    private class DrawPanel extends JPanel {
 
         public DrawPanel() {
             this.setPreferredSize(new Dimension(ConstUtils.WORLD_WIDTH, ConstUtils.WORLD_HEIGHT));
@@ -38,7 +42,13 @@ public class PaintingPane implements AppComponent {
             this.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
-                    points.add(e.getPoint());
+                    Point point = e.getPoint();
+                    int x = point.x;
+                    int y = point.y;
+                    System.out.println(x + " " + y);
+                    if (x > ConstUtils.WORLD_WIDTH && y > ConstUtils.WORLD_HEIGHT) {
+                        return;
+                    }
                 }
             });
         }
@@ -47,12 +57,7 @@ public class PaintingPane implements AppComponent {
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
             Graphics2D g2d = (Graphics2D) g;
-
-            g2d.setColor(Color.RED);
-
-            for (Point point : points) {
-                g2d.fillOval(point.x - 5, point.y - 5, 10, 10);
-            }
+            drawManager.drawAll(g2d);
         }
     }
 }

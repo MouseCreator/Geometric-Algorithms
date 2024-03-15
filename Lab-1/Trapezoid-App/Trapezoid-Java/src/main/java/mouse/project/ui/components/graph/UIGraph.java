@@ -1,17 +1,20 @@
 package mouse.project.ui.components.graph;
 
+import mouse.project.state.State;
 import mouse.project.ui.components.draw.DrawManager;
+import mouse.project.ui.components.draw.DrawManagerImpl;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 public class UIGraph {
-    private DrawManager drawManager;
+    private final DrawManager drawManager;
     private final Nodes nodes;
     private final List<Edge> edges;
     public UIGraph() {
-        this.nodes = new Nodes();
+        drawManager = State.get().getProgramState().getDrawManager();
+        this.nodes = new Nodes(drawManager);
         this.edges = new ArrayList<>();
     }
 
@@ -21,4 +24,5 @@ public class UIGraph {
     public Optional<Node> getNodeAt(Position position) {
         return nodes.getNodeByPosition(position);
     }
+
 }
