@@ -1,8 +1,13 @@
 package mouse.project.ui;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import javax.swing.*;
 
 public class DrawFrame extends JFrame {
+
+    private static final Logger logger = LogManager.getLogger(DrawFrame.class);
 
     public DrawFrame() {
     }
@@ -20,5 +25,6 @@ public class DrawFrame extends JFrame {
         this.setLocationRelativeTo(null);
         this.setVisible(true);
         loop.startGameThread();
+        logger.debug("Application started!");
     }
 }

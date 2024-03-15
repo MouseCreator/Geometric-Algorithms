@@ -3,6 +3,8 @@ package mouse.project.ui;
 import java.awt.*;
 
 public class DrawApplication implements Application {
+
+
     public void init() {
 
     }
