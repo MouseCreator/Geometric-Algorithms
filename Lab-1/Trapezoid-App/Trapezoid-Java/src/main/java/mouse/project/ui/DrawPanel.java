@@ -1,33 +1,39 @@
 package mouse.project.ui;
 
+import mouse.project.state.ConstUtils;
+
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.util.ArrayList;
-import java.util.List;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 
 public class DrawPanel extends JPanel {
-    private final List<Point> points = new ArrayList<>();
+    private final AppLoop loop;
+    private double scaleX = 1.0;
+    private double scaleY = 1.0;
 
     public DrawPanel(AppLoop loop) {
-        this.addMouseListener(new MouseAdapter() {
+        super();
+        this.setPreferredSize(new Dimension(ConstUtils.WORLD_WIDTH, ConstUtils.WORLD_HEIGHT));
+        this.setBackground(ConstUtils.BACKGROUND);
+        this.setDoubleBuffered(true);
+        this.setFocusable(true);
+        addComponentListener(new ComponentAdapter() {
             @Override
-            public void mouseClicked(MouseEvent e) {
-                points.add(e.getPoint());
-                repaint();
+            public void componentResized(ComponentEvent e) {
+                scaleX = (double) getWidth() / ConstUtils.WORLD_WIDTH;
+                scaleY = (double) getHeight() / ConstUtils.WORLD_HEIGHT;
             }
         });
+        this.loop = loop;
     }
 
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
-        g2d.setColor(Color.RED);
-
-        for (Point point : points) {
-            g2d.fillOval(point.x - 5, point.y - 5, 10, 10);
-        }
+        g2d.scale(scaleX, scaleY);
+        loop.draw(g2d);
+        g2d.dispose();
     }
 }

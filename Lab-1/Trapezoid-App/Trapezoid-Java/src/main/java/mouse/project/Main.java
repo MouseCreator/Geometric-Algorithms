@@ -1,8 +1,10 @@
 package mouse.project;
 
+import mouse.project.ui.DrawFrame;
+
 public class Main {
     public static void main(String[] args) {
-        CircleDrawer circleDrawer = new CircleDrawer();
-        circleDrawer.initialize();
+        DrawFrame drawFrame = new DrawFrame();
+        drawFrame.startApp();
     }
 }
