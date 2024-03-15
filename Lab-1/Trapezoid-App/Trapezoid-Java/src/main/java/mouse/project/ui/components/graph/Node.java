@@ -2,7 +2,6 @@ package mouse.project.ui.components.graph;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.Setter;
 import mouse.project.state.ConstUtils;
 import mouse.project.ui.components.main.Drawable;
 
@@ -10,9 +9,10 @@ import java.awt.*;
 @Getter
 @EqualsAndHashCode
 public class Node implements Drawable {
+    @EqualsAndHashCode.Exclude
     private Position position;
-    private final String id;
 
+    private final String id;
     public Node(String id, Position position) {
         this.position = position;
         this.id = id;

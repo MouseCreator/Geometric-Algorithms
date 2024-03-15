@@ -28,12 +28,13 @@ public class Nodes {
         drawManager.onAdd(node);
     }
 
-    public void removeNode(Position position) {
+    public boolean removeNode(Position position) {
         Optional<Node> nodeByPosition = getNodeByPosition(position);
         nodeByPosition.ifPresent(n -> {
             nodeList.remove(n);
             drawManager.onRemove(n);
         });
+        return nodeByPosition.isPresent();
     }
 
     public Optional<Node> getNodeByPosition(Position position) {

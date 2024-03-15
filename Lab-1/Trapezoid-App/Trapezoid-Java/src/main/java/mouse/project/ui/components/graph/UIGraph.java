@@ -2,7 +2,6 @@ package mouse.project.ui.components.graph;
 
 import mouse.project.state.State;
 import mouse.project.ui.components.draw.DrawManager;
-import mouse.project.ui.components.draw.DrawManagerImpl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +22,10 @@ public class UIGraph {
     }
     public Optional<Node> getNodeAt(Position position) {
         return nodes.getNodeByPosition(position);
+    }
+
+    public boolean removeNodeAt(Position position) {
+        return nodes.removeNode(position);
     }
 
 }

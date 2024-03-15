@@ -81,7 +81,7 @@ public class ButtonsPane implements AppComponent {
         private JPanel createTopSubpane() {
             JPanel subpanel = new JPanel();
             subpanel.setBackground(ConstUtils.TRANSPARENT);
-            subpanel.setLayout(new GridLayout(3, 1 ,10, 10));
+            subpanel.setLayout(new GridLayout(4, 1 ,10, 10));
             setBackground(ConstUtils.BACKGROUND_SECONDARY);
 
             JToggleButton nodesBtn = createToggleButton("Nodes", ButtonsPane.this::onNodeButton);

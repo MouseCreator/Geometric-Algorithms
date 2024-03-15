@@ -12,8 +12,8 @@ public class DrawApplication implements Application {
 
     @Override
     public void init() {
-        mainPanel = new GeneralPane();
         State.use(new DefaultStateHolder());
+        mainPanel = new GeneralPane();
     }
 
     @Override
