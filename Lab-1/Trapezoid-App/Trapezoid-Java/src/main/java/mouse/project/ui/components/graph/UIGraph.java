@@ -1,11 +1,9 @@
 package mouse.project.ui.components.graph;
 
-import mouse.project.state.ConstUtils;
 import mouse.project.state.State;
 import mouse.project.ui.components.draw.DrawManager;
 
 import java.util.Optional;
-import java.util.function.Predicate;
 
 public class UIGraph {
     private final Nodes nodes;
@@ -23,7 +21,9 @@ public class UIGraph {
         return nodes.getNodeByPosition(position);
     }
     public boolean removeNodeAt(Position position) {
-        return nodes.removeNode(position);
+        Optional<Node> node = nodes.removeNode(position);
+        node.ifPresent(edges::removeWith);
+        return node.isPresent();
     }
     public void addEdge(Position p1, Position p2, boolean extra) {
         Optional<Node> node1 = nodes.getNodeByPosition(p1);
@@ -36,5 +36,9 @@ public class UIGraph {
 
     public Optional<Edge> getEdgeAt(Position position) {
         return edges.getAtPosition(position);
+    }
+
+    public boolean removeEdgeAt(Position position) {
+        return edges.remove(position);
     }
 }

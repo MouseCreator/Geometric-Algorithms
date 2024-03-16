@@ -39,6 +39,7 @@ public class PaintingPane implements AppComponent, ProgramModeListener {
         handlers.add(new NodesClickHandler());
         handlers.add(new EdgesClickHandler());
         handlers.add(new TargetHandler());
+        handlers.add(new EraseClickHandler());
         return handlers;
     }
 
@@ -255,6 +256,22 @@ public class PaintingPane implements AppComponent, ProgramModeListener {
             return position;
         }
 
+    }
 
+    private class EraseClickHandler implements ClickHandler {
+
+        @Override
+        public boolean isApplied(ProgramMode mode) {
+            return mode == ProgramMode.ERASE;
+        }
+
+        @Override
+        public void click(Position position) {
+            boolean removed = graph.removeNodeAt(position);
+            if (removed) {
+                return;
+            }
+            graph.removeEdgeAt(position);
+        }
     }
 }

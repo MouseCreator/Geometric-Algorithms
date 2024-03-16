@@ -6,6 +6,7 @@ import mouse.project.utils.MathUtils;
 import mouse.project.utils.Vector2;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -41,5 +42,22 @@ public class Edges {
             return magnitude < ConstUtils.TARGET_EDGE_TOLERANCE;
         };
         return edges.stream().filter(isClose).findFirst();
+    }
+
+    public boolean remove(Position position) {
+        Optional<Edge> atPosition = getAtPosition(position);
+        atPosition.ifPresent(e -> {
+            edges.remove(e);
+            drawManager.onRemove(e);
+        });
+        return atPosition.isPresent();
+    }
+
+    public void removeWith(Node node) {
+        List<Edge> list = edges.stream().filter(e -> e.hasNode(node)).toList();
+        list.forEach(e -> {
+            edges.remove(e);
+            drawManager.onRemove(e);
+        });
     }
 }
