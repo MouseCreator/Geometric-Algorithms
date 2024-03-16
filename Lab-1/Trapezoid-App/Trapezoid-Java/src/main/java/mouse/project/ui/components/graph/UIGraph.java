@@ -1,9 +1,11 @@
 package mouse.project.ui.components.graph;
 
+import mouse.project.state.ConstUtils;
 import mouse.project.state.State;
 import mouse.project.ui.components.draw.DrawManager;
 
 import java.util.Optional;
+import java.util.function.Predicate;
 
 public class UIGraph {
     private final Nodes nodes;
@@ -32,4 +34,7 @@ public class UIGraph {
         edges.add(node1.get(), node2.get(), extra);
     }
 
+    public Optional<Edge> getEdgeAt(Position position) {
+        return edges.getAtPosition(position);
+    }
 }

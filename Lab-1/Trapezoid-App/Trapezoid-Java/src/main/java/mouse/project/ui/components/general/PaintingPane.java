@@ -7,6 +7,7 @@ import mouse.project.state.State;
 import mouse.project.ui.components.draw.DrawManager;
 import mouse.project.ui.components.graph.*;
 import mouse.project.ui.components.main.AppComponent;
+import mouse.project.utils.MathUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -229,6 +230,7 @@ public class PaintingPane implements AppComponent, ProgramModeListener {
 
         @Override
         public void click(Position position) {
+            position = adjustPosition(position);
             if (targetPoint == null) {
                 targetPoint = new TargetPoint(position);
                 drawManager.onAdd(targetPoint);
@@ -237,5 +239,22 @@ public class PaintingPane implements AppComponent, ProgramModeListener {
             }
 
         }
+
+        private Position adjustPosition(Position position) {
+            Optional<Node> nodeAt = graph.getNodeAt(position);
+            if (nodeAt.isPresent()) {
+                position = nodeAt.get().getPosition();
+            } else {
+                Optional<Edge> edgeAt = graph.getEdgeAt(position);
+                if (edgeAt.isPresent()) {
+                    System.out.println("FOUND");
+                    Edge edge = edgeAt.get();
+                    position = MathUtils.movePositionToEdge(edge, position);
+                }
+            }
+            return position;
+        }
+
+
     }
 }

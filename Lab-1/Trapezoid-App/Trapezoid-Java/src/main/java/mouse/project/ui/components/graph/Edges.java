@@ -1,9 +1,14 @@
 package mouse.project.ui.components.graph;
 
+import mouse.project.state.ConstUtils;
 import mouse.project.ui.components.draw.DrawManager;
+import mouse.project.utils.MathUtils;
+import mouse.project.utils.Vector2;
 
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
+import java.util.function.Predicate;
 
 public class Edges {
     private final Set<Edge> edges;
@@ -15,7 +20,26 @@ public class Edges {
 
     public void add(Node node1, Node node2, boolean extra) {
         Edge edge = new Edge(node1, node2, extra);
+        if(containsEdge(node1, node2)) {
+            return;
+        }
         edges.add(edge);
         drawManager.onAdd(edge);
+    }
+
+    private boolean containsEdge(Node node1, Node node2) {
+        return edges.stream().anyMatch(e -> e.hasNode(node1) && e.hasNode(node2));
+    }
+
+    public Optional<Edge> getAtPosition(Position c) {
+        Predicate<Edge> isClose = edge -> {
+            Position a = edge.node1().getPosition();
+            Position b = edge.node2().getPosition();
+            Vector2 ac = Vector2.from(a, c);
+            Vector2 ad = MathUtils.getVectorProjection(a, b, c);
+            double magnitude = ac.subtract(ad).magnitude();
+            return magnitude < ConstUtils.TARGET_EDGE_TOLERANCE;
+        };
+        return edges.stream().filter(isClose).findFirst();
     }
 }

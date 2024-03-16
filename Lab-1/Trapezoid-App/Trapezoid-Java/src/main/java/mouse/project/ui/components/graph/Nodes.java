@@ -33,6 +33,7 @@ public class Nodes {
         nodeByPosition.ifPresent(n -> {
             nodeList.remove(n);
             drawManager.onRemove(n);
+            nodeIdGenerator.free(n.getId());
         });
         return nodeByPosition.isPresent();
     }

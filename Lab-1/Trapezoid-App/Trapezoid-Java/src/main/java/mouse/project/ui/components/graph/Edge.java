@@ -27,4 +27,8 @@ public record Edge(Node node1, Node node2, boolean isExtra) implements Drawable 
     public int depth() {
         return 2;
     }
+
+    public boolean hasNode(Node node) {
+        return node.equals(node1) || node.equals(node2);
+    }
 }

@@ -18,6 +18,6 @@ public class ConstUtils {
     public static final Color BACKGROUND_SECONDARY = Color.LIGHT_GRAY;
     public static final int BUTTON_PANE_WIDTH = WINDOW_WIDTH - WORLD_WIDTH;
     public static final int BUTTON_PANE_HEIGHT = WINDOW_HEIGHT;
-    public static final double TARGET_EDGE_TOLERANCE = 2.5;
+    public static final double TARGET_EDGE_TOLERANCE = 5;
     public static final Color TRANSPARENT = new Color(0,0,0,0);
 }
