@@ -8,8 +8,6 @@ import mouse.project.ui.components.draw.DrawManager;
 import mouse.project.ui.components.graph.*;
 import mouse.project.ui.components.main.AppComponent;
 import mouse.project.utils.MathUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import javax.swing.*;
 import java.awt.*;
@@ -22,7 +20,6 @@ import java.util.Optional;
 public class PaintingPane implements AppComponent, ProgramModeListener {
     private final DrawPanel drawPanel;
     private final UIGraph graph;
-    private static final Logger logger = LogManager.getLogger(PaintingPane.class);
     private final DrawManager drawManager;
     private ClickHandler clickHandler = new ClickHandler() {};
     private final List<ClickHandler> clickHandlers;
@@ -248,7 +245,6 @@ public class PaintingPane implements AppComponent, ProgramModeListener {
             } else {
                 Optional<Edge> edgeAt = graph.getEdgeAt(position);
                 if (edgeAt.isPresent()) {
-                    System.out.println("FOUND");
                     Edge edge = edgeAt.get();
                     position = MathUtils.movePositionToEdge(edge, position);
                 }
