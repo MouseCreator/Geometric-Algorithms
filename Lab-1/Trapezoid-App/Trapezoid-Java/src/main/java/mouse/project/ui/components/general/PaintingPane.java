@@ -37,6 +37,7 @@ public class PaintingPane implements AppComponent, ProgramModeListener {
         List<ClickHandler> handlers = new ArrayList<>();
         handlers.add(new NodesClickHandler());
         handlers.add(new EdgesClickHandler());
+        handlers.add(new TargetHandler());
         return handlers;
     }
 
@@ -49,14 +50,11 @@ public class PaintingPane implements AppComponent, ProgramModeListener {
         return drawPanel;
     }
     @Override
-    public void update() {
-
-    }
-
-    @Override
     public void onProgramModeChange(ProgramMode programMode) {
         Optional<ClickHandler> handler = clickHandlers.stream().filter(s -> s.isApplied(programMode)).findFirst();
+        clickHandler.onDisable();
         clickHandler = handler.orElse(new ClickHandler() {});
+        clickHandler.onEnable();
     }
 
     private class DrawPanel extends JPanel {
@@ -70,12 +68,16 @@ public class PaintingPane implements AppComponent, ProgramModeListener {
                     Point point = e.getPoint();
                     int x = point.x;
                     int y = point.y;
-                    if (x > ConstUtils.WORLD_WIDTH && y > ConstUtils.WORLD_HEIGHT) {
+                    if (outOfBounds(x, y)) {
                         return;
                     }
                     if (e.getButton() == MouseEvent.BUTTON1) {
                         onAction(mouseAction, Position.of(x, y));
                     }
+                }
+
+                private static boolean outOfBounds(int x, int y) {
+                    return x > ConstUtils.WORLD_WIDTH || y > ConstUtils.WORLD_HEIGHT;
                 }
 
                 @Override
@@ -98,7 +100,7 @@ public class PaintingPane implements AppComponent, ProgramModeListener {
                     Point point = e.getPoint();
                     int x = point.x;
                     int y = point.y;
-                    if (x > ConstUtils.WORLD_WIDTH && y > ConstUtils.WORLD_HEIGHT) {
+                    if (outOfBounds(x, y)) {
                         onAction(MouseAction.DRAG, null);
                     } else {
                         onAction(MouseAction.DRAG, Position.of(x, y));
@@ -197,6 +199,43 @@ public class PaintingPane implements AppComponent, ProgramModeListener {
             Node startedWith = nodeAt.get();
             Position startPos = startedWith.getPosition();
             showLine(startPos);
+        }
+    }
+
+    private class TargetHandler implements ClickHandler {
+        private TargetPoint targetPoint = null;
+
+        @Override
+        public void onEnable() {
+            hide();
+        }
+
+        @Override
+        public void onDisable() {
+            hide();
+        }
+
+        @Override
+        public boolean isApplied(ProgramMode mode) {
+            return mode == ProgramMode.TARGET;
+        }
+
+        private void hide() {
+            if (targetPoint != null) {
+                drawManager.onRemove(targetPoint);
+                targetPoint = null;
+            }
+        }
+
+        @Override
+        public void click(Position position) {
+            if (targetPoint == null) {
+                targetPoint = new TargetPoint(position);
+                drawManager.onAdd(targetPoint);
+            } else {
+                targetPoint.moveTo(position);
+            }
+
         }
     }
 }
