@@ -121,16 +121,14 @@ public class PaintingPane implements AppComponent, ProgramModeListener {
     private void onAction(MouseAction mouseAction, Position pos) {
 
         switch (mouseAction) {
-            case CLICK -> clickHandler.click(pos);
+            case CLICK, PRESS -> clickHandler.press(pos);
             case DRAG -> clickHandler.drag(pos);
             case RELEASE -> clickHandler.release(pos);
-            case PRESS -> clickHandler.press(pos);
         }
     }
 
     private interface ClickHandler {
         default boolean isApplied(ProgramMode mode) {return false;}
-        default void click(Position position) {}
         default void drag(Position position) {}
         default void release(Position position) {}
         default void press(Position position) {}
@@ -146,7 +144,7 @@ public class PaintingPane implements AppComponent, ProgramModeListener {
         }
 
         @Override
-        public void click(Position position) {
+        public void press(Position position) {
             graph.addNodeAt(position, false);
         }
     }
@@ -227,7 +225,7 @@ public class PaintingPane implements AppComponent, ProgramModeListener {
         }
 
         @Override
-        public void click(Position position) {
+        public void press(Position position) {
             position = adjustPosition(position);
             if (targetPoint == null) {
                 targetPoint = new TargetPoint(position);
@@ -262,7 +260,7 @@ public class PaintingPane implements AppComponent, ProgramModeListener {
         }
 
         @Override
-        public void click(Position position) {
+        public void press(Position position) {
             boolean removed = graph.removeNodeAt(position);
             if (removed) {
                 return;
