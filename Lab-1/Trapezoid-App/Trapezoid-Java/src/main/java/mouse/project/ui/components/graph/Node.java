@@ -4,6 +4,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import mouse.project.state.ConstUtils;
 import mouse.project.ui.components.main.Drawable;
+import mouse.project.utils.math.Position;
 
 import java.awt.*;
 @Getter

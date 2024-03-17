@@ -2,9 +2,10 @@ package mouse.project.ui.components.graph;
 
 import mouse.project.state.ConstUtils;
 import mouse.project.ui.components.draw.DrawManager;
-import mouse.project.utils.Box;
-import mouse.project.utils.MathUtils;
-import mouse.project.utils.Vector2;
+import mouse.project.utils.math.Box;
+import mouse.project.utils.math.MathUtils;
+import mouse.project.utils.math.Position;
+import mouse.project.utils.math.Vector2;
 
 import java.util.HashSet;
 import java.util.List;

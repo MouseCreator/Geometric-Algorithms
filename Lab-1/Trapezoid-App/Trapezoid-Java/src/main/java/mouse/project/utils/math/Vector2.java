@@ -1,6 +1,4 @@
-package mouse.project.utils;
-
-import mouse.project.ui.components.graph.Position;
+package mouse.project.utils.math;
 
 public record Vector2(double x, double y) {
     public static Vector2 zeros() {

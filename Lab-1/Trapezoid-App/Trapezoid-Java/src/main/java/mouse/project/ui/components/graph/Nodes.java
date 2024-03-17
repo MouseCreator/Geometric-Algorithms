@@ -2,6 +2,7 @@ package mouse.project.ui.components.graph;
 
 import mouse.project.state.ConstUtils;
 import mouse.project.ui.components.draw.DrawManager;
+import mouse.project.utils.math.Position;
 
 import java.util.ArrayList;
 import java.util.List;

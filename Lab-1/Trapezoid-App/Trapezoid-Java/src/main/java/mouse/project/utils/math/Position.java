@@ -1,4 +1,4 @@
-package mouse.project.ui.components.graph;
+package mouse.project.utils.math;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;

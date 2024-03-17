@@ -7,7 +7,8 @@ import mouse.project.state.State;
 import mouse.project.ui.components.draw.DrawManager;
 import mouse.project.ui.components.graph.*;
 import mouse.project.ui.components.main.AppComponent;
-import mouse.project.utils.MathUtils;
+import mouse.project.utils.math.MathUtils;
+import mouse.project.utils.math.Position;
 
 import javax.swing.*;
 import java.awt.*;

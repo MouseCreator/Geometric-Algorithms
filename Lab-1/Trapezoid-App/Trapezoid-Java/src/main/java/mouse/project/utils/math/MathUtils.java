@@ -1,7 +1,6 @@
-package mouse.project.utils;
+package mouse.project.utils.math;
 
 import mouse.project.ui.components.graph.Edge;
-import mouse.project.ui.components.graph.Position;
 
 public class MathUtils {
     public static Position movePositionToEdge(Edge edge, Position c) {
