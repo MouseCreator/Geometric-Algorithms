@@ -2,6 +2,7 @@ package mouse.project.ui.components.graph;
 
 import mouse.project.state.ConstUtils;
 import mouse.project.ui.components.draw.DrawManager;
+import mouse.project.utils.Box;
 import mouse.project.utils.MathUtils;
 import mouse.project.utils.Vector2;
 
@@ -39,9 +40,16 @@ public class Edges {
             Vector2 ac = Vector2.from(a, c);
             Vector2 ad = MathUtils.getVectorProjection(a, b, c);
             double magnitude = ac.subtract(ad).magnitude();
-            return magnitude < ConstUtils.TARGET_EDGE_TOLERANCE;
+            return insideEdgeBox(edge, c) && magnitude < ConstUtils.TARGET_EDGE_TOLERANCE;
         };
         return edges.stream().filter(isClose).findFirst();
+    }
+
+    private boolean insideEdgeBox(Edge edge, Position c) {
+        Position p1 = edge.node1().getPosition();
+        Position p2 = edge.node2().getPosition();
+        Box box = new Box(p1, p2);
+        return box.contains(c);
     }
 
     public boolean remove(Position position) {
