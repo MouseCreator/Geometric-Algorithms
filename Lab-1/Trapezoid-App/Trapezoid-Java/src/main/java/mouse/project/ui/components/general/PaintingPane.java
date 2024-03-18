@@ -1,5 +1,11 @@
 package mouse.project.ui.components.general;
 
+import mouse.project.event.service.EventAddRegister;
+import mouse.project.event.service.EventDeleteRegister;
+import mouse.project.event.service.EventListener;
+import mouse.project.event.service.Events;
+import mouse.project.event.type.Event;
+import mouse.project.event.type.RemoveAllEvent;
 import mouse.project.state.ConstUtils;
 import mouse.project.state.MouseAction;
 import mouse.project.state.ProgramMode;
@@ -18,7 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class PaintingPane implements AppComponent, ProgramModeListener {
+public class PaintingPane implements AppComponent, ProgramModeListener, EventListener {
     private final DrawPanel drawPanel;
     private final UIGraph graph;
     private final DrawManager drawManager;
@@ -30,6 +36,7 @@ public class PaintingPane implements AppComponent, ProgramModeListener {
         drawManager = State.get().getProgramState().getDrawManager();
         clickHandlers = createClickHandlers();
         State.get().getProgramState().registerListener(this);
+        Events.register(this);
     }
 
     private List<ClickHandler> createClickHandlers() {
@@ -55,6 +62,27 @@ public class PaintingPane implements AppComponent, ProgramModeListener {
         clickHandler.onDisable();
         clickHandler = handler.orElse(new ClickHandler() {});
         clickHandler.onEnable();
+    }
+
+    @Override
+    public void onEvent(Event event) {
+        if (event instanceof RemoveAllEvent) {
+            onRemoveAll();
+        }
+    }
+
+    private void onRemoveAll() {
+        graph.removeAll();
+    }
+
+    @Override
+    public void register(EventAddRegister eventAddRegister) {
+        eventAddRegister.register(this, RemoveAllEvent.class);
+    }
+
+    @Override
+    public void unregister(EventDeleteRegister eventDeleteRegister) {
+        eventDeleteRegister.unregister(this);
     }
 
     private class DrawPanel extends JPanel {

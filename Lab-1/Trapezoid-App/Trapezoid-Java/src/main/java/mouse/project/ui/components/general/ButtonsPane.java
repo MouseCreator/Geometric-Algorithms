@@ -1,5 +1,7 @@
 package mouse.project.ui.components.general;
 
+import mouse.project.event.service.Events;
+import mouse.project.event.type.RemoveAllEvent;
 import mouse.project.state.ConstUtils;
 import mouse.project.state.ProgramMode;
 import mouse.project.state.State;
@@ -44,6 +46,7 @@ public class ButtonsPane implements AppComponent {
         logger.debug("Load pressed!");
     }
     private void onClearButton() {
+        Events.generate(new RemoveAllEvent());
         logger.debug("Clear pressed!");
     }
 
@@ -69,7 +72,7 @@ public class ButtonsPane implements AppComponent {
             JPanel topSubpane = createTopSubpane();
             JPanel bottomSubpane = createBottomSubpane();
             main.add(topSubpane);
-            JPanel space = createSapce(spaceGap, gap);
+            JPanel space = createSpace(spaceGap, gap);
             main.add(space);
             main.add(bottomSubpane);
             int height = buttonCount * buttonHeight + (buttonCount - 1) * gap + spaceGap;
@@ -145,7 +148,7 @@ public class ButtonsPane implements AppComponent {
 
 
 
-    private static JPanel createSapce(int spaceGap, int gap) {
+    private static JPanel createSpace(int spaceGap, int gap) {
         JPanel space = new JPanel();
         space.setPreferredSize(new Dimension(0, spaceGap - gap));
         space.setBackground(ConstUtils.TRANSPARENT);

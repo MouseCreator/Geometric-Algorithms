@@ -55,18 +55,26 @@ public class Edges {
 
     public boolean remove(Position position) {
         Optional<Edge> atPosition = getAtPosition(position);
-        atPosition.ifPresent(e -> {
-            edges.remove(e);
-            drawManager.onRemove(e);
-        });
+        atPosition.ifPresent(this::removeEdge);
         return atPosition.isPresent();
+    }
+
+    private void removeEdge(Edge e) {
+        beforeRemoval(e);
+        edges.remove(e);
+    }
+
+    private void beforeRemoval(Edge e) {
+        drawManager.onRemove(e);
     }
 
     public void removeWith(Node node) {
         List<Edge> list = edges.stream().filter(e -> e.hasNode(node)).toList();
-        list.forEach(e -> {
-            edges.remove(e);
-            drawManager.onRemove(e);
-        });
+        list.forEach(this::removeEdge);
+    }
+
+    public void removeAll() {
+        edges.forEach(this::beforeRemoval);
+        edges.clear();
     }
 }

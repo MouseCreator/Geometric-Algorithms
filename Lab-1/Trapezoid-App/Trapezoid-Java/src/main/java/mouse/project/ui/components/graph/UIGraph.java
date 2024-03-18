@@ -42,4 +42,9 @@ public class UIGraph {
     public boolean removeEdgeAt(Position position) {
         return edges.remove(position);
     }
+
+    public void removeAll() {
+        nodes.removeAll();
+        edges.removeAll();
+    }
 }

@@ -31,18 +31,29 @@ public class Nodes {
 
     public Optional<Node> removeNode(Position position) {
         Optional<Node> nodeByPosition = getNodeByPosition(position);
-        nodeByPosition.ifPresent(n -> {
-            nodeList.remove(n);
-            drawManager.onRemove(n);
-            nodeIdGenerator.free(n.getId());
-        });
+        nodeByPosition.ifPresent(this::removeNode);
         return nodeByPosition;
     }
 
+    private void removeNode(Node n) {
+        beforeRemoval(n);
+        nodeList.remove(n);
+    }
+
+    private void beforeRemoval(Node n) {
+        drawManager.onRemove(n);
+        nodeIdGenerator.free(n.getId());
+    }
+
     public Optional<Node> getNodeByPosition(Position position) {
-        double radius =  ConstUtils.NODE_DIAMETER / 2.0;
+        double radius = ConstUtils.NODE_DIAMETER / 2.0;
         return nodeList.stream()
                 .filter(n -> n.getPosition().distanceTo(position) < radius)
                 .findFirst();
+    }
+
+    public void removeAll() {
+        nodeList.forEach(this::beforeRemoval);
+        nodeList.clear();
     }
 }
