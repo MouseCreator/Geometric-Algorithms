@@ -4,6 +4,7 @@ import mouse.project.state.State;
 import mouse.project.ui.components.draw.DrawManager;
 import mouse.project.utils.math.Position;
 
+import java.util.List;
 import java.util.Optional;
 
 public class UIGraph {
@@ -46,5 +47,29 @@ public class UIGraph {
     public void removeAll() {
         nodes.removeAll();
         edges.removeAll();
+    }
+
+    public List<Node> getNodes() {
+        return nodes.getAll();
+    }
+
+    public List<Edge>  getEdges() {
+        return edges.getAll();
+    }
+
+    public void addNamedNode(Node node) {
+        nodes.addNode(node);
+    }
+
+    public void addEdge(Edge edge) {
+        validateContains(edge.node1());
+        validateContains(edge.node2());
+        edges.add(edge);
+    }
+
+    private void validateContains(Node node) {
+        if (!nodes.contains(node)) {
+            throw new IllegalArgumentException("Passed edge with external node " + node);
+        }
     }
 }

@@ -7,10 +7,7 @@ import mouse.project.utils.math.MathUtils;
 import mouse.project.utils.math.Position;
 import mouse.project.utils.math.Vector2;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Predicate;
 
 public class Edges {
@@ -23,11 +20,7 @@ public class Edges {
 
     public void add(Node node1, Node node2, boolean extra) {
         Edge edge = new Edge(node1, node2, extra);
-        if(containsEdge(node1, node2)) {
-            return;
-        }
-        edges.add(edge);
-        drawManager.onAdd(edge);
+        add(edge);
     }
 
     private boolean containsEdge(Node node1, Node node2) {
@@ -76,5 +69,17 @@ public class Edges {
     public void removeAll() {
         edges.forEach(this::beforeRemoval);
         edges.clear();
+    }
+
+    public List<Edge> getAll() {
+        return new ArrayList<>(edges);
+    }
+
+    public void add(Edge edge) {
+        if(containsEdge(edge.node1(), edge.node2())) {
+            return;
+        }
+        drawManager.onAdd(edge);
+        edges.add(edge);
     }
 }

@@ -25,6 +25,10 @@ public class Nodes {
 
     public void addNode(String id, Position position, boolean extra) {
         Node node = new Node(id, position, extra);
+        onAdd(node);
+    }
+
+    private void onAdd(Node node) {
         nodeList.add(node);
         drawManager.onAdd(node);
     }
@@ -55,5 +59,18 @@ public class Nodes {
     public void removeAll() {
         nodeList.forEach(this::beforeRemoval);
         nodeList.clear();
+    }
+
+    public List<Node> getAll() {
+        return new ArrayList<>(nodeList);
+    }
+
+    public void addNode(Node node) {
+        nodeIdGenerator.put(node.getId());
+        onAdd(node);
+    }
+
+    public boolean contains(Node node) {
+        return nodeList.contains(node);
     }
 }
