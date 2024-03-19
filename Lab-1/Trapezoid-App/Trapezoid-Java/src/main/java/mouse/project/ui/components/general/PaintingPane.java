@@ -118,12 +118,6 @@ public class PaintingPane implements AppComponent, ProgramModeListener, EventLis
                 private static boolean outOfBounds(int x, int y) {
                     return x > ConstUtils.WORLD_WIDTH || y > ConstUtils.WORLD_HEIGHT;
                 }
-
-                @Override
-                public void mouseClicked(MouseEvent e) {
-                    handleAction(e, MouseAction.CLICK);
-                }
-
                 @Override
                 public void mousePressed(MouseEvent e) {
                     handleAction(e, MouseAction.PRESS);
@@ -161,7 +155,7 @@ public class PaintingPane implements AppComponent, ProgramModeListener, EventLis
     private void onAction(MouseAction mouseAction, Position pos) {
 
         switch (mouseAction) {
-            case CLICK, PRESS -> clickHandler.press(pos);
+            case PRESS -> clickHandler.press(pos);
             case DRAG -> clickHandler.drag(pos);
             case RELEASE -> clickHandler.release(pos);
         }
