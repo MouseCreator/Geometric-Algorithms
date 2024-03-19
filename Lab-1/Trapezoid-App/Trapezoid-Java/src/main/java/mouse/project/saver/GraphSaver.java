@@ -31,68 +31,71 @@ public class GraphSaver {
         });
         return builder.toString();
     }
-    private static class Tokens {
-        private final List<String> values;
 
-        public Tokens(List<String> values) {
-            this.values = new ArrayList<>(values);
-        }
-
-        public String next() {
-            if (isEmpty()) {
-                throw new LoadingException("Cannot get next token.");
+    private record Tokens(List<String> values) {
+            private Tokens(List<String> values) {
+                this.values = new ArrayList<>(values);
             }
-            return values.remove(0);
-        }
 
-        public Integer nextInteger() {
-            String next = next();
-            try {
-                return Integer.parseInt(next);
-            } catch (Exception e) {
-                throw new LoadingException("Cannot parse to integer " + next);
+            public String next() {
+                if (isEmpty()) {
+                    throw new LoadingException("Cannot get next token.");
+                }
+                return values.remove(0);
             }
-        }
 
-        public void expect(String pattern) {
-            String[] strs = pattern.split(" ");
-            if (values.size() < strs.length) {
-                throw new LoadingException("Cannot expect pattern " + pattern);
-            }
-            for (String s : strs) {
-                switch (s.toUpperCase()) {
-                    case "S": continue;
-                    case "X": isPosition(s, "x");
-                    case "Y": isPosition(s, "y");
+            public Integer nextInteger() {
+                String next = next();
+                try {
+                    return Integer.parseInt(next);
+                } catch (Exception e) {
+                    throw new LoadingException("Cannot parse to integer " + next);
                 }
             }
-        }
 
-        private void isPosition(String s, String cord) {
-            boolean matches = s.matches("^-?\\d+$");
-            if (!matches) {
-                throw new LoadingException("Expected integer, found: " + s);
+            public void expect(String pattern) {
+                String[] strs = pattern.split(" ");
+                if (values.size() < strs.length) {
+                    throw new LoadingException("Cannot expect pattern " + pattern);
+                }
+                int i = 0;
+                for (String s : strs) {
+                    String key = values.get(i++);
+                    switch (s.toUpperCase()) {
+                        case "S":
+                            continue;
+                        case "X":
+                            isPosition(key, "x");
+                        case "Y":
+                            isPosition(key, "y");
+                    }
+                }
             }
-            int i = Integer.parseInt(s);
-            if (i < 0) {
-                throw new LoadingException("Cannot accept negative coordinate: " + i);
-            }
-            if (cord.equals("x") && i > ConstUtils.WORLD_WIDTH) {
-                throw new LoadingException("X out of bounds: " + i + " > " + ConstUtils.WORLD_WIDTH);
-            }
-            else if (cord.equals("y") && i > ConstUtils.WORLD_HEIGHT) {
-                throw new LoadingException("Y out of bounds: " + i + " > " + ConstUtils.WORLD_HEIGHT);
-            }
-        }
 
-        public boolean isEmpty() {
-            return values.isEmpty();
-        }
+            private void isPosition(String s, String cord) {
+                boolean matches = s.matches("^-?\\d+$");
+                if (!matches) {
+                    throw new LoadingException("Expected integer, found: " + s);
+                }
+                int i = Integer.parseInt(s);
+                if (i < 0) {
+                    throw new LoadingException("Cannot accept negative coordinate: " + i);
+                }
+                if (cord.equals("x") && i > ConstUtils.WORLD_WIDTH) {
+                    throw new LoadingException("X out of bounds: " + i + " > " + ConstUtils.WORLD_WIDTH);
+                } else if (cord.equals("y") && i > ConstUtils.WORLD_HEIGHT) {
+                    throw new LoadingException("Y out of bounds: " + i + " > " + ConstUtils.WORLD_HEIGHT);
+                }
+            }
 
-        public boolean hasValues() {
-            return !values.isEmpty();
+            public boolean isEmpty() {
+                return values.isEmpty();
+            }
+
+            public boolean hasValues() {
+                return !values.isEmpty();
+            }
         }
-    }
     public void fromSaveString(UIGraph graph, String input) {
         graph.removeAll();
         Map<String, Node> nodes = new HashMap<>();
@@ -116,9 +119,7 @@ public class GraphSaver {
                     Node node2 = getNode(nodes, tokenStream.next());
                     edges.add(new Edge(node1, node2, false));
                 }
-                default -> {
-                    throw new LoadingException("Unexpected token: " + next);
-                }
+                default -> throw new LoadingException("Unexpected token: " + next);
             }
         }
         for (Node node : nodes.values()) {
