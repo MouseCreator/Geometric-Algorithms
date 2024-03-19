@@ -1,4 +1,4 @@
 package mouse.project.event.type;
 
-public class LoadEvent {
+public class LoadEvent implements Event{
 }

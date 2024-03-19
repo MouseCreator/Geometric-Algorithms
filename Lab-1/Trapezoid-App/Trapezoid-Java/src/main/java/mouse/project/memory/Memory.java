@@ -1,13 +1,16 @@
 package mouse.project.memory;
 
-import lombok.Data;
-
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-@Data
 public class Memory implements Iterable<KeyValue> {
-    private Map<String, String> memoryStrings;
+    private final Map<String, String> memoryStrings;
+
+    public Memory() {
+        memoryStrings = new HashMap<>();
+    }
+
     public String get(String key) {
         String s = memoryStrings.get(key);
         if (s == null) {

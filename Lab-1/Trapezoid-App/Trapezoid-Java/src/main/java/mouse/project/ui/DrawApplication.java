@@ -1,6 +1,5 @@
 package mouse.project.ui;
 
-import mouse.project.memory.MemoryHolder;
 import mouse.project.state.DefaultStateHolder;
 import mouse.project.state.State;
 import mouse.project.ui.components.general.GeneralPane;

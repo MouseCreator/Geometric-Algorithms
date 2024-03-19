@@ -1,7 +1,9 @@
 package mouse.project.ui.components.general;
 
 import mouse.project.event.service.Events;
+import mouse.project.event.type.LoadEvent;
 import mouse.project.event.type.RemoveAllEvent;
+import mouse.project.event.type.SaveEvent;
 import mouse.project.state.ConstUtils;
 import mouse.project.state.ProgramMode;
 import mouse.project.state.State;
@@ -41,9 +43,11 @@ public class ButtonsPane implements AppComponent {
     }
     private void onSaveButton() {
         logger.debug("Save pressed!");
+        Events.generate(new SaveEvent());
     }
     private void onLoadButton() {
         logger.debug("Load pressed!");
+        Events.generate(new LoadEvent());
     }
     private void onClearButton() {
         Events.generate(new RemoveAllEvent());

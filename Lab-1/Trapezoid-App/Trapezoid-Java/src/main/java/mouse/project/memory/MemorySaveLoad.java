@@ -3,7 +3,7 @@ package mouse.project.memory;
 import mouse.project.saver.FileManager;
 
 public class MemorySaveLoad {
-    private final static String MEMORY_FILE = "all.memory";
+    private final static String MEMORY_FILE = "src/main/resources/all.memory";
 
     private final FileManager fileManager;
 

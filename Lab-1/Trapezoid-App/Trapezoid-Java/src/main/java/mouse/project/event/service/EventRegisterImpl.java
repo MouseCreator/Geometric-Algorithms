@@ -34,6 +34,10 @@ public class EventRegisterImpl implements EventRegister {
 
     @Override
     public Set<EventListener> getListeners(Class<? extends Event> event) {
-        return new HashSet<>(listenersMap.get(event));
+        Set<EventListener> eventListeners = listenersMap.get(event);
+        if (eventListeners == null) {
+            return new HashSet<>();
+        }
+        return new HashSet<>(eventListeners);
     }
 }

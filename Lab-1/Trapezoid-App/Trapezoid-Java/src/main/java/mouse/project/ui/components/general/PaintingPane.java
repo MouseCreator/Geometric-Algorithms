@@ -5,7 +5,10 @@ import mouse.project.event.service.EventDeleteRegister;
 import mouse.project.event.service.EventListener;
 import mouse.project.event.service.Events;
 import mouse.project.event.type.Event;
+import mouse.project.event.type.LoadEvent;
 import mouse.project.event.type.RemoveAllEvent;
+import mouse.project.event.type.SaveEvent;
+import mouse.project.saver.SaveLoad;
 import mouse.project.state.ConstUtils;
 import mouse.project.state.MouseAction;
 import mouse.project.state.ProgramMode;
@@ -69,6 +72,12 @@ public class PaintingPane implements AppComponent, ProgramModeListener, EventLis
         if (event instanceof RemoveAllEvent) {
             onRemoveAll();
         }
+        else if (event instanceof SaveEvent) {
+            SaveLoad.save(graph);
+        }
+        else if (event instanceof LoadEvent) {
+            SaveLoad.load(graph);
+        }
     }
 
     private void onRemoveAll() {
@@ -78,6 +87,8 @@ public class PaintingPane implements AppComponent, ProgramModeListener, EventLis
     @Override
     public void register(EventAddRegister eventAddRegister) {
         eventAddRegister.register(this, RemoveAllEvent.class);
+        eventAddRegister.register(this, SaveEvent.class);
+        eventAddRegister.register(this, LoadEvent.class);
     }
 
     @Override
