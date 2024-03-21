@@ -32,6 +32,7 @@ public class PaintingPane implements AppComponent, ProgramModeListener, EventLis
     private final UIGraph graph;
     private final DrawManager drawManager;
     private ClickHandler clickHandler = new ClickHandler() {};
+    private final ClickHandler rightClickHandler = new RightClickHandler() {};
     private final List<ClickHandler> clickHandlers;
     public PaintingPane() {
         this.drawPanel = new DrawPanel();
@@ -110,8 +111,11 @@ public class PaintingPane implements AppComponent, ProgramModeListener, EventLis
                     if (outOfBounds(x, y)) {
                         return;
                     }
-                    if (e.getButton() == MouseEvent.BUTTON1) {
-                        onAction(mouseAction, Position.of(x, y));
+                    if (SwingUtilities.isLeftMouseButton(e)) {
+                        onLeftClickAction(mouseAction, Position.of(x, y));
+                    }
+                    else if (SwingUtilities.isRightMouseButton(e)) {
+                        onRightClickAction(mouseAction, Position.of(x, y));
                     }
                 }
 
@@ -133,11 +137,21 @@ public class PaintingPane implements AppComponent, ProgramModeListener, EventLis
                     Point point = e.getPoint();
                     int x = point.x;
                     int y = point.y;
-                    if (outOfBounds(x, y)) {
-                        onAction(MouseAction.DRAG, null);
-                    } else {
-                        onAction(MouseAction.DRAG, Position.of(x, y));
+                    if (SwingUtilities.isLeftMouseButton(e)) {
+                        if (outOfBounds(x, y)) {
+                            onLeftClickAction(MouseAction.DRAG, null);
+                        } else {
+                            onLeftClickAction(MouseAction.DRAG, Position.of(x, y));
+                        }
                     }
+                    else if (SwingUtilities.isRightMouseButton(e)) {
+                        if (outOfBounds(x, y)) {
+                            onRightClickAction(MouseAction.DRAG, null);
+                        } else {
+                            onRightClickAction(MouseAction.DRAG, Position.of(x, y));
+                        }
+                    }
+
                 }
             };
             this.addMouseListener(mouseAdapter);
@@ -152,7 +166,16 @@ public class PaintingPane implements AppComponent, ProgramModeListener, EventLis
             drawManager.drawAll(g2d);
         }
     }
-    private void onAction(MouseAction mouseAction, Position pos) {
+
+    private void onRightClickAction(MouseAction mouseAction, Position of) {
+        switch (mouseAction) {
+            case PRESS -> rightClickHandler.press(of);
+            case DRAG -> rightClickHandler.drag(of);
+            case RELEASE -> rightClickHandler.release(of);
+        }
+    }
+
+    private void onLeftClickAction(MouseAction mouseAction, Position pos) {
 
         switch (mouseAction) {
             case PRESS -> clickHandler.press(pos);
@@ -300,6 +323,49 @@ public class PaintingPane implements AppComponent, ProgramModeListener, EventLis
                 return;
             }
             graph.removeEdgeAt(position);
+        }
+    }
+
+    private class RightClickHandler implements ClickHandler {
+
+        @Override
+        public boolean isApplied(ProgramMode mode) {
+            return true;
+        }
+        private Node currentNode = null;
+        private Position startPosition = null;
+        @Override
+        public void press(Position position) {
+            Optional<Node> nodeAt = graph.getNodeAt(position);
+            if (nodeAt.isEmpty()) {
+                return;
+            }
+            startPosition = position;
+            currentNode = nodeAt.get();
+        }
+
+        @Override
+        public void drag(Position position) {
+            if (currentNode == null) {
+                return;
+            }
+            if (position == null) {
+                reset();
+                return;
+            }
+            currentNode.moveTo(position);
+        }
+
+        private void reset() {
+            currentNode.moveTo(startPosition);
+            currentNode = null;
+            startPosition = null;
+        }
+
+        @Override
+        public void release(Position position) {
+            currentNode = null;
+            startPosition = null;
         }
     }
 }
