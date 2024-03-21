@@ -137,6 +137,10 @@ public class PaintingPane implements AppComponent, ProgramModeListener, EventLis
                     Point point = e.getPoint();
                     int x = point.x;
                     int y = point.y;
+                    handleDragAction(e, x, y);
+                }
+
+                private void handleDragAction(MouseEvent e, int x, int y) {
                     if (SwingUtilities.isLeftMouseButton(e)) {
                         if (outOfBounds(x, y)) {
                             onLeftClickAction(MouseAction.DRAG, null);
@@ -151,7 +155,6 @@ public class PaintingPane implements AppComponent, ProgramModeListener, EventLis
                             onRightClickAction(MouseAction.DRAG, Position.of(x, y));
                         }
                     }
-
                 }
             };
             this.addMouseListener(mouseAdapter);
