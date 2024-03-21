@@ -3,6 +3,8 @@ package mouse.project.algorithm.impl;
 import mouse.project.algorithm.common.CommonNode;
 import mouse.project.utils.math.Position;
 
+import java.util.TreeSet;
+
 public class SNode implements CommonNode {
     private Position position;
     private boolean isExtra;
