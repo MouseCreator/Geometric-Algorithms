@@ -47,15 +47,22 @@ public class SortedListImpl<T> implements SortedList<T> {
 
     @Override
     public boolean add(T t) {
+        int left = 0;
+        int right = size() - 1;
         int index = -1;
-        for (int i = 0; i < size(); i++) {
-            if (comparator.compare(t, list.get(i)) < 0) {
-                continue;
+
+        while (left <= right) {
+            int mid = left + (right - left) >>> 1;
+            int compareResult = comparator.compare(t, list.get(mid));
+
+            if (compareResult < 0) {
+                right = mid - 1;
+            } else {
+                index = mid;
+                left = mid + 1;
             }
-            index = i;
-            break;
         }
-        if (index==-1) {
+        if (index == -1) {
             list.add(t);
         } else {
             list.add(index, t);
