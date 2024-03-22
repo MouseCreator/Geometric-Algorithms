@@ -1,6 +1,4 @@
 package mouse.project.algorithm.impl.trapezoid;
 
-public class STrapezoidImpl {
-    private EdgesSet edgesSet;
-    private VerticesSet verticesSet;
+public record STrapezoidImpl(int bottom, int top) implements STrapezoid {
 }
