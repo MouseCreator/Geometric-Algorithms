@@ -1,6 +1,7 @@
 package mouse.project.algorithm.impl.trapezoid;
 
 import mouse.project.algorithm.impl.tree.Tree;
+import mouse.project.algorithm.impl.tree.TreeHorizontalElementImpl;
 import mouse.project.algorithm.impl.tree.TreeSequence;
 
 import java.util.Optional;
@@ -24,12 +25,13 @@ public class TrapezoidBuilder {
                 Optional<Vertex> pOpt = getEndIn(edge, r[i]);
                 pOpt.ifPresent(p -> v[i].add(p));
                 if (covers(edge, r[i])) {
-                    u[i].add(trapezoid(e[i], v[i], intervals[i]));
+                    Tree tree = trapezoid(e[i], v[i], intervals[i]);
+                    u[i].add(tree);
                 }
                 u[i].add(edge);
             });
         }
-        Tree w = createTreeElement();
+        Tree w = createTreeElement(yMed);
         w.setLeft(balance(u[0]));
         w.setRight(balance(u[1]));
         return w;
@@ -39,8 +41,8 @@ public class TrapezoidBuilder {
         return treeElement.balance();
     }
 
-    private Tree createTreeElement() {
-        return null;
+    private Tree createTreeElement(int yMed) {
+        return new TreeHorizontalElementImpl(yMed);
     }
 
     private boolean covers(Edge edge, STrapezoid sTrapezoid) {

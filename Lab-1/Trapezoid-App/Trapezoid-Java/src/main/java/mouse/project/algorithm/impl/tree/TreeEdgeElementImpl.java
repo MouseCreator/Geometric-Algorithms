@@ -4,6 +4,8 @@ import mouse.project.algorithm.impl.trapezoid.Edge;
 
 public class TreeEdgeElementImpl implements TreeEdgeElement {
     private final Edge edge;
+    private Tree right = null;
+    private Tree left = null;
     public TreeEdgeElementImpl(Edge edge) {
         this.edge = edge;
     }
@@ -15,12 +17,22 @@ public class TreeEdgeElementImpl implements TreeEdgeElement {
 
     @Override
     public void setLeft(Tree element) {
-
+        left = element;
     }
 
     @Override
     public void setRight(Tree element) {
+        right = element;
+    }
 
+    @Override
+    public Tree getLeft() {
+        return left;
+    }
+
+    @Override
+    public Tree getRight() {
+        return right;
     }
 
     @Override
