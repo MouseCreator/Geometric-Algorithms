@@ -11,4 +11,5 @@ public interface Tree {
     Tree getRight();
     boolean isEdge();
     boolean isHorizontal();
+    boolean isLeaf();
 }

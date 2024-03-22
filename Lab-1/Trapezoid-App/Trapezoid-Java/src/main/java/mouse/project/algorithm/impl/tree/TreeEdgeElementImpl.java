@@ -46,6 +46,11 @@ public class TreeEdgeElementImpl implements TreeEdgeElement {
     }
 
     @Override
+    public boolean isLeaf() {
+        return false;
+    }
+
+    @Override
     public Edge getEdge() {
         return edge;
     }

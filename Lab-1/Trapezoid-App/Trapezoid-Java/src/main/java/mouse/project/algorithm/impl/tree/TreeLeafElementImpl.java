@@ -1,13 +1,6 @@
 package mouse.project.algorithm.impl.tree;
 
-public class TreeHorizontalElementImpl implements TreeHorizontalElement {
-    private final int lineY;
-    private Tree left = null;
-    private Tree right = null;
-    public TreeHorizontalElementImpl(int lineY) {
-        this.lineY = lineY;
-    }
-
+public class TreeLeafElementImpl implements TreeLeafElement {
     @Override
     public int weight() {
         return 0;
@@ -15,22 +8,22 @@ public class TreeHorizontalElementImpl implements TreeHorizontalElement {
 
     @Override
     public void setLeft(Tree element) {
-        this.left = element;
+        throw new UnsupportedOperationException("Leaf cannot have left child");
     }
 
     @Override
     public void setRight(Tree element) {
-        this.right = element;
+        throw new UnsupportedOperationException("Leaf cannot have right child");
     }
 
     @Override
     public Tree getLeft() {
-        return left;
+        throw new UnsupportedOperationException("Leaf cannot have left child");
     }
 
     @Override
     public Tree getRight() {
-        return right;
+        throw new UnsupportedOperationException("Leaf cannot have right child");
     }
 
     @Override
@@ -40,16 +33,11 @@ public class TreeHorizontalElementImpl implements TreeHorizontalElement {
 
     @Override
     public boolean isHorizontal() {
-        return true;
-    }
-
-    @Override
-    public boolean isLeaf() {
         return false;
     }
 
     @Override
-    public int getLineY() {
-        return lineY;
+    public boolean isLeaf() {
+        return true;
     }
 }
