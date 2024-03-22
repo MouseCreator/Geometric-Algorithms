@@ -1,7 +1,7 @@
 package mouse.project.algorithm.impl.trapezoid;
 
 import mouse.project.algorithm.impl.tree.Tree;
-import mouse.project.algorithm.impl.tree.TreeElementSequence;
+import mouse.project.algorithm.impl.tree.TreeSequence;
 
 import java.util.Optional;
 
@@ -15,7 +15,7 @@ public class TrapezoidBuilder {
         EdgesSet[] e = new EdgesSet[outputTrapezoids];
         VerticesSet[] v = new VerticesSet[outputTrapezoids];
         STrapezoid[] r = new STrapezoid[outputTrapezoids];
-        TreeElementSequence[] u = new TreeElementSequence[outputTrapezoids];
+        TreeSequence[] u = new TreeSequence[outputTrapezoids];
 
         int yMed = vertices.medianPosition().y();
         SInterval[] intervals = interval.split(yMed);
@@ -35,8 +35,8 @@ public class TrapezoidBuilder {
         return w;
     }
 
-    private Tree balance(TreeElementSequence treeElement) {
-        return null;
+    private Tree balance(TreeSequence treeElement) {
+        return treeElement.balance();
     }
 
     private Tree createTreeElement() {

@@ -5,19 +5,19 @@ import mouse.project.algorithm.impl.trapezoid.Edge;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TreeElementSequenceImpl implements TreeElementSequence {
+public class TreeSequenceImpl implements TreeSequence {
 
     private final List<Edge> edgeList;
     private final List<Tree> treeList;
     private boolean expectsTree;
 
-    public TreeElementSequenceImpl() {
+    public TreeSequenceImpl() {
         edgeList = new ArrayList<>();
         treeList = new ArrayList<>();
         expectsTree = true;
     }
 
-    public TreeElementSequenceImpl(List<Edge> edgesLeft, List<Tree> treesLeft) {
+    public TreeSequenceImpl(List<Edge> edgesLeft, List<Tree> treesLeft) {
         this.treeList = treesLeft;
         this.edgeList = edgesLeft;
     }
@@ -59,9 +59,9 @@ public class TreeElementSequenceImpl implements TreeElementSequence {
         Edge parent = edgeList.get(index-1);
         Edge child = edgeList.get(index);
         Tree midTree = treeList.get(index);
-        TreeElementSequenceImpl u1 = new TreeElementSequenceImpl(edgesLeft, treesLeft);
+        TreeSequenceImpl u1 = new TreeSequenceImpl(edgesLeft, treesLeft);
         Tree balanceLeft = u1.balance();
-        TreeElementSequenceImpl u2 = new TreeElementSequenceImpl(edgesRight, treesRight);
+        TreeSequenceImpl u2 = new TreeSequenceImpl(edgesRight, treesRight);
         Tree balanceRight = u2.balance();
 
         TreeEdgeElement parentElement = new TreeEdgeElementImpl(parent);
