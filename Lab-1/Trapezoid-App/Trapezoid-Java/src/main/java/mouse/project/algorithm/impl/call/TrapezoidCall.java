@@ -34,7 +34,7 @@ public class TrapezoidCall {
         ArrayList<CommonEdge> commonEdges = new ArrayList<>(edges);
         commonEdges.sort((e1, e2) -> middleX(e1) - middleX(e2));
         for (CommonEdge commonEdge : commonEdges) {
-            Edge edge = new EdgeImpl();
+            Edge edge;
         }
         return List.of();
     }

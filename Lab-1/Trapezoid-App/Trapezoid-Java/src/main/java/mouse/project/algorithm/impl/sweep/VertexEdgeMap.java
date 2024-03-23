@@ -6,5 +6,5 @@ import mouse.project.algorithm.impl.trapezoid.Vertex;
 import java.util.List;
 
 public interface VertexEdgeMap {
-    List<Edge> getAllEdges(Vertex vertex);
+    List<Edge> getLeftToRight(Vertex v);
 }

@@ -3,6 +3,7 @@ package mouse.project.algorithm.impl.trapezoid;
 import mouse.project.utils.math.Position;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class VerticesSetImpl implements VerticesSet {
@@ -36,5 +37,10 @@ public class VerticesSetImpl implements VerticesSet {
             throw new IllegalArgumentException("Vertices are not sorted! Got: " + y1 + " > " + y2);
         }
         vertexList.add(vertex);
+    }
+
+    @Override
+    public Collection<Vertex> getAllSortedByY() {
+        return vertexList;
     }
 }

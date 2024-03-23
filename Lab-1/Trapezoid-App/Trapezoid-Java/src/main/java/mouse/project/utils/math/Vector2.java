@@ -43,5 +43,6 @@ public record Vector2(double x, double y) {
         double m = magnitude();
         return Vector2.of(x / m, y / m);
     }
+
 }
 
