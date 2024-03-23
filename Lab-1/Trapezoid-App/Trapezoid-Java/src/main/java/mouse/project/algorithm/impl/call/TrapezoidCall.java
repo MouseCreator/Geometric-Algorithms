@@ -3,46 +3,69 @@ package mouse.project.algorithm.impl.call;
 import mouse.project.algorithm.common.CommonEdge;
 import mouse.project.algorithm.common.CommonGraph;
 import mouse.project.algorithm.common.CommonNode;
-import mouse.project.algorithm.impl.trapezoid.Edge;
-import mouse.project.algorithm.impl.trapezoid.EdgeImpl;
-import mouse.project.algorithm.impl.trapezoid.TrapezoidBuilder;
+import mouse.project.algorithm.impl.sweep.SweepLineScanner;
+import mouse.project.algorithm.impl.sweep.SweepLineScannerImpl;
+import mouse.project.algorithm.impl.sweep.VertexEdgeMap;
+import mouse.project.algorithm.impl.sweep.VertexEdgeMapImpl;
+import mouse.project.algorithm.impl.trapezoid.*;
 import mouse.project.algorithm.impl.tree.Tree;
 import mouse.project.utils.math.Box;
 import mouse.project.utils.math.Position;
-import mouse.project.utils.math.Positions;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 public class TrapezoidCall {
     private final TrapezoidBuilder builder;
+    private final SweepLineScanner scanner;
 
     public TrapezoidCall() {
         builder = new TrapezoidBuilder();
+        scanner = new SweepLineScannerImpl();
     }
 
     public Tree prepareAndCall(CommonGraph graph) {
         Collection<CommonEdge> edges = graph.edges();
         Collection<CommonNode> nodes = graph.nodes();
         Box bounds = getBounds(nodes);
-        List<Edge> orderedEdges = mapAndOrder(edges);
-        return null;
+        Map<CommonNode, Vertex> vertexMap = mapToVertex(nodes);
+
+        List<Edge> orderedEdges = mapEdges(edges, vertexMap);
+        VerticesSet verticesSet = new VerticesSetImpl();
+        vertexMap.values().forEach(verticesSet::add);
+
+        EdgesSet edgesSet = createEdgesSet(orderedEdges, verticesSet);
+        SInterval interval = createInterval(bounds);
+        return builder.trapezoid(edgesSet, verticesSet, interval, verticesSet.size());
     }
 
-    private List<Edge> mapAndOrder(Collection<CommonEdge> edges) {
-        ArrayList<CommonEdge> commonEdges = new ArrayList<>(edges);
-        commonEdges.sort((e1, e2) -> middleX(e1) - middleX(e2));
-        for (CommonEdge commonEdge : commonEdges) {
-            Edge edge;
+    private EdgesSet createEdgesSet(List<Edge> orderedEdges, VerticesSet verticesSet) {
+        VertexEdgeMap ve = new VertexEdgeMapImpl();
+        orderedEdges.forEach(ve::add);
+        return scanner.scanAndCreate(verticesSet, ve);
+    }
+
+    private SInterval createInterval(Box bounds) {
+        return new SIntervalImpl(bounds.top(), bounds.bottom());
+    }
+
+    private Map<CommonNode, Vertex> mapToVertex(Collection<CommonNode> nodes) {
+        Map<CommonNode, Vertex> map = new HashMap<>();
+        for (CommonNode node : nodes) {
+            Vertex vertex = new VertexImpl(node.getPosition());
+            map.put(node, vertex);
         }
-        return List.of();
+        return map;
     }
 
-    private int middleX(CommonEdge edge) {
-        Position p1 = edge.from().getPosition();
-        Position p2 = edge.to().getPosition();
-        return Positions.average(p1, p2).x();
+    private List<Edge> mapEdges(Collection<CommonEdge> edges, Map<CommonNode, Vertex> vertexMap) {
+        List<Edge> result = new ArrayList<>();
+        for (CommonEdge commonEdge : edges) {
+            Vertex v1 = vertexMap.get(commonEdge.from());
+            Vertex v2 = vertexMap.get(commonEdge.to());
+            Edge edge = new EdgeImpl(v1, v2);
+            result.add(edge);
+        }
+        return result;
     }
 
     private Box getBounds(Collection<CommonNode> nodes) {

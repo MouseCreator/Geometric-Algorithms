@@ -9,4 +9,5 @@ public interface VerticesSet {
     Position medianPosition();
     void add(Vertex vertex);
     Collection<Vertex> getAllSortedByY();
+    int size();
 }

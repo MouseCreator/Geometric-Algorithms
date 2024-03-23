@@ -17,6 +17,19 @@ public class Box {
     public boolean contains(Position a) {
         int y = a.y();
         int x = a.x();
-        return bottomLeft.x() <= x && bottomLeft.y() <= y && x <= topRight.x() && y <= topRight.y();
+        return left() <= x && bottom() <= y && x <= right() && y <= top();
+    }
+
+    public int top() {
+        return topRight.y();
+    }
+    public int bottom() {
+        return bottomLeft.y();
+    }
+    public int left() {
+        return bottomLeft.x();
+    }
+    public int right() {
+        return topRight.x();
     }
 }

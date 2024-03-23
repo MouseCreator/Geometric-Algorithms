@@ -43,4 +43,9 @@ public class VerticesSetImpl implements VerticesSet {
     public Collection<Vertex> getAllSortedByY() {
         return vertexList;
     }
+
+    @Override
+    public int size() {
+        return vertexList.size();
+    }
 }
