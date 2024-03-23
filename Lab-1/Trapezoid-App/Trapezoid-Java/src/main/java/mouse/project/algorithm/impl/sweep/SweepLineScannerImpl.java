@@ -9,31 +9,103 @@ public class SweepLineScannerImpl implements SweepLineScanner {
     @Override
     public EdgesSet scanAndCreate(VerticesSet vertices, VertexEdgeMap map) {
         Collection<Vertex> allVertices = vertices.getAllSortedByY();
+
+        List<LeftRightPair> pairs = processVertices(map, allVertices);
+
+        List<Edge> edges = topologicalSort(pairs);
+        EdgesSetImpl edgesSet = new EdgesSetImpl();
+        edgesSet.addAll(edges);
+        return edgesSet;
+    }
+
+    private List<LeftRightPair> processVertices(VertexEdgeMap map,
+                                 Collection<Vertex> allVertices) {
         Status status = new Status();
+        List<LeftRightPair> pairs = new ArrayList<>();
         for (Vertex v : allVertices) {
             int y = v.position().y();
             List<Edge> leftToRight = map.getLeftToRight(v);
+            List<Edge> addedEdges = new ArrayList<>();
+            Edge left = status.findLeft(v);
+            if (left != null) {
+                addedEdges.add(left);
+            }
+            Edge right = status.findRight(v);
             leftToRight.forEach(e -> {
                 if(status.remove(e, y)) {
                    return;
                 }
                 status.add(e, y);
+                addedEdges.add(e);
             });
+            if (right != null) {
+                addedEdges.add(right);
+            }
+            mapToPairs(pairs, addedEdges);
         }
-        return new EdgesSetImpl();
+        return pairs;
+    }
+    private List<Edge> topologicalSort(List<LeftRightPair> pairs) {
+        Map<Edge, List<Edge>> graph = buildGraph(pairs);
+        Map<Edge, Boolean> visited = new HashMap<>();
+        List<Edge> sortedEdges = new ArrayList<>();
+
+        for (Edge edge : graph.keySet()) {
+            if (!visited.containsKey(edge)) {
+                dfs(edge, graph, visited, sortedEdges);
+            }
+        }
+
+        Collections.reverse(sortedEdges);
+        return sortedEdges;
     }
 
-    private static class LeftRightPair {
-        Edge left;
-        Edge right;
+    private void dfs(Edge edge, Map<Edge, List<Edge>> graph, Map<Edge, Boolean> visited, List<Edge> edges) {
+        visited.put(edge, true);
+
+        List<Edge> neighbors = graph.getOrDefault(edge, new ArrayList<>());
+        for (Edge neighbor : neighbors) {
+            if (!visited.containsKey(neighbor)) {
+                dfs(neighbor, graph, visited, edges);
+            }
+        }
+
+        edges.add(edge);
     }
 
-    private void addToEnds(Vertex v, Map<Vertex, Set<Edge>> expectedEnds, VertexEdgeMap map) {
-        map.getLeftToRight(v).forEach(e -> {
-            Set<Edge> edges = expectedEnds.computeIfAbsent(v, s -> new HashSet<>());
-            edges.add(e);
-        });
+    private Map<Edge, List<Edge>> buildGraph(List<LeftRightPair> pairs) {
+        Map<Edge, List<Edge>> graph = new HashMap<>();
+
+        for (LeftRightPair pair : pairs) {
+            Edge left = pair.left();
+            Edge right = pair.right();
+
+            graph.putIfAbsent(left, new ArrayList<>());
+            graph.putIfAbsent(right, new ArrayList<>());
+            graph.get(left).add(right);
+        }
+
+        return graph;
     }
+
+    private void mapToPairs(List<LeftRightPair> pairs, List<Edge> addedEdges) {
+        Edge prev = null;
+        for (Edge e : addedEdges) {
+            if (prev == null) {
+                prev = e;
+                continue;
+            }
+            pairs.add(LeftRightPair.of(prev,e));
+            prev = e;
+        }
+    }
+
+    private record LeftRightPair(Edge left, Edge right) {
+        public static LeftRightPair of(Edge left, Edge right) {
+            return new LeftRightPair(left, right);
+        }
+    }
+
 
     private static class Status {
         private final List<Edge> statusList;
