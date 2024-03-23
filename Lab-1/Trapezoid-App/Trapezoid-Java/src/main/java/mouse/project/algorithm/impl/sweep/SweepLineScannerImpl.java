@@ -126,7 +126,6 @@ public class SweepLineScannerImpl implements SweepLineScanner {
         }
 
         public void add(Edge edge, int currentY) {
-            int target = getX(edge.end1().position(), edge.end2().position(), currentY);
             int index = findIndexOf(edge, currentY);
             statusList.add(index, edge);
         }
@@ -149,24 +148,10 @@ public class SweepLineScannerImpl implements SweepLineScanner {
         }
 
         private int findIndexGeneral(Edge node, int y) {
-            return Collections.binarySearch(statusList, node, Comparator.comparingInt(e -> getX(e, y)));
+            return Collections.binarySearch(statusList, node, Comparator.comparingInt(e -> EdgeHelper.getX(e, y)));
         }
 
-        private int getX(Edge e, int y) {
-            return getX(e.end1().position(), e.end2().position(), y);
-        }
 
-        private int getX(Position p1, Position p2, double y) {
-            if (p1.y() == p2.y()) {
-                if (y == p1.y()) {
-                    return p1.x();
-                } else {
-                    throw new IllegalArgumentException("The given y-coordinate is not on the segment.");
-                }
-            }
-            double slope = (double) (p2.y() - p1.y()) / (p2.x() - p1.x());
-            return (int) ((y - p1.y()) / slope + p1.x());
-        }
     }
 
 }
