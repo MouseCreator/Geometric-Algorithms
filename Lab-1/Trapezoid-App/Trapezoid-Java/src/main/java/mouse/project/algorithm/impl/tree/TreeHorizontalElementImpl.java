@@ -4,13 +4,15 @@ public class TreeHorizontalElementImpl implements TreeHorizontalElement {
     private final int lineY;
     private Tree left = null;
     private Tree right = null;
-    public TreeHorizontalElementImpl(int lineY) {
+    private final int weight;
+    public TreeHorizontalElementImpl(int lineY, int weight) {
         this.lineY = lineY;
+        this.weight = weight;
     }
 
     @Override
     public int weight() {
-        return 0;
+        return weight;
     }
 
     @Override

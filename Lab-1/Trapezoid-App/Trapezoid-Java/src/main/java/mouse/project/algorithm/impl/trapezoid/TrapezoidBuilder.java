@@ -8,7 +8,7 @@ import java.util.function.Supplier;
 import static mouse.project.func.StaticFunctions.repeat;
 public class TrapezoidBuilder {
     private static final int outputTrapezoids = 2;
-    public Tree trapezoid(EdgesSet edges, VerticesSet vertices, SInterval interval) {
+    public Tree trapezoid(EdgesSet edges, VerticesSet vertices, SInterval interval, int weight) {
         if (vertices.isEmpty()) {
             return new TreeLeafElementImpl();
         }
@@ -25,8 +25,8 @@ public class TrapezoidBuilder {
             repeat(2, i -> {
                 Optional<Vertex> pOpt = getEndIn(edge, r[i]);
                 pOpt.ifPresent(p -> v[i].add(p));
-                if (covers(edge, r[i])) {
-                    Tree tree = trapezoid(e[i], v[i], intervals[i]);
+                if (covers(edge, r[i]) || edge.isLimitingEdge()) {
+                    Tree tree = trapezoid(e[i], v[i], intervals[i], weight>>>1);
                     u[i].add(tree);
                     if (!edge.isLimitingEdge()) {
                         u[i].add(edge);
@@ -37,7 +37,7 @@ public class TrapezoidBuilder {
                 u[i].add(edge);
             });
         }
-        Tree w = createTreeElement(yMed);
+        Tree w = createTreeElement(yMed, weight);
         w.setLeft(balance(u[0]));
         w.setRight(balance(u[1]));
         return w;
@@ -74,12 +74,12 @@ public class TrapezoidBuilder {
         }
     }
 
-    private Tree balance(TreeSequence treeElement) {
-        return treeElement.balance();
+    private Tree balance(TreeSequence sequence) {
+        return sequence.balance();
     }
 
-    private Tree createTreeElement(int yMed) {
-        return new TreeHorizontalElementImpl(yMed);
+    private Tree createTreeElement(int yMed, int weight) {
+        return new TreeHorizontalElementImpl(yMed, weight);
     }
 
     private boolean covers(Edge edge, STrapezoid sTrapezoid) {
