@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TraceImpl implements Trace {
-
     private final List<Movement> movementList = new ArrayList<>();
     @Override
     public void append(Movement movement) {
