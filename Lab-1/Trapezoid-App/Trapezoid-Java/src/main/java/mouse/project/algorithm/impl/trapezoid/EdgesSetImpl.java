@@ -19,4 +19,9 @@ public class EdgesSetImpl implements EdgesSet {
     public Collection<Edge> getAll() {
         return new ArrayList<>(edges);
     }
+
+    @Override
+    public void add(Edge edge) {
+        this.edges.add(edge);
+    }
 }

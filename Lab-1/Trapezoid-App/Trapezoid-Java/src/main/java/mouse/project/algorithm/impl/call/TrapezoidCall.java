@@ -41,7 +41,14 @@ public class TrapezoidCall {
     private EdgesSet createEdgesSet(List<Edge> orderedEdges, VerticesSet verticesSet) {
         VertexEdgeMap ve = new VertexEdgeMapImpl();
         orderedEdges.forEach(ve::add);
-        return scanner.scanAndCreate(verticesSet, ve);
+        EdgesSet edgesSet = scanner.scanAndCreate(verticesSet, ve);
+        edgesSet.add(getLimitingEdge());
+        return edgesSet;
+    }
+
+    private Edge getLimitingEdge() {
+        Vertex limitVertex = new VertexImpl(Position.of(25000, 25000));
+        return new EdgeImpl(limitVertex, limitVertex, true);
     }
 
     private SInterval createInterval(Box bounds) {

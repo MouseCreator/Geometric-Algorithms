@@ -24,7 +24,10 @@ public class TrapezoidBuilder {
         for (Edge edge : edges.getAll()) {
             repeat(2, i -> {
                 Optional<Vertex> pOpt = getEndIn(edge, r[i]);
-                pOpt.ifPresent(p -> v[i].add(p));
+                pOpt.ifPresent(p -> {
+                    v[i].add(p);
+                    e[i].add(edge);
+                });
                 if (covers(edge, r[i]) || edge.isLimitingEdge()) {
                     Tree tree = trapezoid(e[i], v[i], intervals[i], weight>>>1);
                     u[i].add(tree);

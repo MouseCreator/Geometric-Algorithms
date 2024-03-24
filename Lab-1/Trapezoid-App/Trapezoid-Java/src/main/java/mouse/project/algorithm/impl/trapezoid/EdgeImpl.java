@@ -3,11 +3,19 @@ package mouse.project.algorithm.impl.trapezoid;
 import java.util.Objects;
 
 public class EdgeImpl implements Edge {
-    private Vertex v1;
-    private Vertex v2;
+    private final Vertex v1;
+    private final Vertex v2;
+
+    private final boolean limiting;
     public EdgeImpl(Vertex v1, Vertex v2) {
         this.v1 = v1;
         this.v2 = v2;
+        limiting = false;
+    }
+    public EdgeImpl(Vertex v1, Vertex v2, boolean limiting) {
+        this.v1 = v1;
+        this.v2 = v2;
+        this.limiting = limiting;
     }
 
     @Override
@@ -22,7 +30,7 @@ public class EdgeImpl implements Edge {
 
     @Override
     public boolean isLimitingEdge() {
-        return false;
+        return limiting;
     }
 
     @Override
