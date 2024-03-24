@@ -58,7 +58,7 @@ public class TrapezoidCall {
     private Map<CommonNode, Vertex> mapToVertex(Collection<CommonNode> nodes) {
         Map<CommonNode, Vertex> map = new HashMap<>();
         for (CommonNode node : nodes) {
-            Vertex vertex = new VertexImpl(node.getPosition());
+            Vertex vertex = new VertexImpl(node.position());
             map.put(node, vertex);
         }
         return map;
@@ -81,7 +81,7 @@ public class TrapezoidCall {
         int xMin = Integer.MAX_VALUE;
         int xMax = 0;
         for (CommonNode n : nodes) {
-            Position position = n.getPosition();
+            Position position = n.position();
             int x = position.x();
             int y = position.y();
             if (x < xMin) {

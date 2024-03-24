@@ -1,10 +1,8 @@
 package mouse.project.mapper;
 
-import mouse.project.algorithm.InputGraph;
+import mouse.project.algorithm.common.CommonGraph;
 import mouse.project.ui.components.graph.UIGraph;
 
 public interface GraphMapper {
-    void toUI(UIGraph uiGraph, InputGraph inputGraph);
-    InputGraph toAlgorithm(UIGraph uiGraph);
-
+    CommonGraph fromUI (UIGraph uiGraph);
 }
