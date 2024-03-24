@@ -1,6 +1,7 @@
 package mouse.project.ui.components.general;
 
 import mouse.project.event.service.Events;
+import mouse.project.event.type.BuildTreeEvent;
 import mouse.project.event.type.LoadEvent;
 import mouse.project.event.type.RemoveAllEvent;
 import mouse.project.event.type.SaveEvent;
@@ -36,6 +37,7 @@ public class ButtonsPane implements AppComponent {
     private void onTargetButton() {
         logger.debug("Target pressed!");
         State.get().getProgramState().updateMode(ProgramMode.TARGET);
+        Events.generate(new BuildTreeEvent());
     }
     private void onEraseButton() {
         logger.debug("Erase pressed!");

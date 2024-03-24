@@ -1,13 +1,13 @@
 package mouse.project.ui.components.general;
 
+import mouse.project.algorithm.Algorithm;
+import mouse.project.algorithm.AlgorithmInvoke;
 import mouse.project.event.service.EventAddRegister;
 import mouse.project.event.service.EventDeleteRegister;
 import mouse.project.event.service.EventListener;
 import mouse.project.event.service.Events;
+import mouse.project.event.type.*;
 import mouse.project.event.type.Event;
-import mouse.project.event.type.LoadEvent;
-import mouse.project.event.type.RemoveAllEvent;
-import mouse.project.event.type.SaveEvent;
 import mouse.project.saver.SaveLoad;
 import mouse.project.state.ConstUtils;
 import mouse.project.state.MouseAction;
@@ -33,14 +33,26 @@ public class PaintingPane implements AppComponent, ProgramModeListener, EventLis
     private final DrawManager drawManager;
     private ClickHandler clickHandler = new ClickHandler() {};
     private final ClickHandler rightClickHandler = new RightClickHandler() {};
+    private final Algorithm algorithm;
+    private List<GeneralEventHandler> eventHandlers;
     private final List<ClickHandler> clickHandlers;
     public PaintingPane() {
         this.drawPanel = new DrawPanel();
         graph = new UIGraph();
+        algorithm = new AlgorithmInvoke();
         drawManager = State.get().getProgramState().getDrawManager();
         clickHandlers = createClickHandlers();
         State.get().getProgramState().registerListener(this);
         Events.register(this);
+        createEventHandlers();
+    }
+
+    private void createEventHandlers() {
+        eventHandlers = new ArrayList<>();
+        eventHandlers.add(new LoadEventHandler());
+        eventHandlers.add(new SaveEventHandler());
+        eventHandlers.add(new BuildTreeHandler());
+        eventHandlers.add(new RemoveEventHandler());
     }
 
     private List<ClickHandler> createClickHandlers() {
@@ -70,16 +82,67 @@ public class PaintingPane implements AppComponent, ProgramModeListener, EventLis
 
     @Override
     public void onEvent(Event event) {
-        if (event instanceof RemoveAllEvent) {
+       for (GeneralEventHandler generalEventHandler : eventHandlers) {
+           if (generalEventHandler.canHandle(event)) {
+               generalEventHandler.handle(event);
+           }
+       }
+    }
+
+    private interface GeneralEventHandler {
+        boolean canHandle(Event event);
+        void handle(Event event);
+    }
+
+    private class RemoveEventHandler implements GeneralEventHandler {
+
+        @Override
+        public boolean canHandle(Event event) {
+            return event instanceof RemoveAllEvent;
+        }
+
+        @Override
+        public void handle(Event event) {
             onRemoveAll();
         }
-        else if (event instanceof SaveEvent) {
+    }
+    private class SaveEventHandler implements GeneralEventHandler {
+
+        @Override
+        public boolean canHandle(Event event) {
+            return event instanceof SaveEvent;
+        }
+
+        @Override
+        public void handle(Event event) {
             SaveLoad.save(graph);
         }
-        else if (event instanceof LoadEvent) {
+    }
+    private class LoadEventHandler implements GeneralEventHandler {
+
+        @Override
+        public boolean canHandle(Event event) {
+            return event instanceof LoadEvent;
+        }
+
+        @Override
+        public void handle(Event event) {
             SaveLoad.load(graph);
         }
     }
+    private class BuildTreeHandler implements GeneralEventHandler {
+
+        @Override
+        public boolean canHandle(Event event) {
+            return event instanceof BuildTreeEvent;
+        }
+
+        @Override
+        public void handle(Event event) {
+            algorithm.build(graph);
+        }
+    }
+
 
     private void onRemoveAll() {
         graph.removeAll();
@@ -90,6 +153,7 @@ public class PaintingPane implements AppComponent, ProgramModeListener, EventLis
         eventAddRegister.register(this, RemoveAllEvent.class);
         eventAddRegister.register(this, SaveEvent.class);
         eventAddRegister.register(this, LoadEvent.class);
+        eventAddRegister.register(this, BuildTreeEvent.class);
     }
 
     @Override
