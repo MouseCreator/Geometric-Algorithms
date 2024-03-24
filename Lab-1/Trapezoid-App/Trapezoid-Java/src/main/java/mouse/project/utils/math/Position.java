@@ -4,7 +4,6 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 @EqualsAndHashCode
-@ToString
 public class Position {
     private final int x;
     private final int y;
@@ -26,5 +25,10 @@ public class Position {
 
     public double distanceTo(Position other) {
         return Math.sqrt((x - other.x) * (x - other.x) + (y - other.y) * (y - other.y));
+    }
+
+    @Override
+    public String toString() {
+        return String.format("{ %d %d }", x, y);
     }
 }

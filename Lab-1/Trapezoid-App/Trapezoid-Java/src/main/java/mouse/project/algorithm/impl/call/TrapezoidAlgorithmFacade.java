@@ -13,6 +13,8 @@ public class TrapezoidAlgorithmFacade implements TrapezoidAlgorithm {
 
     public void build(CommonGraph commonGraph) {
         tree = trapezoidCall.prepareAndCall(commonGraph);
+        Descriptor descriptor = new Descriptor();
+        descriptor.describe(tree);
     }
 
     public void find() {
