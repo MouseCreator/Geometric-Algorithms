@@ -4,8 +4,6 @@ import mouse.project.algorithm.impl.tree.*;
 
 import java.util.Optional;
 import java.util.function.Supplier;
-
-import static mouse.project.func.StaticFunctions.repeat;
 public class TrapezoidBuilder {
     private static final int outputTrapezoids = 2;
     public Tree trapezoid(EdgesSet edges, VerticesSet vertices, SInterval interval, int weight) {
@@ -22,12 +20,12 @@ public class TrapezoidBuilder {
         SInterval[] intervals = interval.split(yMed);
 
         for (Edge edge : edges.getAll()) {
-            repeat(2, i -> {
+            for(int i = 0; i < 2; i++){
                 Optional<Vertex> pOpt = getEndIn(edge, r[i]);
-                pOpt.ifPresent(p -> {
-                    v[i].add(p);
+                if (pOpt.isPresent()) {
+                    v[i].add(pOpt.get());
                     e[i].add(edge);
-                });
+                }
                 if (covers(edge, r[i]) || edge.isLimitingEdge()) {
                     Tree tree = trapezoid(e[i], v[i], intervals[i], weight>>>1);
                     u[i].add(tree);
@@ -37,7 +35,7 @@ public class TrapezoidBuilder {
                     e[i] = new EdgesSetImpl();
                     v[i] = new VerticesSetImpl();
                 }
-            });
+            }
         }
         Tree w = createTreeElement(yMed, weight);
         w.setLeft(balance(u[0]));
