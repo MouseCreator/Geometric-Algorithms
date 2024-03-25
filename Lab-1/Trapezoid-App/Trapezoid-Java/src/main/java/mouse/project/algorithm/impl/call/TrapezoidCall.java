@@ -31,8 +31,7 @@ public class TrapezoidCall {
 
         List<Edge> orderedEdges = mapEdges(edges, vertexMap);
         VerticesSet verticesSet = new VerticesSetImpl();
-        vertexMap.values().forEach(verticesSet::add);
-
+        vertexMap.values().stream().sorted(Comparator.comparingInt(v -> v.position().y())).forEach(verticesSet::add);
         EdgesSet edgesSet = createEdgesSet(orderedEdges, verticesSet);
         SInterval interval = createInterval(bounds);
         return builder.trapezoid(edgesSet, verticesSet, interval, verticesSet.size());
@@ -47,7 +46,7 @@ public class TrapezoidCall {
     }
 
     private Edge getLimitingEdge() {
-        Vertex limitVertex = new VertexImpl(Position.of(25000, 25000));
+        Vertex limitVertex = new VertexImpl(Position.of(25000, 25000), "LIMIT");
         return new EdgeImpl(limitVertex, limitVertex, true);
     }
 
@@ -58,7 +57,7 @@ public class TrapezoidCall {
     private Map<CommonNode, Vertex> mapToVertex(Collection<CommonNode> nodes) {
         Map<CommonNode, Vertex> map = new HashMap<>();
         for (CommonNode node : nodes) {
-            Vertex vertex = new VertexImpl(node.position());
+            Vertex vertex = new VertexImpl(node.position(), node.key());
             map.put(node, vertex);
         }
         return map;

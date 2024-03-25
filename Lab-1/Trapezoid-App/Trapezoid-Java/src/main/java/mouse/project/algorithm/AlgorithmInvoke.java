@@ -22,8 +22,11 @@ public class AlgorithmInvoke implements Algorithm {
 
     @Override
     public void build(UIGraph graph) {
-        CommonGraph commonGraph = graphMapper.fromUI(graph);
-        algorithmFacade.build(commonGraph, listener);
+        Thread thread = new Thread(()->{
+            CommonGraph commonGraph = graphMapper.fromUI(graph);
+            algorithmFacade.build(commonGraph, listener);
+        });
+        thread.start();
     }
 
     @Override

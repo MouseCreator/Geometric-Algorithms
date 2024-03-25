@@ -18,12 +18,12 @@ public class TreeLeafElementImpl implements TreeLeafElement {
 
     @Override
     public Tree getLeft() {
-        throw new UnsupportedOperationException("Leaf cannot have left child");
+        return null;
     }
 
     @Override
     public Tree getRight() {
-        throw new UnsupportedOperationException("Leaf cannot have right child");
+        return null;
     }
 
     @Override

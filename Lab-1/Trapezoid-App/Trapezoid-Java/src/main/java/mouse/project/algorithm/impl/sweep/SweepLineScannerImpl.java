@@ -1,7 +1,6 @@
 package mouse.project.algorithm.impl.sweep;
 
 import mouse.project.algorithm.impl.trapezoid.*;
-import mouse.project.utils.math.Position;
 
 import java.util.*;
 
@@ -26,15 +25,19 @@ public class SweepLineScannerImpl implements SweepLineScanner {
             int y = v.position().y();
             List<Edge> leftToRight = map.getLeftToRight(v);
             List<Edge> addedEdges = new ArrayList<>();
+            List<Edge> tempList = new ArrayList<>();
+            for (Edge e : leftToRight) {
+                if (status.remove(e)) {
+                    continue;
+                }
+                tempList.add(e);
+            }
             Edge left = status.findLeft(v);
             if (left != null) {
                 addedEdges.add(left);
             }
             Edge right = status.findRight(v);
-            leftToRight.forEach(e -> {
-                if(status.remove(e, y)) {
-                   return;
-                }
+            tempList.forEach(e -> {
                 status.add(e, y);
                 addedEdges.add(e);
             });
@@ -116,13 +119,19 @@ public class SweepLineScannerImpl implements SweepLineScanner {
 
         public Edge findLeft(Vertex v) {
             Edge edge = new EdgeImpl(v, v);
-            int indexOfTarget = findIndexOf(edge, v.position().y());
+            int indexOfTarget = findIndexOf(edge, v.position().y()) - 1;
+            if (indexOfTarget < 0) {
+                return null;
+            }
             return statusList.get(indexOfTarget);
         }
         public Edge findRight(Vertex v) {
             Edge edge = new EdgeImpl(v, v);
             int indexOfTarget = findIndexOf(edge, v.position().y());
-            return statusList.get(indexOfTarget+1);
+            if (indexOfTarget == statusList.size()) {
+                return null;
+            }
+            return statusList.get(indexOfTarget);
         }
 
         public void add(Edge edge, int currentY) {
@@ -130,13 +139,8 @@ public class SweepLineScannerImpl implements SweepLineScanner {
             statusList.add(index, edge);
         }
 
-        public boolean remove(Edge edge, int y) {
-            int index = findIndexGeneral(edge, y);
-            if (index >= 0) {
-                statusList.remove(index);
-                return true;
-            }
-            return false;
+        public boolean remove(Edge edge) {
+            return statusList.remove(edge);
         }
 
         private int findIndexOf(Edge node, int y) {

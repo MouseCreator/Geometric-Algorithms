@@ -12,8 +12,8 @@ public record SIntervalImpl(int top, int bottom) implements SInterval {
             String exceptionStr = String.format("Median is higher than interval top: %d > %d", med, top);
             throw new IllegalArgumentException(exceptionStr);
         }
-        result[0] = new SIntervalImpl(bottom, med);
-        result[1] = new SIntervalImpl(med, top);
+        result[0] = new SIntervalImpl(med, bottom);
+        result[1] = new SIntervalImpl(top, med);
         return result;
     }
 }

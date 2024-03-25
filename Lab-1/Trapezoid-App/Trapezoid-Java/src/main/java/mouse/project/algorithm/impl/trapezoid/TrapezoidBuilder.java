@@ -19,8 +19,8 @@ public class TrapezoidBuilder {
         VerticesSet[] v = createVerticesSet();
         STrapezoid[] r = createTrapezoids(interval, yMed);
         TreeSequence[] u = createTreeSequences();
-
         SInterval[] intervals = interval.split(yMed);
+
         for (Edge edge : edges.getAll()) {
             repeat(2, i -> {
                 Optional<Vertex> pOpt = getEndIn(edge, r[i]);
@@ -37,7 +37,6 @@ public class TrapezoidBuilder {
                     e[i] = new EdgesSetImpl();
                     v[i] = new VerticesSetImpl();
                 }
-                u[i].add(edge);
             });
         }
         Tree w = createTreeElement(yMed, weight);
@@ -90,18 +89,18 @@ public class TrapezoidBuilder {
         int p2 = edge.end2().position().y();
         int top = Math.max(p1, p2);
         int bottom = Math.min(p1, p2);
-        return top > sTrapezoid.top() && bottom < sTrapezoid.bottom();
+        return top >= sTrapezoid.top() && bottom <= sTrapezoid.bottom();
     }
 
-    private Optional<Vertex> getEndIn(Edge edge, STrapezoid r1) {
+    private Optional<Vertex> getEndIn(Edge edge, STrapezoid tr) {
         Vertex v1 = edge.end1();
         Vertex v2 = edge.end2();
         int y1 = v1.position().y();
-        if (y1 >= r1.top() && y1 <= r1.bottom()) {
+        if (y1 <= tr.top() && y1 >= tr.bottom()) {
             return Optional.of(v1);
         }
         int y2 = v2.position().y();
-        if (y2 >= r1.top() && y2 <= r1.bottom()) {
+        if (y2 <= tr.top() && y2 >= tr.bottom()) {
             return Optional.of(v2);
         }
         return Optional.empty();

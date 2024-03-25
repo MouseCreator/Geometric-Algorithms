@@ -16,7 +16,7 @@ public class GraphMapperImpl implements GraphMapper {
         CommonGraphImpl commonGraph = new CommonGraphImpl();
         Map<String, CommonNode> nodeMap = new HashMap<>();
         for (Node node : uiGraph.getNodes()) {
-            CommonNode commonNode = new CommonNodeImpl(node.getPosition(), node.isExtra());
+            CommonNode commonNode = new CommonNodeImpl(node.getPosition(), node.getId(), node.isExtra());
             nodeMap.put(node.getId(), commonNode);
             commonGraph.addNode(commonNode);
         }

@@ -4,4 +4,5 @@ import mouse.project.utils.math.Position;
 
 public interface Vertex {
     Position position();
+    String key();
 }

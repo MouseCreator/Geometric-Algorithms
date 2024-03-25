@@ -48,4 +48,9 @@ public class EdgeImpl implements Edge {
         hash = 31 * hash + (v1.hashCode() ^ v2.hashCode());
         return hash;
     }
+
+    @Override
+    public String toString() {
+        return v1.key() + v2.key();
+    }
 }
