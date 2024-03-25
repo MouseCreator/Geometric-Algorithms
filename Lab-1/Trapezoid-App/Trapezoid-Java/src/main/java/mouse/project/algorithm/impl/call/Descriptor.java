@@ -4,7 +4,6 @@ import mouse.project.algorithm.impl.trapezoid.Edge;
 import mouse.project.algorithm.impl.tree.Tree;
 import mouse.project.algorithm.impl.tree.TreeEdgeElement;
 import mouse.project.algorithm.impl.tree.TreeHorizontalElement;
-import mouse.project.utils.math.Position;
 
 public class Descriptor {
     public String describe(Tree tree) {
@@ -32,8 +31,7 @@ public class Descriptor {
         } else if (tree.isEdge()) {
             TreeEdgeElement elem = (TreeEdgeElement) tree;
             Edge edge = elem.getEdge();
-            Position position = edge.end1().position();
-            builder.append("EDGE: ").append(position).append(" ").append(position).append("\n");
+            builder.append("EDGE: ").append(edge).append("\n");
         } else if (tree.isLeaf()) {
             builder.append("LEAF\n");
         } else {
