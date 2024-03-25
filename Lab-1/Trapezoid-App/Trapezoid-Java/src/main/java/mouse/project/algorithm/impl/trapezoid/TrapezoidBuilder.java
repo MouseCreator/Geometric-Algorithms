@@ -96,11 +96,11 @@ public class TrapezoidBuilder {
         Vertex v1 = edge.end1();
         Vertex v2 = edge.end2();
         int y1 = v1.position().y();
-        if (y1 <= tr.top() && y1 >= tr.bottom()) {
+        if (y1 < tr.top() && y1 > tr.bottom()) {
             return Optional.of(v1);
         }
         int y2 = v2.position().y();
-        if (y2 <= tr.top() && y2 >= tr.bottom()) {
+        if (y2 < tr.top() && y2 > tr.bottom()) {
             return Optional.of(v2);
         }
         return Optional.empty();
