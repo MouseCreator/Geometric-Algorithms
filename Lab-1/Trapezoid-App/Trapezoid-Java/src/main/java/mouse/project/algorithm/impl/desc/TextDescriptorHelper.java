@@ -1,11 +1,11 @@
-package mouse.project.algorithm.impl.call;
+package mouse.project.algorithm.impl.desc;
 
 import mouse.project.algorithm.impl.trapezoid.Edge;
 import mouse.project.algorithm.impl.tree.Tree;
 import mouse.project.algorithm.impl.tree.TreeEdgeElement;
 import mouse.project.algorithm.impl.tree.TreeHorizontalElement;
 
-public class Descriptor {
+public class TextDescriptorHelper {
     public String describe(Tree tree) {
         StringBuilder builder = new StringBuilder();
         describe(tree, builder, 0);
