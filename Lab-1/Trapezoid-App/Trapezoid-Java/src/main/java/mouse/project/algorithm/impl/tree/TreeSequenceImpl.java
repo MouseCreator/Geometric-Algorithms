@@ -23,7 +23,7 @@ public class TreeSequenceImpl implements TreeSequence {
     }
 
     @Override
-    public void add(Tree element) {
+    public void addTree(Tree element) {
         if (!expectsTree) {
             throw new IllegalStateException("Expected edge, but got tree: " + element);
         }
@@ -32,7 +32,7 @@ public class TreeSequenceImpl implements TreeSequence {
     }
 
     @Override
-    public void add(Edge element) {
+    public void addEdge(Edge element) {
         if (expectsTree) {
             throw new IllegalStateException("Expected tree, but got edge: " + element);
         }
@@ -89,23 +89,63 @@ public class TreeSequenceImpl implements TreeSequence {
         if (edgeList.isEmpty()) {
             throw new IllegalStateException("Empty sequence cannot be turned into tree");
         }
-        return buildBalancedTree(edgeList);
+        Tree edgeTree = buildBalancedTree(edgeList);
+        assignLeaves(edgeTree, treeList, new IndexWrapper());
+        return edgeTree;
+    }
+    private static class IndexWrapper {
+        private int index;
+
+        public IndexWrapper() {
+            index = 0;
+        }
+
+        public IndexWrapper(int index) {
+            this.index = index;
+        }
+
+        public int get() {
+            return index;
+        }
+        public int increment() {
+            int prev = index;
+            index = index + 1;
+            return prev;
+        }
+    }
+    private void assignLeaves(Tree edgeTree, List<Tree> leaves, IndexWrapper iw) {
+        if (edgeTree == null) {
+            return;
+        }
+        Tree left = edgeTree.getLeft();
+        if (left == null) {
+            edgeTree.setLeft(leaves.get(iw.increment()));
+        } else {
+            assignLeaves(left, leaves, iw);
+        }
+        Tree right = edgeTree.getRight();
+        if (right == null) {
+            edgeTree.setRight(leaves.get(iw.increment()));
+        } else {
+            assignLeaves(right, leaves, iw);
+        }
     }
 
-    private Tree buildBalancedTree(List<Edge> sortedList) {
-        if (sortedList.isEmpty()) {
+    private Tree buildBalancedTree(List<Edge> sortedEdges) {
+        if (sortedEdges.isEmpty()) {
             return null;
         }
 
-        int mid = sortedList.size() >>> 1;
-        Edge midElement = sortedList.get(mid);
+        int mid = sortedEdges.size() >>> 1;
+
+        Edge midElement = sortedEdges.get(mid);
         Tree root = new TreeEdgeElementImpl(midElement);
 
-        List<Edge> leftSublist = sortedList.subList(0, mid);
+        List<Edge> leftSublist = sortedEdges.subList(0, mid);
         Tree leftSubtree = buildBalancedTree(leftSublist);
         root.setLeft(leftSubtree);
 
-        List<Edge> rightSublist = sortedList.subList(mid + 1, sortedList.size());
+        List<Edge> rightSublist = sortedEdges.subList(mid + 1, sortedEdges.size());
         Tree rightSubtree = buildBalancedTree(rightSublist);
         root.setRight(rightSubtree);
 

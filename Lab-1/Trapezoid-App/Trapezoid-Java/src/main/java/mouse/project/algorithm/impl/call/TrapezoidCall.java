@@ -34,7 +34,8 @@ public class TrapezoidCall {
         vertexMap.values().stream().sorted(Comparator.comparingInt(v -> v.position().y())).forEach(verticesSet::add);
         EdgesSet edgesSet = createEdgesSet(orderedEdges, verticesSet);
         SInterval interval = createInterval(bounds);
-        return builder.trapezoid(edgesSet, verticesSet, interval, verticesSet.size());
+        int initialSize = verticesSet.size();
+        return builder.trapezoid(edgesSet, verticesSet, interval, initialSize);
     }
 
     private EdgesSet createEdgesSet(List<Edge> orderedEdges, VerticesSet verticesSet) {
