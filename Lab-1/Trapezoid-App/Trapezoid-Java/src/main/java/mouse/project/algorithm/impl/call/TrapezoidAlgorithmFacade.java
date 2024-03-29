@@ -21,10 +21,12 @@ public class TrapezoidAlgorithmFacade implements TrapezoidAlgorithm {
     }
     @Override
     public void build(CommonGraph commonGraph, GraphicsChangeListener graphicsChangeListener) {
+        graphicsChangeListener.clear();
         tree = trapezoidCall.prepareAndCall(commonGraph);
         Descriptor<TrapezoidHighlights> descriptor = new GraphicsDescriptor(graphicsChangeListener);
         descriptor.inspect(commonGraph);
         trapezoidHighlights = descriptor.describe(tree);
+        graphicsChangeListener.show();
     }
 
     @Override
@@ -32,6 +34,7 @@ public class TrapezoidAlgorithmFacade implements TrapezoidAlgorithm {
         TreeSearch search = new TreeSearchImpl();
         Tree found = search.find(tree, target);
         GFX gfx = trapezoidHighlights.get(found);
+        if (gfx == null) { return; }
         graphicsChangeListener.highlight(gfx);
     }
 }

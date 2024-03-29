@@ -8,14 +8,17 @@ import mouse.project.algorithm.impl.tree.Tree;
 import mouse.project.algorithm.impl.tree.TreeEdgeElement;
 import mouse.project.algorithm.impl.tree.TreeHorizontalElement;
 import mouse.project.graphics.GraphicsChangeListener;
-import mouse.project.utils.math.Position;
-import mouse.project.utils.math.Vector2;
+import mouse.project.utils.math.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Collection;
 
 public class GraphicsDescriptor implements Descriptor<TrapezoidHighlights> {
     private BoundingTrapezoid initialBounds = null;
     private final GraphicsChangeListener gfxChange;
+
+    private static final Logger logger = LogManager.getLogger(GraphicsDescriptor.class);
 
     public GraphicsDescriptor(GraphicsChangeListener gfxChange) {
         this.gfxChange = gfxChange;
@@ -24,7 +27,7 @@ public class GraphicsDescriptor implements Descriptor<TrapezoidHighlights> {
     @Override
     public TrapezoidHighlights describe(Tree tree) {
         if (initialBounds == null) {
-            throw new IllegalStateException("Graph is not inspected before description!");
+            return new TrapezoidHighlights();
         }
         GraphicsBuilder graphicsBuilder = new GraphicsBuilder(gfxChange);
         describe(tree, initialBounds, graphicsBuilder);
@@ -33,12 +36,16 @@ public class GraphicsDescriptor implements Descriptor<TrapezoidHighlights> {
 
     @Override
     public void inspect(CommonGraph commonGraph) {
-        Collection<CommonNode> nodes = commonGraph.nodes();
-        int top = nodes.stream().mapToInt(v -> v.position().y()).max().orElseThrow();
-        int bottom = nodes.stream().mapToInt(v -> v.position().y()).min().orElseThrow();
-        int left = nodes.stream().mapToInt(v -> v.position().x()).max().orElseThrow();
-        int right = nodes.stream().mapToInt(v -> v.position().x()).max().orElseThrow();
-        initialBounds = createFromBounds(left, top, right, bottom);
+        try {
+            Collection<CommonNode> nodes = commonGraph.nodes();
+            int top = nodes.stream().mapToInt(v -> v.position().y()).max().orElseThrow();
+            int bottom = nodes.stream().mapToInt(v -> v.position().y()).min().orElseThrow();
+            int left = nodes.stream().mapToInt(v -> v.position().x()).min().orElseThrow();
+            int right = nodes.stream().mapToInt(v -> v.position().x()).max().orElseThrow();
+            initialBounds = createFromBounds(left, top, right, bottom);
+        } catch (Exception e) {
+            logger.debug("Inspecting empty graph.");
+        }
     }
 
     private BoundingTrapezoid createFromBounds(int left, int top, int right, int bottom) {
@@ -51,35 +58,7 @@ public class GraphicsDescriptor implements Descriptor<TrapezoidHighlights> {
         return new BoundingTrapezoid(leftL, topL, rightL, bottomL);
     }
 
-    private static class Line {
-        Vector2 unit;
-        Position position;
 
-        public Line(Vector2 unit, Position position) {
-            this.unit = unit;
-            this.position = position;
-        }
-
-        public static Line of(Position p1, Position p2) {
-            Vector2 direction = Vector2.from(p1, p2);
-            Vector2 unitDirection = direction.unit();
-            return new Line(unitDirection, p1);
-        }
-
-        public Line(Position goesThrough, Vector2 vector) {
-            this.position = goesThrough;
-            this.unit = vector.unit();
-        }
-
-        public int getX(int y) {
-            if (unit.y() == 0) {
-                throw new IllegalArgumentException("The line is horizontal. Cannot calculate x for a given y.");
-            }
-            double slope = unit.y() / unit.x();
-            double yIntercept = position.y() - slope * position.x();
-            return (int) ((y - yIntercept) / slope);
-        }
-    }
 
     private record BoundingTrapezoid(Line leftLine, Line topLine, Line rightLine, Line bottomLine) {
 
@@ -93,8 +72,8 @@ public class GraphicsDescriptor implements Descriptor<TrapezoidHighlights> {
 
         public BoundingTrapezoid[] splitHorizontal(Line split) {
             BoundingTrapezoid[] trapezoids = new BoundingTrapezoid[2];
-            trapezoids[0] = new BoundingTrapezoid(leftLine, topLine, rightLine, split);
-            trapezoids[1] = new BoundingTrapezoid(leftLine, split, rightLine, bottomLine);
+            trapezoids[0] = new BoundingTrapezoid(leftLine, split, rightLine, bottomLine);
+            trapezoids[1] = new BoundingTrapezoid(leftLine, topLine, rightLine, split);
             return trapezoids;
         }
 
@@ -126,21 +105,27 @@ public class GraphicsDescriptor implements Descriptor<TrapezoidHighlights> {
         if (tree == null) {
             return;
         }
-        describeCurrentElement(tree, bounds, builder);
-        BoundingTrapezoid[] children = new BoundingTrapezoid[2];
+        BoundingTrapezoid[] children;
         if (tree.isHorizontal()) {
             TreeHorizontalElement horiz = (TreeHorizontalElement) tree;
             int lineY = horiz.getLineY();
             Position goesThrough = Position.of(0, lineY);
             children = bounds.splitHorizontal(new Line(goesThrough, Vector2.of(1.0, 0.0)));
+            LineGFX line = createLine(bounds, lineY);
+            builder.addGraphic(tree, line);
         }
         else if (tree.isEdge()) {
             TreeEdgeElement edgeElem = (TreeEdgeElement) tree;
             Edge edge = edgeElem.getEdge();
             Line line = toLine(edge);
             children = bounds.splitVertical(line);
+            builder.addGraphic(tree, createLine(edgeElem.getEdge()));
         }
         else if (tree.isLeaf()) {
+            GFX trapezoid = createTrapezoid(bounds);
+            builder.addGraphic(tree, trapezoid);
+            return;
+        } else {
             return;
         }
         describe(tree.getLeft(), children[0], builder);
@@ -153,18 +138,7 @@ public class GraphicsDescriptor implements Descriptor<TrapezoidHighlights> {
         return Line.of(p1, p2);
     }
 
-    private void describeCurrentElement(Tree tree, BoundingTrapezoid bounds, GraphicsBuilder builder) {
-        if (tree.isHorizontal()) {
-            TreeHorizontalElement horiz = (TreeHorizontalElement) tree;
-            int lineY = horiz.getLineY();
-            builder.addGraphic(tree, createLine(bounds, lineY));
-        } else if (tree.isLeaf()) {
-            builder.addGraphic(tree, createTrapezoid(bounds));
-        } else if (tree.isEdge()) {
-            TreeEdgeElement edgeElement = (TreeEdgeElement) tree;
-            builder.addGraphic(tree, createLine(edgeElement.getEdge()));
-        }
-    }
+
 
     private LineGFX createLine(Edge edge) {
         Position p1 = edge.end1().position();
@@ -172,26 +146,14 @@ public class GraphicsDescriptor implements Descriptor<TrapezoidHighlights> {
         return new EdgeLineGFX(p1, p2);
     }
 
-    private Position getIntersection(Line line1, Line line2) {
-        Vector2 v1 = Vector2.from(line1.position,
-                Position.of(line1.position.x() + (int) line1.unit.x(),
-                line1.position.y() + (int) line1.unit.y()));
-        Vector2 v2 = Vector2.from(line2.position,
-                Position.of(line2.position.x() + (int) line2.unit.x(),
-                line2.position.y() + (int) line2.unit.y()));
 
-        if (Math.abs(v1.cos(v2)) == 1) {
-            throw new IllegalArgumentException("The lines are parallel. No intersection found.");
-        }
 
-        double t = v2.subtract(Vector2.from(line1.position, line2.position)).dot(v1.unit().multiply(-1)) / v1.dot(v2.unit().multiply(-1));
-        return v1.unit().multiply(t).moveOn(line1.position);
-    }
     private GFX createTrapezoid(BoundingTrapezoid bounds) {
-        Position p1 = getIntersection(bounds.leftLine, bounds.topLine);
-        Position p2 = getIntersection(bounds.topLine, bounds.rightLine);
-        Position p3 = getIntersection(bounds.rightLine, bounds.bottomLine);
-        Position p4 = getIntersection(bounds.bottomLine, bounds.leftLine);
+        Position p1 = MathUtils.getIntersection(bounds.leftLine, bounds.topLine);
+        Position p2 = MathUtils.getIntersection(bounds.topLine, bounds.rightLine);
+        Position p3 = MathUtils.getIntersection(bounds.rightLine, bounds.bottomLine);
+        Position p4 = MathUtils.getIntersection(bounds.bottomLine, bounds.leftLine);
+        System.out.println("New trapezoid:" + p1 + " " + p2 + " " + p3 + " " + p4);
         return new TrapezoidGFXImpl(p1, p2, p3, p4);
     }
 

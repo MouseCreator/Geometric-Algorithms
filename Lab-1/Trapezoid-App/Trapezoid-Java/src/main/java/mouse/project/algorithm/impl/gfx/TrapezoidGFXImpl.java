@@ -10,6 +10,8 @@ public class TrapezoidGFXImpl implements TrapezoidGFX {
     private final Position p3;
     private final Position p4;
     private Color color;
+    private boolean highlighted = false;
+    private int depth;
 
     public TrapezoidGFXImpl(Position p1, Position p2, Position p3, Position p4) {
         this.p1 = p1;
@@ -20,13 +22,24 @@ public class TrapezoidGFXImpl implements TrapezoidGFX {
     }
 
     @Override
+    public int depth() {
+        return depth;
+    }
+
+    @Override
     public void dehighlight() {
+        if (!highlighted) return;
+        highlighted = false;
         color = Colors.dehighlight(color);
+        depth = -6;
     }
 
     @Override
     public void highlight() {
+        if (highlighted) return;
+        highlighted = true;
         color = Colors.highlight(color);
+        depth = 30;
     }
 
     @Override
@@ -37,6 +50,6 @@ public class TrapezoidGFXImpl implements TrapezoidGFX {
         int numPoints = 4;
 
         Polygon polygon = new Polygon(xPoints, yPoints, numPoints);
-        g2d.draw(polygon);
+        g2d.fillPolygon(polygon);
     }
 }

@@ -24,7 +24,7 @@ public final class TargetPoint implements Drawable {
 
     @Override
     public int depth() {
-        return 20;
+        return 100;
     }
 
     public void moveTo(Position position) {

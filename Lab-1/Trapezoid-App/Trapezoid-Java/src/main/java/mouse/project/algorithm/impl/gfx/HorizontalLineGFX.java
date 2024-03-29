@@ -9,6 +9,13 @@ public class HorizontalLineGFX implements LineGFX {
     private final Position from;
     private final Position to;
     private Color color;
+    private int depth;
+    private boolean highlighted = false;
+    @Override
+    public int depth() {
+        return depth;
+    }
+
     public HorizontalLineGFX(Position from, Position to) {
         this.from = from;
         this.to = to;
@@ -17,12 +24,18 @@ public class HorizontalLineGFX implements LineGFX {
 
     @Override
     public void dehighlight() {
+        if (!highlighted) return;
+        highlighted = false;
         color = ConstUtils.EXTRA_LINE;
+        depth = 1;
     }
 
     @Override
     public void highlight() {
+        if (highlighted) return;
+        highlighted = true;
         color = ConstUtils.HIGHLIGHT_LINE;
+        depth = 60;
     }
 
     @Override

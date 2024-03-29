@@ -357,6 +357,7 @@ public class PaintingPane implements AppComponent, ProgramModeListener, EventLis
             } else {
                 targetPoint.moveTo(position);
             }
+            algorithm.find(targetPoint.position());
 
         }
 

@@ -9,6 +9,7 @@ public class EdgeLineGFX implements LineGFX {
     private final Position from;
     private final Position to;
     private Color color;
+    private boolean highlight = false;
     public EdgeLineGFX(Position from, Position to) {
         this.from = from;
         this.to = to;
@@ -16,11 +17,20 @@ public class EdgeLineGFX implements LineGFX {
     }
     @Override
     public void dehighlight() {
+        if (!highlight) return;
+        highlight = false;
         color = ConstUtils.TRANSPARENT;
     }
 
     @Override
+    public int depth() {
+        return 60;
+    }
+
+    @Override
     public void highlight() {
+        if (highlight) return;
+        highlight = true;
         color = ConstUtils.HIGHLIGHT_LINE;
     }
 
