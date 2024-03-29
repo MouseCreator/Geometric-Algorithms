@@ -26,7 +26,11 @@ public class TrapezoidBuilder {
                     e[i].add(edge);
                 }
                 if (covers(edge, r[i]) || edge.isLimitingEdge()) {
-                    Tree tree = trapezoid(e[i], v[i], intervals[i], weight>>>1);
+                    if (edge.isLimitingEdge()) {
+                        e[i].add(edge);
+                    }
+                    int nextWeight = Math.max(0, weight - 1 >>> 1);
+                    Tree tree = trapezoid(e[i], v[i], intervals[i], nextWeight);
                     u[i].addTree(tree);
                     if (!edge.isLimitingEdge()) {
                         u[i].addEdge(edge);

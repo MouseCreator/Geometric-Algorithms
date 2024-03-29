@@ -54,4 +54,12 @@ public class TreeHorizontalElementImpl implements TreeHorizontalElement {
     public int getLineY() {
         return lineY;
     }
+
+    @Override
+    public String toString() {
+        return "Horizontal{" +
+                "Y=" + lineY +
+                ", weight=" + weight +
+                '}';
+    }
 }

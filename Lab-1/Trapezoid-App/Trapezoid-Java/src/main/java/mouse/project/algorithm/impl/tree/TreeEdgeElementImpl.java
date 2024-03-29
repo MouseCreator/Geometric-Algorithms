@@ -54,4 +54,11 @@ public class TreeEdgeElementImpl implements TreeEdgeElement {
     public Edge getEdge() {
         return edge;
     }
+
+    @Override
+    public String toString() {
+        return "TreeEdge{" +
+                "edge=" + edge +
+                '}';
+    }
 }

@@ -40,4 +40,9 @@ public class TreeLeafElementImpl implements TreeLeafElement {
     public boolean isLeaf() {
         return true;
     }
+
+    @Override
+    public String toString() {
+        return "Leaf";
+    }
 }

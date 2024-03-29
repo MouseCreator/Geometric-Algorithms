@@ -45,11 +45,32 @@ public class TreeSequenceImpl implements TreeSequence {
         if (weight==0) {
             return toEdgeTree();
         }
+        if (treeList.size()==2) {
+            return simpleTree();
+        }
         int mid = getMidIndex(weight);
+        System.out.println("EDGE LIST:" + edgeList + "; TREE LIST: " + treeList);
+        System.out.println(mid);
         return split(mid);
     }
 
+    private Tree simpleTree() {
+        Edge edge = edgeList.get(0);
+        Tree left = treeList.get(0);
+        Tree right = treeList.get(1);
+        TreeEdgeElement edgeElement = new TreeEdgeElementImpl(edge);
+        edgeElement.setLeft(left);
+        edgeElement.setRight(right);
+        return edgeElement;
+    }
+
     private Tree split(int index) {
+        if (index == 0) {
+            return produceLeftmost();
+        }
+        if (index == treeList.size()) {
+            return produceRightmost();
+        }
         List<Edge> edgesLeft = edgeList.subList(0, index-1);
         List<Edge> edgesRight = edgeList.subList(index, edgeList.size());
 
@@ -73,6 +94,31 @@ public class TreeSequenceImpl implements TreeSequence {
         return parentElement;
     }
 
+    private Tree produceRightmost() {
+        int last = treeList.size()-1;
+        Tree right = treeList.get(last);
+        Tree parent = new TreeEdgeElementImpl(edgeList.get(last-1));
+        List<Tree> treesLeft = treeList.subList(0, last);
+        List<Edge> edgesLeft = edgeList.subList(0, last-1);
+        TreeSequenceImpl leftSeq = new TreeSequenceImpl(edgesLeft, treesLeft);
+        Tree balanceLeft = leftSeq.balance();
+        parent.setLeft(balanceLeft);
+        parent.setRight(right);
+        return parent;
+    }
+
+    private Tree produceLeftmost() {
+        Tree left = treeList.get(0);
+        Tree parent = new TreeEdgeElementImpl(edgeList.get(0));
+        List<Tree> treesRight = treeList.subList(1, treeList.size());
+        List<Edge> edgesRight = edgeList.subList(1, edgeList.size());
+        TreeSequenceImpl rightSeq = new TreeSequenceImpl(edgesRight, treesRight);
+        Tree balanceRight = rightSeq.balance();
+        parent.setLeft(left);
+        parent.setRight(balanceRight);
+        return parent;
+    }
+
     private int getMidIndex(int weight) {
         int halfWeight = weight >>> 1;
         int currentWeight = 0;
@@ -90,7 +136,6 @@ public class TreeSequenceImpl implements TreeSequence {
             throw new IllegalStateException("Empty sequence cannot be turned into tree");
         }
         Tree edgeTree = buildBalancedTree(edgeList);
-        System.out.println("EDGE TREE:" + edgeList + ";");
         assignLeaves(edgeTree, treeList, new IndexWrapper());
         return edgeTree;
     }
@@ -99,14 +144,6 @@ public class TreeSequenceImpl implements TreeSequence {
 
         public IndexWrapper() {
             index = 0;
-        }
-
-        public IndexWrapper(int index) {
-            this.index = index;
-        }
-
-        public int get() {
-            return index;
         }
         public int increment() {
             int prev = index;

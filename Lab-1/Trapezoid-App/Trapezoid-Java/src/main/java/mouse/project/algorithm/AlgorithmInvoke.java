@@ -29,6 +29,7 @@ public class AlgorithmInvoke implements Algorithm {
             CommonGraph commonGraph = graphMapper.fromUI(graph);
             algorithmFacade.build(commonGraph, listener);
         });
+        thread.setName("Algorithm Thread");
         thread.start();
     }
 
