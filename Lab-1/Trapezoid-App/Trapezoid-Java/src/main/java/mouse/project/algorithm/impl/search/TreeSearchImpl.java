@@ -8,36 +8,39 @@ import mouse.project.algorithm.impl.tree.TreeHorizontalElement;
 import mouse.project.utils.math.Position;
 
 public class TreeSearchImpl implements TreeSearch {
+    private final static int CLOSE = 2;
     @Override
-    public Trace find(Tree tree, Position position) {
-        TraceImpl trace = new TraceImpl();
-        find(tree, position, trace);
-        return trace;
+    public Tree find(Tree tree, Position position) {
+        return findElement(tree, position);
     }
 
-    private void find(Tree tree, Position position, Trace trace) {
+    private Tree findElement(Tree tree, Position position) {
+        if (tree==null) {
+            throw new IllegalArgumentException("Null tree while looking for: " + position);
+        }
         if (tree.isEdge()) {
             TreeEdgeElement edgeElement = (TreeEdgeElement) tree;
             Edge edge = edgeElement.getEdge();
             int distance = getDistance(edge, position);
-            appendAndMoveDeeper(tree, position, trace, distance);
+            return move(tree, position, distance);
         } else if (tree.isHorizontal()) {
             TreeHorizontalElement horizontalElement = (TreeHorizontalElement) tree;
             int lineY = horizontalElement.getLineY();
             int distance = getDistance(position, lineY);
-            appendAndMoveDeeper(tree, position, trace, distance);
+            return move(tree, position, distance);
         } else if (tree.isLeaf()) {
-            trace.append(tree, Dir.NONE);
+            return tree;
         }
+        throw new IllegalStateException("Unknown element: " + tree);
     }
 
-    private void appendAndMoveDeeper(Tree tree, Position position, Trace trace, int distance) {
-        if (distance > 0) {
-            trace.append(tree, Dir.RIGHT_UP);
-            find(tree.getRight(), position, trace);
+    private Tree move(Tree tree, Position position, int distance) {
+        if (distance > CLOSE) {
+            return findElement(tree.getRight(), position);
+        } else if (distance < -CLOSE) {
+            return findElement(tree.getLeft(), position);
         } else {
-            trace.append(tree, Dir.LEFT_DOWN);
-            find(tree.getLeft(), position, trace);
+            return tree;
         }
     }
 

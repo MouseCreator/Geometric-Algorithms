@@ -10,18 +10,28 @@ import mouse.project.algorithm.impl.trapezoid.Edge;
 import mouse.project.algorithm.impl.tree.Tree;
 import mouse.project.algorithm.impl.tree.TreeEdgeElement;
 import mouse.project.algorithm.impl.tree.TreeHorizontalElement;
+import mouse.project.graphics.GraphicsChangeListener;
 import mouse.project.utils.math.Position;
 import mouse.project.utils.math.Vector2;
 
 import java.util.Collection;
 
-public class GraphicsDescriptor implements Descriptor {
+public class GraphicsDescriptor implements Descriptor<TrapezoidHighlights> {
     private BoundingTrapezoid initialBounds = null;
+    private final GraphicsChangeListener gfxChange;
+
+    public GraphicsDescriptor(GraphicsChangeListener gfxChange) {
+        this.gfxChange = gfxChange;
+    }
+
     @Override
-    public void describe(Tree tree) {
+    public TrapezoidHighlights describe(Tree tree) {
         if (initialBounds == null) {
             throw new IllegalStateException("Graph is not inspected before description!");
         }
+        GraphicsBuilder graphicsBuilder = new GraphicsBuilder(gfxChange);
+        describe(tree, initialBounds, graphicsBuilder);
+        return graphicsBuilder.getHighLights();
     }
 
     @Override
@@ -36,7 +46,7 @@ public class GraphicsDescriptor implements Descriptor {
 
     private BoundingTrapezoid createFromBounds(int left, int top, int right, int bottom) {
         Position topLeft = Position.of(left, top);
-        Position bottomRight = Position.of(left, bottom);
+        Position bottomRight = Position.of(right, bottom);
         Line leftL = new Line(topLeft, Vector2.of(0, 1));
         Line topL = new Line(topLeft, Vector2.of(1, 0));
         Line rightL = new Line(bottomRight, Vector2.of(0, 1));
@@ -62,15 +72,6 @@ public class GraphicsDescriptor implements Descriptor {
         public Line(Position goesThrough, Vector2 vector) {
             this.position = goesThrough;
             this.unit = vector.unit();
-        }
-
-        public int getY(int x) {
-            if (unit.x() == 0) {
-                throw new IllegalArgumentException("The line is vertical. Cannot calculate y for a given x.");
-            }
-            double slope = unit.y() / unit.x();
-            double yIntercept = position.y() - slope * position.x();
-            return (int) (slope * x + yIntercept);
         }
 
         public int getX(int y) {
@@ -109,8 +110,22 @@ public class GraphicsDescriptor implements Descriptor {
     }
 
     private static class GraphicsBuilder {
-        void addGraphic(GFX gfx) {
+        GraphicsChangeListener listener;
+        TrapezoidHighlights highlights = new TrapezoidHighlights();
+        public GraphicsBuilder(GraphicsChangeListener gfxChange) {
+            this.listener = gfxChange;
+        }
+        void addGraphic(Tree tree, GFX gfx) {
+            highlights.put(tree, gfx);
+            listener.add(gfx);
+        }
 
+        public TrapezoidHighlights getHighLights() {
+            return highlights;
+        }
+
+        public void addSecret(Tree tree, GFX gfx) {
+            highlights.put(tree, gfx);
         }
     }
 
@@ -149,11 +164,21 @@ public class GraphicsDescriptor implements Descriptor {
         if (tree.isHorizontal()) {
             TreeHorizontalElement horiz = (TreeHorizontalElement) tree;
             int lineY = horiz.getLineY();
-            builder.addGraphic(createLine(bounds, lineY));
+            builder.addGraphic(tree, createLine(bounds, lineY));
         } else if (tree.isLeaf()) {
-            builder.addGraphic(createTrapezoid(bounds));
+            builder.addGraphic(tree, createTrapezoid(bounds));
+        } else if (tree.isEdge()) {
+            TreeEdgeElement edgeElement = (TreeEdgeElement) tree;
+            builder.addSecret(tree, createLine(edgeElement.getEdge()));
         }
     }
+
+    private LineGFX createLine(Edge edge) {
+        Position p1 = edge.end1().position();
+        Position p2 = edge.end2().position();
+        return new LineGFXImpl(p1, p2);
+    }
+
     private Position getIntersection(Line line1, Line line2) {
         Vector2 v1 = Vector2.from(line1.position,
                 Position.of(line1.position.x() + (int) line1.unit.x(),
