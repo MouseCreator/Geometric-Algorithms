@@ -5,6 +5,7 @@ import mouse.project.algorithm.common.CommonGraph;
 import mouse.project.algorithm.common.CommonNode;
 import mouse.project.algorithm.impl.desc.Descriptor;
 import mouse.project.algorithm.impl.desc.GraphicsDescriptor;
+import mouse.project.algorithm.impl.desc.TextDescriptorHelper;
 import mouse.project.algorithm.impl.desc.TrapezoidHighlights;
 import mouse.project.algorithm.impl.gfx.GFX;
 import mouse.project.algorithm.impl.search.TreeSearch;
@@ -31,6 +32,8 @@ public class TrapezoidAlgorithmFacade implements TrapezoidAlgorithm {
         tree = trapezoidCall.prepareAndCall(commonGraph);
         Descriptor<TrapezoidHighlights> descriptor = new GraphicsDescriptor(graphicsChangeListener);
         descriptor.inspect(commonGraph);
+
+
         trapezoidHighlights = descriptor.describe(tree);
         graphicsChangeListener.show();
     }
