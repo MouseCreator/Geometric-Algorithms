@@ -153,7 +153,6 @@ public class GraphicsDescriptor implements Descriptor<TrapezoidHighlights> {
         Position p2 = MathUtils.getIntersection(bounds.topLine, bounds.rightLine);
         Position p3 = MathUtils.getIntersection(bounds.rightLine, bounds.bottomLine);
         Position p4 = MathUtils.getIntersection(bounds.bottomLine, bounds.leftLine);
-        System.out.println("New trapezoid:" + p1 + " " + p2 + " " + p3 + " " + p4);
         return new TrapezoidGFXImpl(p1, p2, p3, p4);
     }
 

@@ -45,10 +45,18 @@ public class ButtonsPane implements AppComponent {
     }
     private void onSaveButton() {
         logger.debug("Save pressed!");
+        resetState();
         Events.generate(new SaveEvent());
     }
+
+    private void resetState() {
+        btnGroup.clearSelection();
+        State.get().getProgramState().updateMode(ProgramMode.IDLE);
+    }
+
     private void onLoadButton() {
         logger.debug("Load pressed!");
+        resetState();
         Events.generate(new LoadEvent());
     }
     private void onClearButton() {
@@ -60,10 +68,10 @@ public class ButtonsPane implements AppComponent {
     public Component getComponent() {
         return panel;
     }
-
+    private ButtonGroup btnGroup;
     private class ButtonsFlow extends JPanel {
-
         public ButtonsFlow() {
+            btnGroup = new ButtonGroup();
             int buttonHeight = 50;
             int buttonCount = 7;
             int gap = 10;
@@ -98,7 +106,7 @@ public class ButtonsPane implements AppComponent {
             JToggleButton targetBtn = createToggleButton("Target", ButtonsPane.this::onTargetButton);
             JToggleButton eraseBtn = createToggleButton("Erase", ButtonsPane.this::onEraseButton);
 
-            ButtonGroup btnGroup = new ButtonGroup();
+
             btnGroup.add(nodesBtn);
             btnGroup.add(edgesBtn);
             btnGroup.add(targetBtn);

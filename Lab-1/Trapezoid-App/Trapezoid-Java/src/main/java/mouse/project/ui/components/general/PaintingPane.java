@@ -118,6 +118,7 @@ public class PaintingPane implements AppComponent, ProgramModeListener, EventLis
             SaveLoad.save(graph);
         }
     }
+
     private class LoadEventHandler implements GeneralEventHandler {
 
         @Override
