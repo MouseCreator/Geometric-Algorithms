@@ -37,10 +37,8 @@ public class SweepLineScannerImpl implements SweepLineScanner {
                 addedEdges.add(left);
             }
             Edge right = status.findRight(v);
-            tempList.forEach(e -> {
-                status.add(e, y);
-                addedEdges.add(e);
-            });
+            addedEdges.addAll(tempList);
+            status.addAll(tempList, y);
             if (right != null) {
                 addedEdges.add(right);
             }
@@ -119,11 +117,11 @@ public class SweepLineScannerImpl implements SweepLineScanner {
 
         public Edge findLeft(Vertex v) {
             Edge edge = new EdgeImpl(v, v);
-            int indexOfTarget = findIndexOf(edge, v.position().y()) - 1;
-            if (indexOfTarget < 0) {
+            int indexOfTarget = findIndexOf(edge, v.position().y());
+            if (indexOfTarget == 0) {
                 return null;
             }
-            return statusList.get(indexOfTarget);
+            return statusList.get(indexOfTarget-1);
         }
         public Edge findRight(Vertex v) {
             Edge edge = new EdgeImpl(v, v);
@@ -132,11 +130,6 @@ public class SweepLineScannerImpl implements SweepLineScanner {
                 return null;
             }
             return statusList.get(indexOfTarget);
-        }
-
-        public void add(Edge edge, int currentY) {
-            int index = findIndexOf(edge, currentY);
-            statusList.add(index, edge);
         }
 
         public boolean remove(Edge edge) {
@@ -151,11 +144,22 @@ public class SweepLineScannerImpl implements SweepLineScanner {
             return index;
         }
 
-        private int findIndexGeneral(Edge node, int y) {
-            return Collections.binarySearch(statusList, node, Comparator.comparingInt(e -> EdgeHelper.getX(e, y)));
+        private int findIndexGeneral(Edge input, int y) {
+            List<Integer> list = statusList.stream().map(e -> EdgeHelper.getX(e, y)).toList();
+            System.out.println(list);
+            System.out.println(EdgeHelper.getX(input, y));
+            return Collections.binarySearch(statusList, input, Comparator.comparingInt(e -> EdgeHelper.getX(e, y)));
         }
 
 
+        public void addAll(List<Edge> tempList, int y) {
+            if (tempList.isEmpty()) {
+                return;
+            }
+            Edge edge = tempList.get(0);
+            int index = findIndexOf(edge, y);
+            statusList.addAll(index, tempList);
+        }
     }
 
 }

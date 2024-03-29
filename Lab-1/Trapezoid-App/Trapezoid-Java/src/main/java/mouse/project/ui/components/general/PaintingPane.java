@@ -103,6 +103,7 @@ public class PaintingPane implements AppComponent, ProgramModeListener, EventLis
 
         @Override
         public void handle(Event event) {
+
             onRemoveAll();
         }
     }
@@ -148,6 +149,7 @@ public class PaintingPane implements AppComponent, ProgramModeListener, EventLis
 
     private void onRemoveAll() {
         graph.removeAll();
+        algorithm.clear();
     }
 
     @Override

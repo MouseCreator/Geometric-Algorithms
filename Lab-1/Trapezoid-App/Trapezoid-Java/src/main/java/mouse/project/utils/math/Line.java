@@ -16,7 +16,7 @@ public record Line(Position position, Vector2 unit) {
         return intersection.x();
     }
 
-    private static Line from(Position of, Vector2 v) {
+    public static Line from(Position of, Vector2 v) {
         return new Line(of, v);
     }
 

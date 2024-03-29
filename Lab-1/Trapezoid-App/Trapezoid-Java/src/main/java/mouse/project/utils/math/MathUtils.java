@@ -39,4 +39,8 @@ public class MathUtils {
         double yd = (g2.a() * g1.c() - g1.a() * g2.c()) / d;
         return Position.of((int) xd, (int) yd);
     }
+
+    public static GenLine toGenLine(Position p1, Position p2) {
+        return toGenLine(Line.of(p1, p2));
+    }
 }
