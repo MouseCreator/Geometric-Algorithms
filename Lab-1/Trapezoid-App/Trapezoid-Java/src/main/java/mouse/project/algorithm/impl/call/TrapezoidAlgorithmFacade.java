@@ -19,8 +19,9 @@ public class TrapezoidAlgorithmFacade implements TrapezoidAlgorithm {
     @Override
     public void build(CommonGraph commonGraph, GraphicsChangeListener graphicsChangeListener) {
         tree = trapezoidCall.prepareAndCall(commonGraph);
-        Descriptor textDescriptor = new TextDescriptor();
-        textDescriptor.describe(tree);
+        Descriptor descriptor = new TextDescriptor();
+        descriptor.inspect(commonGraph);
+        descriptor.describe(tree);
     }
 
     @Override
