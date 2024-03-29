@@ -73,11 +73,11 @@ public class TreeSequenceImpl implements TreeSequence {
     }
 
     private Tree split(int index) {
-        if (index == 0) {
+        if (index <= 2) {
             logger.debug("LEFT CASE");
             return produceLeftmost();
         }
-        if (index == treeList.size()-1) {
+        if (index >= treeList.size()-1) {
             logger.debug("RIGHT CASE");
             return produceRightmost();
         }

@@ -66,8 +66,10 @@ public class GraphSaver {
                             continue;
                         case "X":
                             isPosition(key, "x");
+                            break;
                         case "Y":
                             isPosition(key, "y");
+                            break;
                     }
                 }
             }
