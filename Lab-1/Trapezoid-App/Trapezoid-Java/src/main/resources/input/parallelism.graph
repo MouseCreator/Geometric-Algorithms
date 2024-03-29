@@ -1,0 +1,20 @@
+/*Nodes*/
+node A 300 100
+node B 400 100
+node C 500 300
+node D 600 300
+node E 100 500
+node F 200 500
+node G 150 600
+/*Edges*/
+edge A B
+edge C D
+edge E F
+
+edge A C
+edge B D
+edge C E
+edge D F
+
+edge E G
+edge G F
