@@ -1,0 +1,16 @@
+/*Nodes*/
+node A 309 347
+node B 393 100
+node C 449 184
+node D 525 84
+node E 559 230
+node F 622 136
+node G 671 392
+/*Edges*/
+edge A G
+edge B A
+edge G F
+edge F E
+edge E D
+edge D C
+edge C B
