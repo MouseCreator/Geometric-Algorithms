@@ -7,4 +7,5 @@ import mouse.project.utils.math.Position;
 public interface TrapezoidAlgorithm {
     void build(CommonGraph uiGraph, GraphicsChangeListener graphicsChangeListener);
     void find(Position target, GraphicsChangeListener graphicsChangeListener);
+    void clear();
 }

@@ -12,7 +12,6 @@ public class TrapezoidBuilder {
         }
 
         int yMed = vertices.medianPosition().y();
-
         EdgesSet[] e = createEdgeSets();
         VerticesSet[] v = createVerticesSet();
         STrapezoid[] r = createTrapezoids(interval, yMed);

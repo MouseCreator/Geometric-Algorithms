@@ -60,4 +60,11 @@ public class TrapezoidAlgorithmFacade implements TrapezoidAlgorithm {
         if (gfx == null) { return; }
         graphicsChangeListener.highlight(gfx);
     }
+
+    @Override
+    public void clear() {
+        tree = null;
+        trapezoidHighlights = null;
+        graphBox = null;
+    }
 }

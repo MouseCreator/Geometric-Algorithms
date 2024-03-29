@@ -6,4 +6,5 @@ public interface EdgesSet {
     void addAll(Collection<Edge> edges);
     Collection<Edge> getAll();
     void add(Edge edge);
+    Edge last();
 }

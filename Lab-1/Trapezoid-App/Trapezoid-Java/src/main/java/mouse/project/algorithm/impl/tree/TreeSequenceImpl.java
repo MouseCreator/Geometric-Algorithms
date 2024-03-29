@@ -90,6 +90,7 @@ public class TreeSequenceImpl implements TreeSequence {
             throw new IllegalStateException("Empty sequence cannot be turned into tree");
         }
         Tree edgeTree = buildBalancedTree(edgeList);
+        System.out.println("EDGE TREE:" + edgeList + ";");
         assignLeaves(edgeTree, treeList, new IndexWrapper());
         return edgeTree;
     }

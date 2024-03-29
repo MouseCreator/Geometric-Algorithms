@@ -47,8 +47,9 @@ public class TrapezoidCall {
     }
 
     private Edge getLimitingEdge() {
-        Vertex limitVertex = new VertexImpl(Position.of(25000, 25000), "LIMIT");
-        return new EdgeImpl(limitVertex, limitVertex, true);
+        Vertex limitVertex = new VertexImpl(Position.of(25000, -25000), "LIMIT");
+        Vertex limitVertex2 = new VertexImpl(Position.of(25000, 25000), "LIMIT-2");
+        return new EdgeImpl(limitVertex, limitVertex2, true);
     }
 
     private SInterval createInterval(Box bounds) {

@@ -2,7 +2,6 @@ package mouse.project.algorithm;
 
 import mouse.project.algorithm.common.CommonGraph;
 import mouse.project.algorithm.impl.call.TrapezoidAlgorithmFacade;
-import mouse.project.algorithm.impl.gfx.GFX;
 import mouse.project.graphics.GraphicsChangeListener;
 import mouse.project.graphics.GraphicsChangeListenerImpl;
 import mouse.project.mapper.GraphMapper;
@@ -11,8 +10,6 @@ import mouse.project.ui.components.draw.DrawManager;
 import mouse.project.ui.components.graph.UIGraph;
 import mouse.project.utils.math.Position;
 
-import java.util.Collection;
-import java.util.List;
 
 public class AlgorithmInvoke implements Algorithm {
 
@@ -38,5 +35,11 @@ public class AlgorithmInvoke implements Algorithm {
     @Override
     public void find(Position position) {
         algorithmFacade.find(position, listener);
+    }
+
+    @Override
+    public void clear() {
+        algorithmFacade.clear();
+        listener.clear();
     }
 }
