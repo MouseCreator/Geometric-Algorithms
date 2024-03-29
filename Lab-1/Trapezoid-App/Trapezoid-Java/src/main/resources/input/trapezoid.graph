@@ -1,0 +1,10 @@
+/*Nodes*/
+node A 550 129
+node B 687 166
+node C 704 323
+node D 486 296
+/*Edges*/
+edge D A
+edge A B
+edge B C
+edge C D
