@@ -18,6 +18,8 @@ import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import java.awt.*;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 
 public class ButtonsPane implements AppComponent {
     private final JPanel panel;
@@ -73,7 +75,7 @@ public class ButtonsPane implements AppComponent {
         public ButtonsFlow() {
             btnGroup = new ButtonGroup();
             int buttonHeight = 50;
-            int buttonCount = 7;
+            int buttonCount = 9;
             int gap = 10;
             int spaceGap = 40;
 
@@ -122,17 +124,33 @@ public class ButtonsPane implements AppComponent {
         private JPanel createBottomSubpane() {
             JPanel subpanel = new JPanel();
             subpanel.setBackground(ConstUtils.TRANSPARENT);
-            subpanel.setLayout(new GridLayout(3, 1 ,10, 10));
+            subpanel.setLayout(new GridLayout(5, 1 ,10, 10));
             setBackground(ConstUtils.BACKGROUND_SECONDARY);
 
             JButton saveBtn = createButton("Save", ButtonsPane.this::onSaveButton);
             JButton loadBtn = createButton("Load", ButtonsPane.this::onLoadButton);
             JButton clearBtn = createButton("Clear", ButtonsPane.this::onClearButton);
 
+            JCheckBox coordinatesBox = createCheckBox("Vertex coordinates",
+                    e -> State.get().getGraphicState().setShowCoordinates(e.getStateChange() == ItemEvent.SELECTED));
+
+            JCheckBox namesBox = createCheckBox("Vertex names",
+                    e -> State.get().getGraphicState().setShowNames(e.getStateChange() == ItemEvent.SELECTED));
+
             subpanel.add(saveBtn);
             subpanel.add(loadBtn);
             subpanel.add(clearBtn);
+            subpanel.add(coordinatesBox);
+            subpanel.add(namesBox);
             return subpanel;
+        }
+
+        private static JCheckBox createCheckBox(String name, ItemListener listener) {
+            JCheckBox coordinatesBox = new JCheckBox(name);
+            coordinatesBox.setSelected(true);
+            coordinatesBox.setBackground(ConstUtils.BACKGROUND_SECONDARY);
+            coordinatesBox.addItemListener(listener);
+            return coordinatesBox;
         }
 
         private JToggleButton createToggleButton(String text, Runnable action) {

@@ -3,11 +3,11 @@ package mouse.project.state;
 public class DefaultStateHolder implements StateHolder {
 
     private final ProgramState programState;
-    private final AlgorithmState algorithmState;
+    private final GraphicState graphicState;
 
     public DefaultStateHolder() {
         programState = new ProgramState();
-        algorithmState = new AlgorithmState();
+        graphicState = new GraphicState();
     }
 
     @Override
@@ -16,7 +16,7 @@ public class DefaultStateHolder implements StateHolder {
     }
 
     @Override
-    public AlgorithmState getAlgorithmState() {
-        return algorithmState;
+    public GraphicState getGraphicState() {
+        return graphicState;
     }
 }

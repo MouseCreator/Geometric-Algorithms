@@ -38,13 +38,24 @@ public class Node implements Drawable {
 
     private void drawText(Graphics2D g2d, int radius) {
         g2d.setColor(Color.BLACK);
-        String positionText = id + position.toString();
+        String positionText = createLabel();
         FontMetrics fontMetrics = g2d.getFontMetrics();
         int textWidth = fontMetrics.stringWidth(positionText);
         int textHeight = fontMetrics.getHeight();
         int textX = position.x() - radius - textWidth - 5;
         int textY = position.y() + (textHeight / 2);
         g2d.drawString(positionText, textX, textY);
+    }
+
+    private String createLabel() {
+        String s = "";
+        if (State.get().getGraphicState().isShowNames()) {
+            s += id;
+        }
+        if (State.get().getGraphicState().isShowCoordinates()) {
+            s += position.toString();
+        }
+        return s;
     }
 
     @Override

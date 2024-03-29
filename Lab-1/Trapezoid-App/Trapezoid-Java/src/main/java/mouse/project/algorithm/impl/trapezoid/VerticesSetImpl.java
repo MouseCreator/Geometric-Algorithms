@@ -4,6 +4,7 @@ import mouse.project.utils.math.Position;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 
 public class VerticesSetImpl implements VerticesSet {
@@ -26,16 +27,6 @@ public class VerticesSetImpl implements VerticesSet {
 
     @Override
     public void add(Vertex vertex) {
-        if (vertexList.isEmpty()) {
-            vertexList.add(vertex);
-            return;
-        }
-        Vertex last = vertexList.get(vertexList.size() - 1);
-        int y1 = vertex.position().y();
-        int y2 = last.position().y();
-        if (y1 < y2) {
-            throw new IllegalArgumentException("Vertices are not sorted! Got: " + y1 + " > " + y2);
-        }
         vertexList.add(vertex);
     }
 
