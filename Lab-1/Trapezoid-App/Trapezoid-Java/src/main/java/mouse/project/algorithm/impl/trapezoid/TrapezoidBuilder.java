@@ -1,5 +1,6 @@
 package mouse.project.algorithm.impl.trapezoid;
 
+import mouse.project.algorithm.impl.sweep.EdgeHelper;
 import mouse.project.algorithm.impl.tree.*;
 
 import java.util.Optional;
@@ -26,10 +27,8 @@ public class TrapezoidBuilder {
                     e[i].add(edge);
                 }
                 if (covers(edge, r[i]) || edge.isLimitingEdge()) {
-                    if (edge.isLimitingEdge()) {
-                        e[i].add(edge);
-                    }
-                    int nextWeight = Math.max(0, weight - 1 >>> 1);
+                    e[i].add(EdgeHelper.createLimiting());
+                    int nextWeight = Math.max(0, (weight - 1) >>> 1);
                     Tree tree = trapezoid(e[i], v[i], intervals[i], nextWeight);
                     u[i].addTree(tree);
                     if (!edge.isLimitingEdge()) {

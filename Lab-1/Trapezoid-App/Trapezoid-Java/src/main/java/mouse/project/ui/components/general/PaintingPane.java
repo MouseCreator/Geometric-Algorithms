@@ -336,6 +336,7 @@ public class PaintingPane implements AppComponent, ProgramModeListener, EventLis
         @Override
         public void onDisable() {
             hide();
+            algorithm.clear();
         }
 
         @Override

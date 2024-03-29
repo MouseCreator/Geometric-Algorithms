@@ -42,15 +42,17 @@ public class TreeSequenceImpl implements TreeSequence {
 
     public Tree balance() {
         int weight = weight();
+        System.out.println("EDGE LIST:" + edgeList + "; TREE LIST: " + treeList);
         if (weight==0) {
+            System.out.println("EDGE");
             return toEdgeTree();
         }
         if (treeList.size()==2) {
+            System.out.println("SIMPLE");
             return simpleTree();
         }
         int mid = getMidIndex(weight);
-        System.out.println("EDGE LIST:" + edgeList + "; TREE LIST: " + treeList);
-        System.out.println(mid);
+        System.out.println("SPLIT " + mid);
         return split(mid);
     }
 
@@ -66,9 +68,11 @@ public class TreeSequenceImpl implements TreeSequence {
 
     private Tree split(int index) {
         if (index == 0) {
+            System.out.println("LEFT");
             return produceLeftmost();
         }
-        if (index == treeList.size()) {
+        if (index == treeList.size()-1) {
+            System.out.println("RIGHT");
             return produceRightmost();
         }
         List<Edge> edgesLeft = edgeList.subList(0, index-1);
@@ -123,16 +127,19 @@ public class TreeSequenceImpl implements TreeSequence {
         int halfWeight = weight >>> 1;
         int currentWeight = 0;
         for (int i = 0; i < treeList.size(); i++) {
+            currentWeight += treeList.get(i).weight();
             if (currentWeight >= halfWeight) {
                 return i;
             }
-            currentWeight += treeList.get(i).weight();
         }
-        return treeList.size();
+        return treeList.size() - 1;
     }
 
     private Tree toEdgeTree() {
         if (edgeList.isEmpty()) {
+            if (treeList.size()==1) {
+                return treeList.get(0);
+            }
             throw new IllegalStateException("Empty sequence cannot be turned into tree");
         }
         Tree edgeTree = buildBalancedTree(edgeList);

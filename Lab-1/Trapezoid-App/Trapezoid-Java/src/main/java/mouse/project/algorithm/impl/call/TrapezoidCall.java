@@ -3,10 +3,7 @@ package mouse.project.algorithm.impl.call;
 import mouse.project.algorithm.common.CommonEdge;
 import mouse.project.algorithm.common.CommonGraph;
 import mouse.project.algorithm.common.CommonNode;
-import mouse.project.algorithm.impl.sweep.SweepLineScanner;
-import mouse.project.algorithm.impl.sweep.SweepLineScannerImpl;
-import mouse.project.algorithm.impl.sweep.VertexEdgeMap;
-import mouse.project.algorithm.impl.sweep.VertexEdgeMapImpl;
+import mouse.project.algorithm.impl.sweep.*;
 import mouse.project.algorithm.impl.trapezoid.*;
 import mouse.project.algorithm.impl.tree.Tree;
 import mouse.project.utils.math.Box;
@@ -47,9 +44,7 @@ public class TrapezoidCall {
     }
 
     private Edge getLimitingEdge() {
-        Vertex limitVertex = new VertexImpl(Position.of(25000, -25000), "LIMIT");
-        Vertex limitVertex2 = new VertexImpl(Position.of(25000, 25000), "LIMIT-2");
-        return new EdgeImpl(limitVertex, limitVertex2, true);
+        return EdgeHelper.createLimiting();
     }
 
     private SInterval createInterval(Box bounds) {
