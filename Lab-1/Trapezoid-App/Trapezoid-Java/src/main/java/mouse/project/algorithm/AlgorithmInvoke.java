@@ -4,8 +4,10 @@ import mouse.project.algorithm.common.CommonGraph;
 import mouse.project.algorithm.impl.call.TrapezoidAlgorithmFacade;
 import mouse.project.algorithm.impl.gfx.GFX;
 import mouse.project.graphics.GraphicsChangeListener;
+import mouse.project.graphics.GraphicsChangeListenerImpl;
 import mouse.project.mapper.GraphMapper;
 import mouse.project.mapper.GraphMapperImpl;
+import mouse.project.ui.components.draw.DrawManager;
 import mouse.project.ui.components.graph.UIGraph;
 import mouse.project.utils.math.Position;
 
@@ -18,28 +20,10 @@ public class AlgorithmInvoke implements Algorithm {
     private final TrapezoidAlgorithmFacade algorithmFacade;
     private final GraphicsChangeListener listener;
 
-    public AlgorithmInvoke() {
+    public AlgorithmInvoke(DrawManager drawManager) {
         this.graphMapper = new GraphMapperImpl();
         this.algorithmFacade = new TrapezoidAlgorithmFacade();
-        listener = new GraphicsChangeListener() {
-            @Override
-            public void add(GFX gfx) {
-            }
-
-            @Override
-            public void clear() {
-            }
-
-            @Override
-            public Collection<GFX> getAll() {
-                return List.of();
-            }
-
-            @Override
-            public void highlight(GFX gfx) {
-
-            }
-        };
+        listener = new GraphicsChangeListenerImpl(drawManager);
     }
 
     @Override

@@ -1,4 +1,8 @@
 package mouse.project.algorithm.impl.gfx;
 
-public interface GFX {
+import mouse.project.ui.components.main.Drawable;
+
+public interface GFX extends Drawable {
+    void dehighlight();
+    void highlight();
 }

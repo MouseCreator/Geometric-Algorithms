@@ -39,8 +39,8 @@ public class PaintingPane implements AppComponent, ProgramModeListener, EventLis
     public PaintingPane() {
         this.drawPanel = new DrawPanel();
         graph = new UIGraph();
-        algorithm = new AlgorithmInvoke();
         drawManager = State.get().getProgramState().getDrawManager();
+        algorithm = new AlgorithmInvoke(drawManager);
         clickHandlers = createClickHandlers();
         State.get().getProgramState().registerListener(this);
         Events.register(this);

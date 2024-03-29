@@ -2,10 +2,7 @@ package mouse.project.algorithm.impl.desc;
 
 import mouse.project.algorithm.common.CommonGraph;
 import mouse.project.algorithm.common.CommonNode;
-import mouse.project.algorithm.impl.gfx.GFX;
-import mouse.project.algorithm.impl.gfx.LineGFX;
-import mouse.project.algorithm.impl.gfx.LineGFXImpl;
-import mouse.project.algorithm.impl.gfx.TrapezoidGFXImpl;
+import mouse.project.algorithm.impl.gfx.*;
 import mouse.project.algorithm.impl.trapezoid.Edge;
 import mouse.project.algorithm.impl.tree.Tree;
 import mouse.project.algorithm.impl.tree.TreeEdgeElement;
@@ -123,10 +120,6 @@ public class GraphicsDescriptor implements Descriptor<TrapezoidHighlights> {
         public TrapezoidHighlights getHighLights() {
             return highlights;
         }
-
-        public void addSecret(Tree tree, GFX gfx) {
-            highlights.put(tree, gfx);
-        }
     }
 
     private void describe(Tree tree, BoundingTrapezoid bounds, GraphicsBuilder builder) {
@@ -169,14 +162,14 @@ public class GraphicsDescriptor implements Descriptor<TrapezoidHighlights> {
             builder.addGraphic(tree, createTrapezoid(bounds));
         } else if (tree.isEdge()) {
             TreeEdgeElement edgeElement = (TreeEdgeElement) tree;
-            builder.addSecret(tree, createLine(edgeElement.getEdge()));
+            builder.addGraphic(tree, createLine(edgeElement.getEdge()));
         }
     }
 
     private LineGFX createLine(Edge edge) {
         Position p1 = edge.end1().position();
         Position p2 = edge.end2().position();
-        return new LineGFXImpl(p1, p2);
+        return new EdgeLineGFX(p1, p2);
     }
 
     private Position getIntersection(Line line1, Line line2) {
@@ -207,6 +200,6 @@ public class GraphicsDescriptor implements Descriptor<TrapezoidHighlights> {
         int rightX = bounds.getRight(lineY);
         Position p1 = Position.of(leftX, lineY);
         Position p2 = Position.of(rightX, lineY);
-        return new LineGFXImpl(p1, p2);
+        return new HorizontalLineGFX(p1, p2);
     }
 }

@@ -20,4 +20,6 @@ public class ConstUtils {
     public static final int BUTTON_PANE_HEIGHT = WINDOW_HEIGHT;
     public static final double TARGET_EDGE_TOLERANCE = 8;
     public static final Color TRANSPARENT = new Color(0,0,0,0);
+    public static final Color EXTRA_LINE = new Color(155, 155, 155);
+    public static final Color HIGHLIGHT_LINE = Color.ORANGE;
 }
