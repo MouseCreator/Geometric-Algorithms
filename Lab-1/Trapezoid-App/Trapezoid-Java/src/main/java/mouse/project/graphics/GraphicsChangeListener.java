@@ -7,4 +7,5 @@ public interface GraphicsChangeListener {
     void clear();
     void show();
     void highlight(GFX gfx);
+    void dehighlight();
 }

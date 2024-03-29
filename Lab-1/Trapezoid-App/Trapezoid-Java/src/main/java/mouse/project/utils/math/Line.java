@@ -12,7 +12,7 @@ public record Line(Position position, Vector2 unit) {
     }
 
     public int getX(int y) {
-        Position intersection = MathUtils.getIntersection(this, Line.from(Position.of(0, y), Vector2.of(0, 1)));
+        Position intersection = MathUtils.getIntersection(this, Line.from(Position.of(0, y), Vector2.of(1, 0)));
         return intersection.x();
     }
 

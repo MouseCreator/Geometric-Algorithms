@@ -1,15 +1,18 @@
 package mouse.project.algorithm.impl.gfx;
 
+import lombok.EqualsAndHashCode;
 import mouse.project.state.ConstUtils;
 import mouse.project.utils.math.Position;
 
 import java.awt.*;
-
+@EqualsAndHashCode
 public class EdgeLineGFX implements LineGFX {
     private final Position from;
     private final Position to;
+    @EqualsAndHashCode.Exclude
     private Color color;
-    private boolean highlight = false;
+    @EqualsAndHashCode.Exclude
+    private boolean highlight = true;
     public EdgeLineGFX(Position from, Position to) {
         this.from = from;
         this.to = to;

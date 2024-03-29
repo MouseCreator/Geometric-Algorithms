@@ -43,14 +43,12 @@ public class TreeSearchImpl implements TreeSearch {
             return tree;
         }
     }
-
-
     private int getDistance(Position position, int lineY) {
         return position.y() - lineY;
     }
 
     private int getDistance(Edge edge, Position position) {
         int x = EdgeHelper.getX(edge, position.y());
-        return x - position.x();
+        return position.x() - x ;
     }
 }

@@ -3,15 +3,15 @@ package mouse.project.graphics;
 import mouse.project.algorithm.impl.gfx.GFX;
 import mouse.project.ui.components.draw.DrawManager;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 public class GraphicsChangeListenerImpl implements GraphicsChangeListener {
-    private final Set<GFX> gfxSet;
+    private final List<GFX> gfxSet;
     private final DrawManager drawManager;
 
     public GraphicsChangeListenerImpl(DrawManager drawManager) {
-        this.gfxSet = new HashSet<>();
+        this.gfxSet = new ArrayList<>();
         this.drawManager = drawManager;
     }
 
@@ -33,9 +33,16 @@ public class GraphicsChangeListenerImpl implements GraphicsChangeListener {
 
     @Override
     public void highlight(GFX gfx) {
-        drawManager.onRemove(gfx);
+        gfxSet.forEach(drawManager::onRemove);
         gfxSet.forEach(GFX::dehighlight);
         gfx.highlight();
-        drawManager.onAdd(gfx);
+        gfxSet.forEach(drawManager::onAdd);
+    }
+
+    @Override
+    public void dehighlight() {
+        gfxSet.forEach(drawManager::onRemove);
+        gfxSet.forEach(GFX::dehighlight);
+        gfxSet.forEach(drawManager::onAdd);
     }
 }

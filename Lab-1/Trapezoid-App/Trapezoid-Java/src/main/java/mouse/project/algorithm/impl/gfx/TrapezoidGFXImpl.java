@@ -1,16 +1,24 @@
 package mouse.project.algorithm.impl.gfx;
 
+import lombok.EqualsAndHashCode;
+import mouse.project.state.ConstUtils;
 import mouse.project.utils.math.Position;
 
 import java.awt.*;
-
+@EqualsAndHashCode
 public class TrapezoidGFXImpl implements TrapezoidGFX {
     private final Position p1;
     private final Position p2;
     private final Position p3;
     private final Position p4;
+    @EqualsAndHashCode.Exclude
     private Color color;
-    private boolean highlighted = false;
+
+    @EqualsAndHashCode.Exclude
+    private final Color origin;
+    @EqualsAndHashCode.Exclude
+    private boolean highlighted = true;
+    @EqualsAndHashCode.Exclude
     private int depth;
 
     public TrapezoidGFXImpl(Position p1, Position p2, Position p3, Position p4) {
@@ -18,7 +26,8 @@ public class TrapezoidGFXImpl implements TrapezoidGFX {
         this.p2 = p2;
         this.p3 = p3;
         this.p4 = p4;
-        color = Colors.generateSubtle();
+        origin = Colors.generateSubtle();
+        dehighlight();
     }
 
     @Override
@@ -30,7 +39,7 @@ public class TrapezoidGFXImpl implements TrapezoidGFX {
     public void dehighlight() {
         if (!highlighted) return;
         highlighted = false;
-        color = Colors.dehighlight(color);
+        color = origin;
         depth = -6;
     }
 
@@ -38,8 +47,8 @@ public class TrapezoidGFXImpl implements TrapezoidGFX {
     public void highlight() {
         if (highlighted) return;
         highlighted = true;
-        color = Colors.highlight(color);
-        depth = 30;
+        color = ConstUtils.HIGHLIGHT_LINE;
+        depth = 6;
     }
 
     @Override

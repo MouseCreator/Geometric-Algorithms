@@ -49,7 +49,7 @@ public class Node implements Drawable {
 
     @Override
     public int depth() {
-        return 3;
+        return 120;
     }
 
     public void moveTo(Position position) {
