@@ -1,6 +1,8 @@
 package mouse.project.algorithm.impl.tree;
 
 import mouse.project.algorithm.impl.trapezoid.Edge;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,6 +12,7 @@ public class TreeSequenceImpl implements TreeSequence {
     private final List<Edge> edgeList;
     private final List<Tree> treeList;
     private boolean expectsTree;
+    private static final Logger logger = LogManager.getLogger(TreeSequenceImpl.class);
 
     public TreeSequenceImpl() {
         edgeList = new ArrayList<>();
@@ -42,17 +45,20 @@ public class TreeSequenceImpl implements TreeSequence {
 
     public Tree balance() {
         int weight = weight();
-        System.out.println("EDGE LIST:" + edgeList + "; TREE LIST: " + treeList);
+        logger.debug("EDGE LIST:" + edgeList + "; TREE LIST: " + treeList);
+        if (edgeList.isEmpty()) {
+            return treeList.get(0);
+        }
         if (weight==0) {
-            System.out.println("EDGE");
+            logger.debug("EDGE TREE CASE");
             return toEdgeTree();
         }
         if (treeList.size()==2) {
-            System.out.println("SIMPLE");
+            logger.debug("SIMPLE CASE");
             return simpleTree();
         }
         int mid = getMidIndex(weight);
-        System.out.println("SPLIT " + mid);
+        logger.debug("SPLIT " + mid);
         return split(mid);
     }
 
@@ -68,11 +74,11 @@ public class TreeSequenceImpl implements TreeSequence {
 
     private Tree split(int index) {
         if (index == 0) {
-            System.out.println("LEFT");
+            logger.debug("LEFT CASE");
             return produceLeftmost();
         }
         if (index == treeList.size()-1) {
-            System.out.println("RIGHT");
+            logger.debug("RIGHT CASE");
             return produceRightmost();
         }
         List<Edge> edgesLeft = edgeList.subList(0, index-1);
@@ -137,9 +143,6 @@ public class TreeSequenceImpl implements TreeSequence {
 
     private Tree toEdgeTree() {
         if (edgeList.isEmpty()) {
-            if (treeList.size()==1) {
-                return treeList.get(0);
-            }
             throw new IllegalStateException("Empty sequence cannot be turned into tree");
         }
         Tree edgeTree = buildBalancedTree(edgeList);

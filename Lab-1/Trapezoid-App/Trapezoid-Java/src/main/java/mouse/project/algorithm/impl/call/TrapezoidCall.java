@@ -8,12 +8,15 @@ import mouse.project.algorithm.impl.trapezoid.*;
 import mouse.project.algorithm.impl.tree.Tree;
 import mouse.project.utils.math.Box;
 import mouse.project.utils.math.Position;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.*;
 
 public class TrapezoidCall {
     private final TrapezoidBuilder builder;
     private final SweepLineScanner scanner;
+    private final static Logger logger = LogManager.getLogger(TrapezoidCall.class);
 
     public TrapezoidCall() {
         builder = new TrapezoidBuilder();
@@ -39,6 +42,7 @@ public class TrapezoidCall {
         VertexEdgeMap ve = new VertexEdgeMapImpl();
         orderedEdges.forEach(ve::add);
         EdgesSet edgesSet = scanner.scanAndCreate(verticesSet, ve);
+        logger.debug("Sorted edges: " + edgesSet);
         edgesSet.add(getLimitingEdge());
         return edgesSet;
     }

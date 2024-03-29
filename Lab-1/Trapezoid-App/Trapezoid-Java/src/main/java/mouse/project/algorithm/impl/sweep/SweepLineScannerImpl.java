@@ -145,9 +145,6 @@ public class SweepLineScannerImpl implements SweepLineScanner {
         }
 
         private int findIndexGeneral(Edge input, int y) {
-            List<Integer> list = statusList.stream().map(e -> EdgeHelper.getX(e, y)).toList();
-            System.out.println(list);
-            System.out.println(EdgeHelper.getX(input, y));
             return Collections.binarySearch(statusList, input, Comparator.comparingInt(e -> EdgeHelper.getX(e, y)));
         }
 
