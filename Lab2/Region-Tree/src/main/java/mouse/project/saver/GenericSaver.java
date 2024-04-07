@@ -113,7 +113,7 @@ public class GenericSaver {
                 list.add(tokenStream.next());
             }
             savableInstance.consume(list);
-            set.add(savableInstance);
+            set.addSavable(savableInstance);
         }
     }
 

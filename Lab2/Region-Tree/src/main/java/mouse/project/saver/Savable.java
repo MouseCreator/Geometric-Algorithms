@@ -8,5 +8,5 @@ public interface Savable {
     Collection<Object> supply();
     void consume(List<String> strings);
     int canConsume();
-    boolean dontSaveMe();
+    default boolean dontSaveMe() {return false;}
 }

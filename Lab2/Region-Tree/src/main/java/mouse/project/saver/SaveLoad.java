@@ -12,7 +12,7 @@ import java.nio.file.Paths;
 
 public class SaveLoad {
     private static final GenericSaver GENERIC_SAVER = new GenericSaver();
-    private static final String defaultName = "example.graph";
+    private static final String defaultName = "example.points";
     public static void save(PointSet pointSet) {
         String content = GENERIC_SAVER.toSaveString(pointSet);
 

@@ -49,12 +49,12 @@ public class PointSet implements SavableHolder {
     @Override
     public void addAll(Collection<Savable> savables) {
         for (Savable savable : savables) {
-            add(savable);
+            addSavable(savable);
         }
     }
 
     @Override
-    public void add(Savable savable) {
+    public void addSavable(Savable savable) {
         if (savable instanceof TPoint) {
             add((TPoint) savable);
         }
@@ -74,4 +74,5 @@ public class PointSet implements SavableHolder {
     public Optional<TPoint> getPointAt(Position position) {
         return TPoints.stream().filter(getPointByPosition(position)).findFirst();
     }
+
 }

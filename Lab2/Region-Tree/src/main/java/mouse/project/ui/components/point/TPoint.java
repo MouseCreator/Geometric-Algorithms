@@ -65,18 +65,13 @@ public final class TPoint implements Drawable, Savable {
 
     @Override
     public void consume(List<String> strings) {
-
+        String x = strings.get(0);
+        String y = strings.get(1);
+        this.position = Position.of(Integer.parseInt(x), Integer.parseInt(y));
     }
-
     @Override
     public int canConsume() {
-        return 0;
-    }
-
-
-    @Override
-    public boolean dontSaveMe() {
-        return false;
+        return 2;
     }
 
     public void moveTo(Position position) {

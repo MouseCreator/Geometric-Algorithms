@@ -9,5 +9,5 @@ public interface SavableHolder {
     Collection<Savable> getSavables();
     Map<String, Supplier<Savable>> getKeyMap();
     void addAll(Collection<Savable> savables);
-    void add(Savable savable);
+    void addSavable(Savable savable);
 }
