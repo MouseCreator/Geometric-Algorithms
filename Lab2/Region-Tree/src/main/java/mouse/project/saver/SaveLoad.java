@@ -11,10 +11,10 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 public class SaveLoad {
-    private static final GraphSaver graphSaver = new GraphSaver();
+    private static final GenericSaver GENERIC_SAVER = new GenericSaver();
     private static final String defaultName = "example.graph";
     public static void save(PointSet pointSet) {
-        String content = graphSaver.toSaveString(pointSet);
+        String content = GENERIC_SAVER.toSaveString(pointSet);
 
         JFileChooser fileChooser = initFileChooser();
 
@@ -60,7 +60,7 @@ public class SaveLoad {
             String content = fileManager.load(filePath);
             MemoryHolder.get().put(MemoryKeys.LAST_USED_DIRECTORY, file.getParent());
             MemoryHolder.save();
-            graphSaver.fromSaveString(pointSet, content);
+            GENERIC_SAVER.fromSaveString(pointSet, content);
         }
 
     }

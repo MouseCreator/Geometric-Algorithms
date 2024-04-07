@@ -2,22 +2,32 @@ package mouse.project.saver;
 
 import mouse.project.state.ConstUtils;
 import mouse.project.ui.components.point.Point;
-import mouse.project.ui.components.point.PointSet;
-import mouse.project.utils.math.Position;
 
 import java.util.*;
+import java.util.function.Supplier;
 
-public class GraphSaver {
-    public static final String POINT = "point";
-    public String toSaveString(PointSet pointSet) {
+public class GenericSaver {
+    public String toSaveString(SavableHolder savableHolder) {
         StringBuilder builder = new StringBuilder();
-        List<Point> points = pointSet.getPoints();
-        points.forEach(n -> {
-            Optional<String> s = savePoint(n);
+        Collection<Savable> savables = savableHolder.getSavables();
+        savables.forEach(n -> {
+            Optional<String> s = saveInstance(n);
             s.ifPresent(builder::append);
             builder.append("\n");
         });
         return builder.toString();
+    }
+
+    private Optional<String> saveInstance(Savable savable) {
+        if (savable.dontSaveMe()) {
+            return Optional.empty();
+        }
+        String key = savable.key();
+        StringBuilder builder = new StringBuilder(key);
+        for (Object s : savable.supply()) {
+            builder.append(" ").append(s);
+        }
+        return Optional.of(builder.toString());
     }
 
     private record Tokens(List<String> values) {
@@ -86,21 +96,24 @@ public class GraphSaver {
                 return !values.isEmpty();
             }
         }
-    public void fromSaveString(PointSet set, String input) {
-        set.clear();
+    public void fromSaveString(SavableHolder set, String input) {
+        set.refresh();
 
         Tokens tokenStream = tokenize(input);
-
+        Map<String, Supplier<Savable>> keyMap = set.getKeyMap();
         while (tokenStream.hasValues()) {
             String next = tokenStream.next();
-            if (next.equals(POINT)) {
-                tokenStream.expect("X Y");
-                int x = tokenStream.nextInteger();
-                int y = tokenStream.nextInteger();
-                set.add(new Point(Position.of(x, y)));
-            } else {
+            Supplier<Savable> savableSupplier = keyMap.get(next);
+            if (savableSupplier == null) {
                 throw new LoadingException("Unexpected token: " + next);
             }
+            Savable savableInstance = savableSupplier.get();
+            List<String> list = new ArrayList<>();
+            for (int i = 0; i < savableInstance.canConsume(); i++) {
+                list.add(tokenStream.next());
+            }
+            savableInstance.consume(list);
+            set.add(savableInstance);
         }
     }
 
@@ -112,11 +125,6 @@ public class GraphSaver {
         return node1;
     }
 
-    private Optional<String> savePoint(Point point) {
-        Position position = point.getPosition();
-        String result = String.format("%s %d %d", POINT, position.x(), position.y());
-        return Optional.of(result);
-    }
 
     private Tokens tokenize(String input) {
         String[] strings = removeWhitespaces(input);

@@ -1,7 +1,6 @@
 package mouse.project.ui.components.general;
 
 import mouse.project.event.service.Events;
-import mouse.project.event.type.BuildTreeEvent;
 import mouse.project.event.type.LoadEvent;
 import mouse.project.event.type.RemoveAllEvent;
 import mouse.project.event.type.SaveEvent;
@@ -28,18 +27,13 @@ public class ButtonsPane implements AppComponent {
         this.panel = new ButtonsFlow();
     }
 
-    private void onNodeButton() {
-        logger.debug("Nodes pressed!");
-        State.get().getProgramState().updateMode(ProgramMode.NODE);
+    private void onPointsButton() {
+        logger.debug("Points pressed!");
+        State.get().getProgramState().updateMode(ProgramMode.POINTS);
     }
-    private void onEdgeButton() {
-        logger.debug("Edges pressed!");
-        State.get().getProgramState().updateMode(ProgramMode.EDGE);
-    }
-    private void onTargetButton() {
-        logger.debug("Target pressed!");
-        State.get().getProgramState().updateMode(ProgramMode.TARGET);
-        Events.generate(new BuildTreeEvent());
+    private void onBoxButton() {
+        logger.debug("Box pressed!");
+        State.get().getProgramState().updateMode(ProgramMode.BOX);
     }
     private void onEraseButton() {
         logger.debug("Erase pressed!");
@@ -75,7 +69,7 @@ public class ButtonsPane implements AppComponent {
         public ButtonsFlow() {
             btnGroup = new ButtonGroup();
             int buttonHeight = 50;
-            int buttonCount = 9;
+            int buttonCount = 8;
             int gap = 10;
             int spaceGap = 40;
 
@@ -103,20 +97,17 @@ public class ButtonsPane implements AppComponent {
             subpanel.setLayout(new GridLayout(4, 1 ,10, 10));
             setBackground(ConstUtils.BACKGROUND_SECONDARY);
 
-            JToggleButton nodesBtn = createToggleButton("Nodes", ButtonsPane.this::onNodeButton);
-            JToggleButton edgesBtn = createToggleButton("Edges", ButtonsPane.this::onEdgeButton);
-            JToggleButton targetBtn = createToggleButton("Target", ButtonsPane.this::onTargetButton);
+            JToggleButton pointsBtn = createToggleButton("Points", ButtonsPane.this::onPointsButton);
+            JToggleButton boxBtn = createToggleButton("Box", ButtonsPane.this::onBoxButton);
             JToggleButton eraseBtn = createToggleButton("Erase", ButtonsPane.this::onEraseButton);
 
 
-            btnGroup.add(nodesBtn);
-            btnGroup.add(edgesBtn);
-            btnGroup.add(targetBtn);
+            btnGroup.add(pointsBtn);
+            btnGroup.add(boxBtn);
             btnGroup.add(eraseBtn);
 
-            subpanel.add(nodesBtn);
-            subpanel.add(edgesBtn);
-            subpanel.add(targetBtn);
+            subpanel.add(pointsBtn);
+            subpanel.add(boxBtn);
             subpanel.add(eraseBtn);
             return subpanel;
         }
