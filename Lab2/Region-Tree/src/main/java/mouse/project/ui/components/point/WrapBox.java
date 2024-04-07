@@ -42,4 +42,8 @@ public class WrapBox implements Drawable {
     public int depth() {
         return 2;
     }
+
+    public boolean isTooSmall() {
+        return from.distanceTo(to) < ConstUtils.SMALLEST_BOX;
+    }
 }

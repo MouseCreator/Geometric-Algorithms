@@ -1,7 +1,7 @@
 package mouse.project.saver;
 
 import mouse.project.state.ConstUtils;
-import mouse.project.ui.components.point.Point;
+import mouse.project.ui.components.point.TPoint;
 
 import java.util.*;
 import java.util.function.Supplier;
@@ -117,8 +117,8 @@ public class GenericSaver {
         }
     }
 
-    private static Point getPoint(Map<String, Point> pointMap, String key1) {
-        Point node1 = pointMap.get(key1);
+    private static TPoint getPoint(Map<String, TPoint> pointMap, String key1) {
+        TPoint node1 = pointMap.get(key1);
         if (node1 == null) {
             throw new LoadingException("Unexpected node key: " + key1);
         }

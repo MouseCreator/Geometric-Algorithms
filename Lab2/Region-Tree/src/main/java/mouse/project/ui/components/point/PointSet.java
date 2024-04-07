@@ -2,40 +2,47 @@ package mouse.project.ui.components.point;
 
 import mouse.project.saver.Savable;
 import mouse.project.saver.SavableHolder;
+import mouse.project.state.ConstUtils;
+import mouse.project.ui.components.draw.DrawManager;
 import mouse.project.utils.math.Position;
 
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 public class PointSet implements SavableHolder {
-    private final List<Point> points;
-    public PointSet() {
-        points = new ArrayList<>();
+    private final List<TPoint> TPoints;
+    private final DrawManager drawManager;
+    public PointSet(DrawManager drawManager) {
+        this.drawManager = drawManager;
+        TPoints = new ArrayList<>();
     }
-    public List<Point> getPoints() {
-        return new ArrayList<>(points);
+    public List<TPoint> getPoints() {
+        return new ArrayList<>(TPoints);
     }
     public void clear() {
-        points.clear();
+        TPoints.forEach(drawManager::onRemove);
+        TPoints.clear();
     }
-    public void add(Point point) {
-        this.points.add(point);
+    public void add(TPoint TPoint) {
+        drawManager.onAdd(TPoint);
+        this.TPoints.add(TPoint);
     }
 
     @Override
     public void refresh() {
-        points.clear();
+        TPoints.clear();
     }
 
     @Override
     public Collection<Savable> getSavables() {
-        return new ArrayList<>(points);
+        return new ArrayList<>(TPoints);
     }
 
     @Override
     public Map<String, Supplier<Savable>> getKeyMap() {
         HashMap<String, Supplier<Savable>> map = new HashMap<>();
-        map.put(Point.KEY, ()->new Point(Position.of(0,0)));
+        map.put(TPoint.KEY, ()->new TPoint(Position.of(0,0)));
         return map;
     }
 
@@ -48,8 +55,23 @@ public class PointSet implements SavableHolder {
 
     @Override
     public void add(Savable savable) {
-        if (savable instanceof Point) {
-            points.add((Point) savable);
+        if (savable instanceof TPoint) {
+            add((TPoint) savable);
         }
+    }
+
+    public void removePointAt(Position position) {
+        List<TPoint> list = TPoints.stream().filter(getPointByPosition(position)).toList();
+        list.forEach(drawManager::onRemove);
+        TPoints.removeAll(list);
+    }
+
+    private static Predicate<TPoint> getPointByPosition(Position position) {
+        int nodeRadius = ConstUtils.NODE_DIAMETER >>> 1;
+        return TPoint -> position.distanceTo(TPoint.position()) < nodeRadius;
+    }
+
+    public Optional<TPoint> getPointAt(Position position) {
+        return TPoints.stream().filter(getPointByPosition(position)).findFirst();
     }
 }

@@ -6,12 +6,16 @@ import mouse.project.event.service.EventListener;
 import mouse.project.event.service.Events;
 import mouse.project.event.type.*;
 import mouse.project.event.type.Event;
+import mouse.project.saver.SaveLoad;
 import mouse.project.state.ConstUtils;
 import mouse.project.state.MouseAction;
 import mouse.project.state.ProgramMode;
 import mouse.project.state.State;
 import mouse.project.ui.components.draw.DrawManager;
 import mouse.project.ui.components.main.AppComponent;
+import mouse.project.ui.components.point.PointSet;
+import mouse.project.ui.components.point.TPoint;
+import mouse.project.ui.components.point.WrapBox;
 import mouse.project.utils.math.Position;
 
 import javax.swing.*;
@@ -26,13 +30,15 @@ public class PaintingPane implements AppComponent, ProgramModeListener, EventLis
     private final DrawPanel drawPanel;
     private final DrawManager drawManager;
     private ClickHandler clickHandler = new ClickHandler() {};
-    private ClickHandler rightClickHandler = new ClickHandler() {};
+    private final ClickHandler rightClickHandler = new RightClickHandlerImpl();
+    private final PointSet pointSet;
     private List<GeneralEventHandler> eventHandlers;
     private final List<ClickHandler> clickHandlers;
     public PaintingPane() {
         this.drawPanel = new DrawPanel();
         drawManager = State.get().getProgramState().getDrawManager();
         clickHandlers = createClickHandlers();
+        pointSet = new PointSet(drawManager);
         State.get().getProgramState().registerListener(this);
         Events.register(this);
         createEventHandlers();
@@ -42,12 +48,14 @@ public class PaintingPane implements AppComponent, ProgramModeListener, EventLis
         eventHandlers = new ArrayList<>();
         eventHandlers.add(new LoadEventHandler());
         eventHandlers.add(new SaveEventHandler());
-        eventHandlers.add(new BuildTreeHandler());
         eventHandlers.add(new RemoveEventHandler());
     }
 
     private List<ClickHandler> createClickHandlers() {
         List<ClickHandler> handlers = new ArrayList<>();
+        handlers.add(new BoxClickHandlerImpl());
+        handlers.add(new PointsClickHandlerImpl());
+        handlers.add(new EraseClickHandler());
         return handlers;
     }
 
@@ -103,6 +111,7 @@ public class PaintingPane implements AppComponent, ProgramModeListener, EventLis
 
         @Override
         public void handle(Event event) {
+            SaveLoad.save(pointSet);
         }
     }
 
@@ -115,18 +124,7 @@ public class PaintingPane implements AppComponent, ProgramModeListener, EventLis
 
         @Override
         public void handle(Event event) {
-        }
-    }
-    private class BuildTreeHandler implements GeneralEventHandler {
-
-        @Override
-        public boolean canHandle(Event event) {
-            return event instanceof BuildTreeEvent;
-        }
-
-        @Override
-        public void handle(Event event) {
-
+            SaveLoad.load(pointSet);
         }
     }
 
@@ -246,4 +244,128 @@ public class PaintingPane implements AppComponent, ProgramModeListener, EventLis
         default void onEnable() {}
         default void onDisable() {}
     }
+
+    public class PointsClickHandlerImpl implements ClickHandler {
+        @Override
+        public boolean isApplied(ProgramMode mode) {
+            return mode == ProgramMode.POINTS;
+        }
+        @Override
+        public void press(Position position) {
+            pointSet.add(new TPoint(position));
+        }
+    }
+
+    public class RightClickHandlerImpl implements ClickHandler {
+        @Override
+        public boolean isApplied(ProgramMode mode) {
+            return true;
+        }
+        private TPoint currentNode = null;
+        private Position startPosition = null;
+        @Override
+        public void press(Position position) {
+            Optional<TPoint> nodeAt = pointSet.getPointAt(position);
+            if (nodeAt.isEmpty()) {
+                return;
+            }
+            startPosition = position;
+            currentNode = nodeAt.get();
+        }
+
+        @Override
+        public void drag(Position position) {
+            if (currentNode == null) {
+                return;
+            }
+            if (position == null) {
+                reset();
+                return;
+            }
+            currentNode.moveTo(position);
+        }
+
+        private void reset() {
+            currentNode.moveTo(startPosition);
+            currentNode = null;
+            startPosition = null;
+        }
+
+        @Override
+        public void release(Position position) {
+            currentNode = null;
+            startPosition = null;
+        }
+    }
+
+    public class BoxClickHandlerImpl implements ClickHandler {
+
+        private WrapBox wrapBox = null;
+        @Override
+        public boolean isApplied(ProgramMode mode) {
+            return mode == ProgramMode.BOX;
+        }
+
+        @Override
+        public void drag(Position position) {
+            if (position == null) {
+                removeBox();
+                return;
+            }
+            if (wrapBox == null) {
+                return;
+            }
+            wrapBox.moveTo(position);
+        }
+
+        private void removeBox() {
+            drawManager.onRemove(wrapBox);
+            wrapBox = null;
+        }
+
+        @Override
+        public void release(Position position) {
+            if (wrapBox.isTooSmall()) {
+                removeBox();
+                return;
+            }
+            // apply algorithm
+        }
+
+        @Override
+        public void press(Position position) {
+            if (wrapBox == null) {
+                wrapBox = new WrapBox(position);
+                drawManager.onAdd(wrapBox);
+            } else {
+                wrapBox.moveTo(position);
+                wrapBox.moveFrom(position);
+            }
+        }
+
+        @Override
+        public void onEnable() {
+            wrapBox = null;
+        }
+
+        @Override
+        public void onDisable() {
+            removeBox();
+        }
+    }
+
+    private class EraseClickHandler implements ClickHandler {
+
+        @Override
+        public boolean isApplied(ProgramMode mode) {
+            return mode == ProgramMode.ERASE;
+        }
+
+        @Override
+        public void press(Position position) {
+            pointSet.removePointAt(position);
+        }
+    }
+
+
 }

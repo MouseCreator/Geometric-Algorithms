@@ -18,4 +18,5 @@ public class ConstUtils {
     public static final int BUTTON_PANE_WIDTH = WINDOW_WIDTH - WORLD_WIDTH;
     public static final int BUTTON_PANE_HEIGHT = WINDOW_HEIGHT;
     public static final Color TRANSPARENT = new Color(0,0,0,0);
+    public static final double SMALLEST_BOX = 8.0;
 }

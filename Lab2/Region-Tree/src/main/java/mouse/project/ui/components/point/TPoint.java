@@ -9,10 +9,17 @@ import mouse.project.utils.math.Position;
 import java.util.List;
 import java.awt.*;
 import java.util.Collection;
+import java.util.Objects;
 
-public record Point(Position position) implements Drawable, Savable {
+public final class TPoint implements Drawable, Savable {
 
     public static final String KEY = "point";
+    private Position position;
+
+    public TPoint(Position position) {
+        this.position = position;
+    }
+
     @Override
     public void draw(Graphics2D g2d) {
         g2d.setColor(ConstUtils.POINT_COLOR);
@@ -71,4 +78,32 @@ public record Point(Position position) implements Drawable, Savable {
     public boolean dontSaveMe() {
         return false;
     }
+
+    public void moveTo(Position position) {
+        this.position = position;
+    }
+
+    public Position position() {
+        return position;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) return true;
+        if (obj == null || obj.getClass() != this.getClass()) return false;
+        var that = (TPoint) obj;
+        return Objects.equals(this.position, that.position);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(position);
+    }
+
+    @Override
+    public String toString() {
+        return "TPoint[" +
+                "position=" + position + ']';
+    }
+
 }
