@@ -1,11 +1,15 @@
 package mouse.project.ui.components.general;
 
+import mouse.project.algorithm.Algorithm;
+import mouse.project.algorithm.AlgorithmInvoke;
 import mouse.project.event.service.EventAddRegister;
 import mouse.project.event.service.EventDeleteRegister;
 import mouse.project.event.service.EventListener;
 import mouse.project.event.service.Events;
 import mouse.project.event.type.*;
 import mouse.project.event.type.Event;
+import mouse.project.graphics.GraphicsChangeListener;
+import mouse.project.graphics.GraphicsChangeListenerImpl;
 import mouse.project.saver.SaveLoad;
 import mouse.project.state.ConstUtils;
 import mouse.project.state.MouseAction;
@@ -33,11 +37,14 @@ public class PaintingPane implements AppComponent, ProgramModeListener, EventLis
     private final ClickHandler rightClickHandler = new RightClickHandlerImpl();
     private final PointSet pointSet;
     private List<GeneralEventHandler> eventHandlers;
+    private final Algorithm algorithm;
     private final List<ClickHandler> clickHandlers;
     public PaintingPane() {
         this.drawPanel = new DrawPanel();
         drawManager = State.get().getProgramState().getDrawManager();
+        GraphicsChangeListener graphicsChangeListener = new GraphicsChangeListenerImpl(drawManager);
         clickHandlers = createClickHandlers();
+        algorithm = new AlgorithmInvoke(graphicsChangeListener);
         pointSet = new PointSet(drawManager);
         State.get().getProgramState().registerListener(this);
         Events.register(this);
@@ -330,7 +337,7 @@ public class PaintingPane implements AppComponent, ProgramModeListener, EventLis
                 removeBox();
                 return;
             }
-            // apply algorithm
+            algorithm.find(wrapBox);
         }
 
         @Override
@@ -347,11 +354,13 @@ public class PaintingPane implements AppComponent, ProgramModeListener, EventLis
         @Override
         public void onEnable() {
             wrapBox = null;
+            algorithm.build(pointSet);
         }
 
         @Override
         public void onDisable() {
             removeBox();
+            algorithm.clear();
         }
     }
 

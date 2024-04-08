@@ -1,6 +1,6 @@
 package mouse.project.graphics;
 
-import mouse.project.algorithm.impl.gfx.GFX;
+import mouse.project.algorithm.gfx.GFX;
 import mouse.project.ui.components.draw.DrawManager;
 
 import java.util.ArrayList;
