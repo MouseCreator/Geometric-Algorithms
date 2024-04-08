@@ -1,8 +1,5 @@
 package mouse.project.saver;
 
-import mouse.project.state.ConstUtils;
-import mouse.project.ui.components.point.TPoint;
-
 import java.util.*;
 import java.util.function.Supplier;
 
@@ -30,130 +27,105 @@ public class GenericSaver {
         return Optional.of(builder.toString());
     }
 
-    private record Tokens(List<String> values) {
-            private Tokens(List<String> values) {
-                this.values = new ArrayList<>(values);
-            }
+    private record RecordValue(String header, List<String> values) {
+    }
 
-            public String next() {
-                if (isEmpty()) {
-                    throw new LoadingException("Cannot get next token.");
-                }
-                return values.remove(0);
-            }
-
-            public Integer nextInteger() {
-                String next = next();
-                try {
-                    return Integer.parseInt(next);
-                } catch (Exception e) {
-                    throw new LoadingException("Cannot parse to integer " + next);
-                }
-            }
-
-            public void expect(String pattern) {
-                String[] strs = pattern.split(" ");
-                if (values.size() < strs.length) {
-                    throw new LoadingException("Cannot expect pattern " + pattern);
-                }
-                int i = 0;
-                for (String s : strs) {
-                    String key = values.get(i++);
-                    switch (s.toUpperCase()) {
-                        case "S":
-                            continue;
-                        case "X":
-                            isPosition(key, "x");
-                            break;
-                        case "Y":
-                            isPosition(key, "y");
-                            break;
-                    }
-                }
-            }
-
-            private void isPosition(String s, String cord) {
-                boolean matches = s.matches("^-?\\d+$");
-                if (!matches) {
-                    throw new LoadingException("Expected integer, found: " + s);
-                }
-                int i = Integer.parseInt(s);
-                if (i < 0) {
-                    throw new LoadingException("Cannot accept negative coordinate: " + i);
-                }
-                if (cord.equals("x") && i > ConstUtils.WORLD_WIDTH) {
-                    throw new LoadingException("X out of bounds: " + i + " > " + ConstUtils.WORLD_WIDTH);
-                } else if (cord.equals("y") && i > ConstUtils.WORLD_HEIGHT) {
-                    throw new LoadingException("Y out of bounds: " + i + " > " + ConstUtils.WORLD_HEIGHT);
-                }
-            }
-
-            public boolean isEmpty() {
-                return values.isEmpty();
-            }
-
-            public boolean hasValues() {
-                return !values.isEmpty();
-            }
+    private record Lines(List<RecordValue> lines) {
+        private Lines(List<RecordValue> lines) {
+            this.lines = new ArrayList<>(lines);
         }
+        public RecordValue next() {
+            if (isEmpty()) {
+                throw new LoadingException("Cannot get next line!");
+            }
+            return lines.remove(0);
+        }
+        public boolean isEmpty() {
+            return lines.isEmpty();
+        }
+        public boolean hasNext() {
+            return !lines.isEmpty();
+        }
+    }
     public void fromSaveString(SavableHolder set, String input) {
         set.refresh();
 
-        Tokens tokenStream = tokenize(input);
+        Lines lineStream = toLines(input);
         Map<String, Supplier<Savable>> keyMap = set.getKeyMap();
-        while (tokenStream.hasValues()) {
-            String next = tokenStream.next();
-            Supplier<Savable> savableSupplier = keyMap.get(next);
+        while (lineStream.hasNext()) {
+            RecordValue next = lineStream.next();
+            Supplier<Savable> savableSupplier = keyMap.get(next.header());
             if (savableSupplier == null) {
                 throw new LoadingException("Unexpected token: " + next);
             }
             Savable savableInstance = savableSupplier.get();
-            List<String> list = new ArrayList<>();
-            for (int i = 0; i < savableInstance.canConsume(); i++) {
-                list.add(tokenStream.next());
-            }
+            List<String> list = new ArrayList<>(next.values());
             savableInstance.consume(list);
             set.addSavable(savableInstance);
         }
     }
 
-    private static TPoint getPoint(Map<String, TPoint> pointMap, String key1) {
-        TPoint node1 = pointMap.get(key1);
-        if (node1 == null) {
-            throw new LoadingException("Unexpected node key: " + key1);
-        }
-        return node1;
+
+    private Lines toLines(String input) {
+        String[] strings = getLines(input);
+        List<String> list = Arrays.asList(strings);
+        removeEmpty(list);
+        List<String> noComments = removeComments(list);
+        List<RecordValue> recordValues = toRecords(noComments);
+        return new Lines(recordValues);
     }
 
+    private List<RecordValue> toRecords(List<String> lines) {
+        List<RecordValue> recordValues = new ArrayList<>();
+        for (String line : lines) {
+            recordValues.add(toRecord(line));
+        }
+        return recordValues;
+    }
 
-    private Tokens tokenize(String input) {
-        String[] strings = removeWhitespaces(input);
-        List<String> list = Arrays.asList(strings);
-        List<String> noComments = removeComments(list);
-        return new Tokens(noComments);
+    private RecordValue toRecord(String line) {
+        line = removeWhitespaces(line);
+        String[] rv = line.split(" ", 2);
+        String r = rv[0];
+        if (rv.length==1) {
+            return new RecordValue(r, new ArrayList<>());
+        }
+        String v = rv[1];
+        String[] params = v.split(" ");
+        return new RecordValue(r, Arrays.asList(params));
+    }
+
+    private void removeEmpty(List<String> list) {
+        list.removeIf(s -> s.trim().isEmpty());
     }
 
     private List<String> removeComments(List<String> list) {
         List<String> result = new ArrayList<>();
-        boolean commentStart = false;
         for (String s : list) {
-            if (s.contains("/*")) {
-                commentStart = true;
+            if (s.startsWith("#")) {
+                continue;
             }
-            if (!commentStart) {
+            int index = s.indexOf("#");
+            if (index < 0) {
                 result.add(s);
+                continue;
             }
-            if (s.contains("*/")) {
-                commentStart = false;
+            int prev = index - 1;
+            char c = s.charAt(prev);
+            if (c=='\\') {
+                String subs = s.substring(0, prev);
+                result.add(subs);
             }
         }
         return result;
     }
 
-    private static String[] removeWhitespaces(String input) {
-        String normalizedSpaces = input.replaceAll("\\s", " ");
-        String singleSpaced = normalizedSpaces.replaceAll(" +", " ");
-        return singleSpaced.split(" ");
+    private static String[] getLines(String input) {
+        return input.split("\n");
+    }
+    private static String removeWhitespaces(String line) {
+        String normalizedSpaces = line.replaceAll("\\s", " ");
+        return normalizedSpaces.replaceAll(" +", " ");
     }
 
 }

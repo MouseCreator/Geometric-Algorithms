@@ -13,9 +13,12 @@ import java.util.function.Supplier;
 public class PointSet implements SavableHolder {
     private final List<TPoint> TPoints;
     private final DrawManager drawManager;
+
+    private final PointIdGenerator idGenerator;
     public PointSet(DrawManager drawManager) {
         this.drawManager = drawManager;
         TPoints = new ArrayList<>();
+        idGenerator = new PointIdGeneratorImpl();
     }
     public List<TPoint> getPoints() {
         return new ArrayList<>(TPoints);
@@ -24,13 +27,20 @@ public class PointSet implements SavableHolder {
         TPoints.forEach(drawManager::onRemove);
         TPoints.clear();
     }
-    public void add(TPoint TPoint) {
-        drawManager.onAdd(TPoint);
-        this.TPoints.add(TPoint);
+    public void add(TPoint tPoint) {
+        drawManager.onAdd(tPoint);
+        if (tPoint.hasId()) {
+            idGenerator.put(tPoint.key());
+        } else {
+            String id = idGenerator.generateAndPut();
+            tPoint.setId(id);
+        }
+        this.TPoints.add(tPoint);
     }
 
     @Override
     public void refresh() {
+        TPoints.forEach(tPoint -> idGenerator.free(tPoint.getId()));
         TPoints.clear();
     }
 
@@ -63,6 +73,7 @@ public class PointSet implements SavableHolder {
     public void removePointAt(Position position) {
         List<TPoint> list = TPoints.stream().filter(getPointByPosition(position)).toList();
         list.forEach(drawManager::onRemove);
+        list.forEach(t -> idGenerator.free(t.getId()));
         TPoints.removeAll(list);
     }
 

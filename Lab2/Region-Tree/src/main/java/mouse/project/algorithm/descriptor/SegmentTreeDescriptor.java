@@ -5,9 +5,8 @@ import mouse.project.algorithm.tree.SegmentTree;
 import mouse.project.algorithm.tree.SegmentTreeNode;
 
 import java.util.List;
-
-public class SegmentTreeDescriptor {
-    String describe(SegmentTree tree) {
+public class SegmentTreeDescriptor implements Descriptor<String> {
+    public String describe(SegmentTree tree) {
         SegmentTreeNode root = tree.getRoot();
         StringBuilder builder = new StringBuilder();
         describeNode(root, builder);

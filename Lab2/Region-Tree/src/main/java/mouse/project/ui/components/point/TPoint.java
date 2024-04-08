@@ -1,5 +1,8 @@
 package mouse.project.ui.components.point;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import mouse.project.saver.Savable;
 import mouse.project.state.ConstUtils;
 import mouse.project.state.State;
@@ -10,12 +13,18 @@ import java.util.List;
 import java.awt.*;
 import java.util.Collection;
 import java.util.Objects;
-
+@ToString
 public final class TPoint implements Drawable, Savable {
 
     public static final String KEY = "point";
     private Position position;
 
+    @Getter
+    @Setter
+    private String id;
+    public boolean hasId() {
+        return id != null;
+    }
     public TPoint(Position position) {
         this.position = position;
     }
@@ -42,6 +51,9 @@ public final class TPoint implements Drawable, Savable {
 
     private String createLabel() {
         String s = "";
+        if (State.get().getGraphicState().isShowNames()) {
+            s += id;
+        }
         if (State.get().getGraphicState().isShowCoordinates()) {
             s += position.toString();
         }
@@ -60,18 +72,16 @@ public final class TPoint implements Drawable, Savable {
 
     @Override
     public Collection<Object> supply() {
-        return List.of(position.x(), position.y());
+        return List.of(id, position.x(), position.y());
     }
 
     @Override
     public void consume(List<String> strings) {
-        String x = strings.get(0);
-        String y = strings.get(1);
+        String id = strings.get(0);
+        String x = strings.get(1);
+        String y = strings.get(2);
         this.position = Position.of(Integer.parseInt(x), Integer.parseInt(y));
-    }
-    @Override
-    public int canConsume() {
-        return 2;
+        this.id = id;
     }
 
     public void moveTo(Position position) {
@@ -95,10 +105,5 @@ public final class TPoint implements Drawable, Savable {
         return Objects.hash(position);
     }
 
-    @Override
-    public String toString() {
-        return "TPoint[" +
-                "position=" + position + ']';
-    }
 
 }
