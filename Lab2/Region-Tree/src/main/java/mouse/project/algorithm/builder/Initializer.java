@@ -10,8 +10,6 @@ import java.util.*;
 public class Initializer {
     public SegmentTree createTreeFor(CSet pointSet) {
         Collection<CPoint> points = pointSet.getPoints();
-        CPoint cPoint = () -> null;
-        cPoint.position();
         List<Integer> xCoordinates = points.stream()
                 .sorted(Comparator.comparingInt(p -> p.position().x()))
                 .distinct().map(pt -> pt.position().x())
