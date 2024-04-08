@@ -5,10 +5,7 @@ import mouse.project.algorithm.common.CSet;
 import mouse.project.algorithm.tree.SegmentTree;
 import mouse.project.algorithm.tree.SegmentTreeNode;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 public class Initializer {
     public SegmentTree createTreeFor(CSet pointSet) {
@@ -29,24 +26,27 @@ public class Initializer {
     }
 
     private void addPoints(SegmentTree segmentTree, List<CPoint> ySortedPoints) {
-        ySortedPoints.forEach(p -> insertPoint(segmentTree, p));
+        Map<SegmentTreeNode, List<CPoint>> map = new HashMap<>();
+        ySortedPoints.forEach(p -> insertPoint(segmentTree, p, map));
+        map.keySet().forEach(k -> k.initYTree(map.get(k)));
     }
 
-    private void insertPoint(SegmentTree segmentTree, CPoint p) {
+    private void insertPoint(SegmentTree segmentTree, CPoint p, Map<SegmentTreeNode, List<CPoint>> map) {
         SegmentTreeNode root = segmentTree.getRoot();
         int v = segmentTree.normalize(p.position().x());
-        insertInNode(v, root, p);
+        insertInNode(v, root, p, map);
     }
 
-    private void insertInNode(int v, SegmentTreeNode node, CPoint p) {
+    private void insertInNode(int v, SegmentTreeNode node, CPoint p, Map<SegmentTreeNode, List<CPoint>> map) {
         if (node==null) {
             return;
         }
-        node.addPoint(p);
+        List<CPoint> list = map.computeIfAbsent(node, n -> new ArrayList<>());
+        list.add(p);
         if (node.median() < v && node.hasLeft()) {
-            insertInNode(v, node.getLeft(), p);
+            insertInNode(v, node.getLeft(), p, map);
         } else if (node.hasRight()) {
-            insertInNode(v, node.getRight(), p);
+            insertInNode(v, node.getRight(), p, map);
         }
     }
 }

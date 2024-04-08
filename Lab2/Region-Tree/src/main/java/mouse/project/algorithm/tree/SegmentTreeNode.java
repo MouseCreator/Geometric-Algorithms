@@ -3,6 +3,9 @@ package mouse.project.algorithm.tree;
 import lombok.Data;
 import mouse.project.algorithm.common.CPoint;
 
+import java.util.Collection;
+import java.util.Objects;
+
 @Data
 public class SegmentTreeNode {
 
@@ -13,6 +16,18 @@ public class SegmentTreeNode {
     private SegmentTreeNode left;
     private SegmentTreeNode right;
 
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+        SegmentTreeNode that = (SegmentTreeNode) object;
+        return lower == that.lower && upper == that.upper;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(lower, upper);
+    }
 
     public SegmentTreeNode(int lowerMost, int upperMost) {
         this.lower = lowerMost;
@@ -22,8 +37,8 @@ public class SegmentTreeNode {
         yTree = new YTreeImpl();
     }
 
-    public void addPoint(CPoint point) {
-        yTree.add(point);
+    public void initYTree(Collection<CPoint> points) {
+        yTree.buildBalancedFrom(points);
     }
 
 
