@@ -1,11 +1,13 @@
 package mouse.project.ui.components.point;
 
+import lombok.Getter;
 import mouse.project.state.ConstUtils;
 import mouse.project.ui.components.main.Drawable;
 import mouse.project.utils.math.Position;
 
 import java.awt.*;
 
+@Getter
 public class WrapBox implements Drawable {
     public WrapBox(Position from) {
         this.from = from;
@@ -46,4 +48,5 @@ public class WrapBox implements Drawable {
     public boolean isTooSmall() {
         return from.distanceTo(to) < ConstUtils.SMALLEST_BOX;
     }
+
 }

@@ -8,6 +8,7 @@ public class ConstUtils {
     public static final Color FILL_COLOR = new Color(255, 0, 0, 100);
     public static final Color POINT_SELECTED_COLOR = Color.ORANGE;
     public static final int NODE_DIAMETER = 10;
+    public static final int SELECT_NODE_DIAMETER = 16;
     public static final int FPS = 60;
     public static final int WINDOW_WIDTH = 1280;
     public static final int WINDOW_HEIGHT = 720;
@@ -19,4 +20,5 @@ public class ConstUtils {
     public static final int BUTTON_PANE_HEIGHT = WINDOW_HEIGHT;
     public static final Color TRANSPARENT = new Color(0,0,0,0);
     public static final double SMALLEST_BOX = 8.0;
+
 }

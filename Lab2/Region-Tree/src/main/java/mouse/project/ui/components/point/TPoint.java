@@ -33,7 +33,7 @@ public final class TPoint implements Drawable, Savable {
     public void draw(Graphics2D g2d) {
         g2d.setColor(ConstUtils.POINT_COLOR);
         int diameter = ConstUtils.NODE_DIAMETER;
-        int radius = diameter >> 1;
+        int radius = diameter >>> 1;
         g2d.fillOval(position.x() - radius, position.y() - radius, diameter, diameter);
         drawText(g2d, radius);
     }
