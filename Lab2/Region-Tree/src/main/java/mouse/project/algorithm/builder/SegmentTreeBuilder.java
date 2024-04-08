@@ -1,21 +1,25 @@
 package mouse.project.algorithm.builder;
 
 import mouse.project.algorithm.tree.SegmentTree;
+import mouse.project.algorithm.tree.SegmentTreeNode;
+
+import java.util.List;
 
 public class SegmentTreeBuilder {
-    public SegmentTree createSegmentTree(int lowerMost, int upperMost) {
-        return createTreeRecursive(lowerMost, upperMost);
+    public SegmentTree createSegmentTree(List<Integer> sortedX) {
+        SegmentTreeNode root = createTreeRecursive(0, sortedX.size());
+        return new SegmentTree(sortedX, root);
     }
 
-    private SegmentTree createTreeRecursive(int lowerMost, int upperMost) {
+    private SegmentTreeNode createTreeRecursive(int lowerMost, int upperMost) {
         if (lowerMost >= upperMost) {
             return null;
         }
-        SegmentTree segmentTree = new SegmentTree(lowerMost, upperMost);
+        SegmentTreeNode segmentTree = new SegmentTreeNode(lowerMost, upperMost);
         int middle = (lowerMost + upperMost) >>> 1;
 
-        segmentTree.setLeft(createSegmentTree(lowerMost, middle));
-        segmentTree.setRight(createSegmentTree(middle, upperMost));
+        segmentTree.setLeft(createTreeRecursive(lowerMost, middle));
+        segmentTree.setRight(createTreeRecursive(middle, upperMost));
         return segmentTree;
     }
 }

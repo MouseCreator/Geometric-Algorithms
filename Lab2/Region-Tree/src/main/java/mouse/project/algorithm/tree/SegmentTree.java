@@ -2,20 +2,27 @@ package mouse.project.algorithm.tree;
 
 import lombok.Data;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+
 @Data
 public class SegmentTree {
-    private int lower;
-    private int upper;
-    private YTree yTree;
 
-    public SegmentTree(int lowerMost, int upperMost) {
-        this.lower = lowerMost;
-        this.upper = upperMost;
-        left = null;
-        right = null;
-        yTree = new YTreeImpl();
+    private final List<Integer> xCoordinates;
+
+    private final SegmentTreeNode root;
+
+    public SegmentTree(List<Integer> xCoordinates, SegmentTreeNode segmentTreeNode) {
+        this.xCoordinates = xCoordinates;
+        this.root = segmentTreeNode;
     }
 
-    private SegmentTree left;
-    private SegmentTree right;
+    public int normalize(int x) {
+        int result = Collections.binarySearch(xCoordinates, x);
+        if (result < 0) {
+            return -result + 1;
+        }
+        return result;
+    }
 }
