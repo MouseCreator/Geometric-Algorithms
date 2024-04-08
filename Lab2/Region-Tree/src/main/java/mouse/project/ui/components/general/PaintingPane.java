@@ -251,6 +251,8 @@ public class PaintingPane implements AppComponent, ProgramModeListener, EventLis
         }
         @Override
         public void press(Position position) {
+            if (pointSet.getPointAt(position).isPresent())
+                return;
             pointSet.add(new TPoint(position));
         }
     }
