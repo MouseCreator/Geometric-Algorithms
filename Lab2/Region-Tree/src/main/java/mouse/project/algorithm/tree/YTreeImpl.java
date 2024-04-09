@@ -15,7 +15,11 @@ public class YTreeImpl implements YTree {
     }
 
     private YTreeNode buildBalanced(int from, int to, List<CPoint> points, YTreeNode parent, boolean movedLeft) {
-        if (from >= to - 1) {
+        if (points.size()==3) {
+            int ii = 0;
+            ii++;
+        }
+        if (from >= to) {
             return null;
         }
         YTreeNode node;
@@ -31,8 +35,11 @@ public class YTreeImpl implements YTree {
                 node = parent.createRight(targetPoint);
             }
         }
+        if (to - from == 1) {
+            return node;
+        }
         node.left = buildBalanced(from, mid, points, node, true);
-        node.right = buildBalanced(mid, to, points, node, false);
+        node.right = buildBalanced(mid+1, to, points, node, false);
         return node;
     }
 
@@ -57,13 +64,13 @@ public class YTreeImpl implements YTree {
         YTreeNode current = root;
         while (current != null) {
             if(targetY < current.point.position().y()) {
+                startPoint = current;
                 if (current.hasNoLeft()) {
                     break;
                 } else {
                     current = current.left;
                 }
             } else {
-                startPoint = current;
                 if (current.hasNoRight()) {
                     break;
                 } else {
@@ -80,22 +87,6 @@ public class YTreeImpl implements YTree {
         YTreeNode left = null;
         YTreeNode right = null;
 
-        public void addNode(CPoint value) {
-            if (value.position().y() < point.position().y()) {
-                if (hasNoLeft()) {
-                    left = createLeft(value);
-                } else {
-                    left.addNode(value);
-                }
-            } else {
-                if (hasNoRight()) {
-                    right = createRight(value);
-                } else {
-                    right.addNode(value);
-                }
-            }
-        }
-
         private boolean hasNoRight() {
             return right == null || rightBr;
         }
@@ -107,7 +98,7 @@ public class YTreeImpl implements YTree {
         private YTreeNode createLeft(CPoint value) {
             YTreeNode newOne = new YTreeNode();
             newOne.point = value;
-            if (leftBr) {
+            if (hasNoLeft()) {
                 newOne.left = this.left;
             }
             this.leftBr = false;
@@ -119,7 +110,7 @@ public class YTreeImpl implements YTree {
         private YTreeNode createRight(CPoint value) {
             YTreeNode newOne = new YTreeNode();
             newOne.point = value;
-            if (rightBr) {
+            if (hasNoRight()) {
                 newOne.right = this.right;
             }
             this.rightBr = false;

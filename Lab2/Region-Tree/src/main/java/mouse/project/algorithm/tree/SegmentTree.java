@@ -2,6 +2,7 @@ package mouse.project.algorithm.tree;
 
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -24,5 +25,20 @@ public class SegmentTree {
             return -result + 1;
         }
         return result;
+    }
+
+    public List<SegmentTreeNode> allNodes() {
+        List<SegmentTreeNode> nodes = new ArrayList<>();
+        collectAll(nodes, root);
+        return nodes;
+    }
+
+    private void collectAll(List<SegmentTreeNode> nodes, SegmentTreeNode current) {
+        if (current == null) {
+            return;
+        }
+        collectAll(nodes, current.getLeft());
+        nodes.add(current);
+        collectAll(nodes, current.getRight());
     }
 }

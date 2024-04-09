@@ -39,11 +39,14 @@ public class Initializer {
         if (node==null) {
             return;
         }
-        List<CPoint> list = map.computeIfAbsent(node, n -> new ArrayList<>());
-        list.add(p);
-        if (node.median() < v && node.hasLeft()) {
+        if (node.getLower() <= v && node.getUpper() > v) {
+            List<CPoint> list = map.computeIfAbsent(node, n -> new ArrayList<>());
+            list.add(p);
+        }
+        if (node.getLower() <= v && node.hasLeft()) {
             insertInNode(v, node.getLeft(), p, map);
-        } else if (node.hasRight()) {
+        }
+        if (node.getUpper() > v && node.hasRight()) {
             insertInNode(v, node.getRight(), p, map);
         }
     }

@@ -23,7 +23,7 @@ public class SegmentTreeDescriptor implements Descriptor<String> {
                 .append(node.getLower())
                 .append(", ")
                 .append(node.getUpper())
-                .append("] = {");
+                .append(") = {");
         allPoints.forEach(p -> builder.append(" ").append(p.id()));
         builder.append(" }\n");
         describeNode(node.getLeft(), builder, level+1);
