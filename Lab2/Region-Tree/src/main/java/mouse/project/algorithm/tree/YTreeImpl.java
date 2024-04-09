@@ -4,6 +4,7 @@ import mouse.project.algorithm.common.CPoint;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 
 public class YTreeImpl implements YTree {
@@ -49,6 +50,16 @@ public class YTreeImpl implements YTree {
     public List<CPoint> getRange(int yMin, int yMax) {
         YTreeNode current = findGreaterOrEquals(yMin);
         List<CPoint> result = new ArrayList<>();
+        /*
+        TODO:
+        Fix D-skip problem
+            B
+          /  \
+        A     C
+            /
+         !D!
+
+         */
         while (current != null && current.point.position().y() <= yMax) {
             result.add(current.point);
             current = current.next();
@@ -80,6 +91,7 @@ public class YTreeImpl implements YTree {
         }
         return startPoint;
     }
+
     private static class YTreeNode {
         CPoint point;
         boolean leftBr = false;
