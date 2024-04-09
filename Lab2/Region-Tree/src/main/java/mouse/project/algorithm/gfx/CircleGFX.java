@@ -17,7 +17,7 @@ public class CircleGFX implements GFX{
 
     @Override
     public int depth() {
-        return 60;
+        return 10;
     }
     @Override
     public void draw(Graphics2D g2d) {

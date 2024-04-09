@@ -34,12 +34,15 @@ public class RegionAlgImpl implements RegionAlg {
         segmentTree = initializer.createTreeFor(cSet);
         String describe = descriptor.describe(segmentTree);
         System.out.println(describe);
+        System.out.println("\n----------\n");
     }
 
     @Override
     public void find(WrapBox target, GraphicsChangeListener graphicsChangeListener) {
+        graphicsChangeListener.clear();
         List<CPoint> points = regionSearch.find(segmentTree, Mapper.toArea(target));
         highlightPoints(points, graphicsChangeListener);
+        graphicsChangeListener.show();
     }
 
     private void highlightPoints(List<CPoint> points, GraphicsChangeListener graphicsChangeListener) {

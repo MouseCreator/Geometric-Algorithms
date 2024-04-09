@@ -27,6 +27,14 @@ public class SegmentTree {
         return result;
     }
 
+    public int normalizeSearch(int x) {
+        int result = Collections.binarySearch(xCoordinates, x);
+        if (result < 0) {
+            return -result-1;
+        }
+        return result - 1;
+    }
+
     public List<SegmentTreeNode> allNodes() {
         List<SegmentTreeNode> nodes = new ArrayList<>();
         collectAll(nodes, root);

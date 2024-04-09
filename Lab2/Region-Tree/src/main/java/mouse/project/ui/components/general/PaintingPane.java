@@ -273,6 +273,9 @@ public class PaintingPane implements AppComponent, ProgramModeListener, EventLis
         private Position startPosition = null;
         @Override
         public void press(Position position) {
+            if (State.get().getProgramState().getMode()==ProgramMode.BOX) {
+                return;
+            }
             Optional<TPoint> nodeAt = pointSet.getPointAt(position);
             if (nodeAt.isEmpty()) {
                 return;

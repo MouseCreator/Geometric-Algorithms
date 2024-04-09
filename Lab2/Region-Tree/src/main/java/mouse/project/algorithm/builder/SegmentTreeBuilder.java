@@ -13,7 +13,7 @@ public class SegmentTreeBuilder {
 
     private SegmentTreeNode createTreeRecursive(int lowerMost, int upperMost) {
         SegmentTreeNode segmentTree = new SegmentTreeNode(lowerMost, upperMost);
-        if (upperMost - lowerMost == 1) {
+        if (upperMost - lowerMost <= 1) {
             return segmentTree;
         }
         int middle = (lowerMost + upperMost) >>> 1;

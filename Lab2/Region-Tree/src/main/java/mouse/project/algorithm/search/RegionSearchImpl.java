@@ -21,8 +21,8 @@ public class RegionSearchImpl implements RegionSearch {
     private record Interval(int low, int high) {}
 
     private Set<CPoint> exploreTree(SegmentTree segmentTree, Interval xInterval, Interval yRange) {
-        int nLow = segmentTree.normalize(xInterval.low());
-        int nHigh = segmentTree.normalize(xInterval.high());
+        int nLow = segmentTree.normalizeSearch(xInterval.low());
+        int nHigh = segmentTree.normalizeSearch(xInterval.high());
         if (nLow == nHigh) {
             return new HashSet<>();
         }
@@ -39,13 +39,13 @@ public class RegionSearchImpl implements RegionSearch {
             result.addAll(current.getYTree().getRange(yRange.low(), yRange.high()));
             return;
         }
-        if (current.getLower() >= xRange.low()) {
+        if (current.getLower() <= xRange.low()) {
             if (current.getUpper() < xRange.high()) {
                 return;
             }
             exploreNode(result, current.getLeft(), xRange, yRange);
         }
-        if (current.getUpper() <= xRange.high()) {
+        if (current.getUpper() > xRange.high()) {
             exploreNode(result, current.getRight(), xRange, yRange);
         }
 
