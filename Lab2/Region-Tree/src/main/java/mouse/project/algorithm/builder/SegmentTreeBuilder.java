@@ -12,7 +12,7 @@ public class SegmentTreeBuilder {
     }
 
     private SegmentTreeNode createTreeRecursive(int lowerMost, int upperMost) {
-        if (lowerMost >= upperMost) {
+        if (lowerMost >= upperMost - 1) {
             return null;
         }
         SegmentTreeNode segmentTree = new SegmentTreeNode(lowerMost, upperMost);

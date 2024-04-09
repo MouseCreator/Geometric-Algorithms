@@ -15,7 +15,7 @@ public class YTreeImpl implements YTree {
     }
 
     private YTreeNode buildBalanced(int from, int to, List<CPoint> points, YTreeNode parent, boolean movedLeft) {
-        if (from >= to) {
+        if (from >= to - 1) {
             return null;
         }
         YTreeNode node;

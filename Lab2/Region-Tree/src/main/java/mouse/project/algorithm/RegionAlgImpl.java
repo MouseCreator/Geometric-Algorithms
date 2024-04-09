@@ -32,7 +32,8 @@ public class RegionAlgImpl implements RegionAlg {
     public void build(PointSet pointSet, GraphicsChangeListener graphicsChangeListener) {
         CSet cSet = Mapper.toCSet(pointSet);
         segmentTree = initializer.createTreeFor(cSet);
-        descriptor.describe(segmentTree);
+        String describe = descriptor.describe(segmentTree);
+        System.out.println(describe);
     }
 
     @Override

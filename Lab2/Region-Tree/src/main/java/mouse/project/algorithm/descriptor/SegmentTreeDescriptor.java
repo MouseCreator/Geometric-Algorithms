@@ -9,14 +9,15 @@ public class SegmentTreeDescriptor implements Descriptor<String> {
     public String describe(SegmentTree tree) {
         SegmentTreeNode root = tree.getRoot();
         StringBuilder builder = new StringBuilder();
-        describeNode(root, builder);
+        describeNode(root, builder, 0);
         return builder.toString();
     }
 
-    private void describeNode(SegmentTreeNode node, StringBuilder builder) {
+    private void describeNode(SegmentTreeNode node, StringBuilder builder, int level) {
         if (node == null) {
             return;
         }
+        builder.append("\t".repeat(level));
         List<CPoint> allPoints = node.getYTree().getAll();
         builder.append("[")
                 .append(node.getLower())
@@ -24,8 +25,8 @@ public class SegmentTreeDescriptor implements Descriptor<String> {
                 .append(node.getUpper())
                 .append("] = {");
         allPoints.forEach(p -> builder.append(" ").append(p.id()));
-        builder.append(" }");
-        describeNode(node.getLeft(), builder);
-        describeNode(node.getRight(), builder);
+        builder.append(" }\n");
+        describeNode(node.getLeft(), builder, level+1);
+        describeNode(node.getRight(), builder, level+1);
     }
 }
