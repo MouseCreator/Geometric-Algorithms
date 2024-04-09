@@ -39,7 +39,6 @@ public class RegionAlgImpl implements RegionAlg {
 
     @Override
     public void find(WrapBox target, GraphicsChangeListener graphicsChangeListener) {
-        graphicsChangeListener.clear();
         List<CPoint> points = regionSearch.find(segmentTree, Mapper.toArea(target));
         highlightPoints(points, graphicsChangeListener);
         graphicsChangeListener.show();

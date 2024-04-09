@@ -38,11 +38,13 @@ public class PaintingPane implements AppComponent, ProgramModeListener, EventLis
     private final PointSet pointSet;
     private List<GeneralEventHandler> eventHandlers;
     private final Algorithm algorithm;
+
+    private final GraphicsChangeListener graphicsChangeListener;
     private final List<ClickHandler> clickHandlers;
     public PaintingPane() {
         this.drawPanel = new DrawPanel();
         drawManager = State.get().getProgramState().getDrawManager();
-        GraphicsChangeListener graphicsChangeListener = new GraphicsChangeListenerImpl(drawManager);
+        graphicsChangeListener = new GraphicsChangeListenerImpl(drawManager);
         clickHandlers = createClickHandlers();
         algorithm = new AlgorithmInvoke(graphicsChangeListener);
         pointSet = new PointSet(drawManager);
@@ -345,6 +347,7 @@ public class PaintingPane implements AppComponent, ProgramModeListener, EventLis
 
         @Override
         public void press(Position position) {
+            graphicsChangeListener.clear();
             if (wrapBox == null) {
                 wrapBox = new WrapBox(position);
                 drawManager.onAdd(wrapBox);

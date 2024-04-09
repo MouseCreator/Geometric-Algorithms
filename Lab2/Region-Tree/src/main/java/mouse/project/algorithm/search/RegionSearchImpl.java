@@ -39,13 +39,10 @@ public class RegionSearchImpl implements RegionSearch {
             result.addAll(current.getYTree().getRange(yRange.low(), yRange.high()));
             return;
         }
-        if (current.getLower() <= xRange.low()) {
-            if (current.getUpper() < xRange.high()) {
-                return;
-            }
+        if (current.getLower() <= xRange.high()) {
             exploreNode(result, current.getLeft(), xRange, yRange);
         }
-        if (current.getUpper() > xRange.high()) {
+        if (current.getUpper() >= xRange.low()) {
             exploreNode(result, current.getRight(), xRange, yRange);
         }
 
