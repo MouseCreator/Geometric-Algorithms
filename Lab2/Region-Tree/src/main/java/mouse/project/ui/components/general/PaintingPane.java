@@ -338,6 +338,9 @@ public class PaintingPane implements AppComponent, ProgramModeListener, EventLis
 
         @Override
         public void release(Position position) {
+            if (wrapBox == null) {
+                return;
+            }
             if (wrapBox.isTooSmall()) {
                 removeBox();
                 return;

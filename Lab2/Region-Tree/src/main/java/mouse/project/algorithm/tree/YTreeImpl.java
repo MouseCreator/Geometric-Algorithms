@@ -15,10 +15,6 @@ public class YTreeImpl implements YTree {
     }
 
     private YTreeNode buildBalanced(int from, int to, List<CPoint> points, YTreeNode parent, boolean movedLeft) {
-        if (points.size()==3) {
-            int ii = 0;
-            ii++;
-        }
         if (from >= to) {
             return null;
         }
@@ -38,8 +34,12 @@ public class YTreeImpl implements YTree {
         if (to - from == 1) {
             return node;
         }
-        node.left = buildBalanced(from, mid, points, node, true);
-        node.right = buildBalanced(mid+1, to, points, node, false);
+        if (node.left == null) {
+            node.left = buildBalanced(from, mid, points, node, true);
+        }
+        if (node.right==null) {
+            node.right = buildBalanced(mid + 1, to, points, node, false);
+        }
         return node;
     }
 
