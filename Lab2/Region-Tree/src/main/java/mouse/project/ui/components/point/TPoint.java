@@ -21,7 +21,7 @@ public final class TPoint implements Drawable, Savable {
 
     @Getter
     @Setter
-    private String id;
+    private String id = null;
     public boolean hasId() {
         return id != null;
     }

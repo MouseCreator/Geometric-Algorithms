@@ -30,7 +30,7 @@ public class PointSet implements SavableHolder {
     public void add(TPoint tPoint) {
         drawManager.onAdd(tPoint);
         if (tPoint.hasId()) {
-            idGenerator.put(tPoint.key());
+            idGenerator.put(tPoint.getId());
         } else {
             String id = idGenerator.generateAndPut();
             tPoint.setId(id);
