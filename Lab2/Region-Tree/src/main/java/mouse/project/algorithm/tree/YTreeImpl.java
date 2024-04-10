@@ -2,10 +2,7 @@ package mouse.project.algorithm.tree;
 
 import mouse.project.algorithm.common.CPoint;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
 public class YTreeImpl implements YTree {
     private YTreeNode root;
@@ -35,11 +32,13 @@ public class YTreeImpl implements YTree {
         if (to - from == 1) {
             return node;
         }
-        if (node.left == null) {
-            node.left = buildBalanced(from, mid, points, node, true);
+        YTreeNode onLeft = buildBalanced(from, mid, points, node, true);
+        if (onLeft != null) {
+            node.left = onLeft;
         }
-        if (node.right==null) {
-            node.right = buildBalanced(mid + 1, to, points, node, false);
+        YTreeNode onRight = buildBalanced(mid+1, to, points, node, false);
+        if (onRight != null) {
+            node.right = onRight;
         }
         return node;
     }
@@ -49,22 +48,38 @@ public class YTreeImpl implements YTree {
     }
     public List<CPoint> getRange(int yMin, int yMax) {
         YTreeNode current = findGreaterOrEquals(yMin);
-        List<CPoint> result = new ArrayList<>();
-        /*
-        TODO:
-        Fix D-skip problem
-            B
-          /  \
-        A     C
-            /
-         !D!
-
-         */
-        while (current != null && current.point.position().y() <= yMax) {
-            result.add(current.point);
-            current = current.next();
+        if (current == null) {
+            return new ArrayList<>();
         }
-        return result;
+        List<CPoint> result = new ArrayList<>();
+        findInRangeRight(current, result, yMax);
+        return new ArrayList<>(result);
+    }
+
+    private void findInRangeLeft(YTreeNode current, List<CPoint> result, int yMax) {
+        if (current == null) {
+            return;
+        }
+        if (current.hasNoLeft()) {
+            findInRangeRight(current, result, yMax);
+        } else {
+            findInRangeLeft(current.prev(), result, yMax);
+        }
+    }
+
+    private void findInRangeRight(YTreeNode current, List<CPoint> result, int yMax) {
+        if (current == null) {
+            return;
+        }
+        if (current.point.position().y() > yMax) {
+            return;
+        }
+        result.add(current.point);
+        if (current.rightBr) {
+            findInRangeRight(current.next(), result, yMax);
+        } else {
+            findInRangeLeft(current.next(), result, yMax);
+        }
     }
 
     private YTreeNode findGreaterOrEquals(int targetY) {
@@ -112,6 +127,7 @@ public class YTreeImpl implements YTree {
             newOne.point = value;
             if (hasNoLeft()) {
                 newOne.left = this.left;
+                newOne.leftBr = true;
             }
             this.leftBr = false;
             newOne.right = this;
@@ -124,6 +140,7 @@ public class YTreeImpl implements YTree {
             newOne.point = value;
             if (hasNoRight()) {
                 newOne.right = this.right;
+                newOne.rightBr = true;
             }
             this.rightBr = false;
             newOne.left = this;

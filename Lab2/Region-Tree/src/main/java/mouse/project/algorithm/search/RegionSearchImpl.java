@@ -35,7 +35,7 @@ public class RegionSearchImpl implements RegionSearch {
         if (current == null) {
             return;
         }
-        if (current.getLower() == xRange.low() && current.getUpper() == xRange.high()) {
+        if (current.getLower() >= xRange.low() && current.getUpper() <= xRange.high()) {
             result.addAll(current.getYTree().getRange(yRange.low(), yRange.high()));
             return;
         }
