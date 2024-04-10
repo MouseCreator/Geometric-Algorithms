@@ -122,10 +122,10 @@ public class ButtonsPane implements AppComponent {
             JButton loadBtn = createButton("Load", ButtonsPane.this::onLoadButton);
             JButton clearBtn = createButton("Clear", ButtonsPane.this::onClearButton);
 
-            JCheckBox coordinatesBox = createCheckBox("Vertex coordinates",
+            JCheckBox coordinatesBox = createCheckBox("Point coordinates",
                     e -> State.get().getGraphicState().setShowCoordinates(e.getStateChange() == ItemEvent.SELECTED));
 
-            JCheckBox namesBox = createCheckBox("Vertex names",
+            JCheckBox namesBox = createCheckBox("Point names",
                     e -> State.get().getGraphicState().setShowNames(e.getStateChange() == ItemEvent.SELECTED));
 
             subpanel.add(saveBtn);
