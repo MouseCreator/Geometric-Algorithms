@@ -12,7 +12,7 @@ public class Initializer {
         Collection<CPoint> points = pointSet.getPoints();
         List<Integer> xCoordinates = points.stream()
                 .sorted(Comparator.comparingInt(p -> p.position().x()))
-                .distinct().map(pt -> pt.position().x())
+                .map(pt -> pt.position().x()).distinct()
                 .toList();
         List<CPoint> ySortedPoints = new ArrayList<>(points);
         ySortedPoints.sort(Comparator.comparingInt(p -> p.position().y()));

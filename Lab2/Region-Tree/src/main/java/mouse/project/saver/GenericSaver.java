@@ -68,7 +68,7 @@ public class GenericSaver {
 
     private Lines toLines(String input) {
         String[] strings = getLines(input);
-        List<String> list = Arrays.asList(strings);
+        List<String> list = new ArrayList<>(Arrays.asList(strings));
         removeEmpty(list);
         List<String> noComments = removeComments(list);
         List<RecordValue> recordValues = toRecords(noComments);
