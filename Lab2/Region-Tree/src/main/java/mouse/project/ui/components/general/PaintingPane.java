@@ -132,6 +132,8 @@ public class PaintingPane implements AppComponent, ProgramModeListener, EventLis
 
         @Override
         public void handle(Event event) {
+            pointSet.clear();
+            algorithm.clear();
             SaveLoad.load(pointSet);
         }
     }
