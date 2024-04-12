@@ -10,17 +10,27 @@ import java.util.*;
 public class Initializer {
     public SegmentTree createTreeFor(CSet pointSet) {
         Collection<CPoint> points = pointSet.getPoints();
-        List<Integer> xCoordinates = points.stream()
-                .sorted(Comparator.comparingInt(p -> p.position().x()))
-                .map(pt -> pt.position().x()).distinct()
-                .toList();
-        List<CPoint> ySortedPoints = new ArrayList<>(points);
-        ySortedPoints.sort(Comparator.comparingInt(p -> p.position().y()));
+        List<Integer> xCoordinates = extractDistinctXCoordinates(points);
+        List<CPoint> ySortedPoints = getSortedYPoints(points);
 
         SegmentTreeBuilder builder = new SegmentTreeBuilder();
         SegmentTree segmentTree = builder.createSegmentTree(xCoordinates);
+
         addPoints(segmentTree, ySortedPoints);
         return segmentTree;
+    }
+
+    private List<CPoint> getSortedYPoints(Collection<CPoint> points) {
+        List<CPoint> ySortedPoints = new ArrayList<>(points);
+        ySortedPoints.sort(Comparator.comparingInt(p -> p.position().y()));
+        return ySortedPoints;
+    }
+
+    private List<Integer> extractDistinctXCoordinates(Collection<CPoint> points) {
+        return points.stream()
+                .sorted(Comparator.comparingInt(p -> p.position().x()))
+                .map(pt -> pt.position().x()).distinct()
+                .toList();
     }
 
     private void addPoints(SegmentTree segmentTree, List<CPoint> ySortedPoints) {
