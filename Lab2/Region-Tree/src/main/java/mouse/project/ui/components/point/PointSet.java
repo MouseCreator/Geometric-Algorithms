@@ -40,6 +40,7 @@ public class PointSet implements SavableHolder {
 
     @Override
     public void refresh() {
+        TPoints.forEach(drawManager::onRemove);
         TPoints.forEach(tPoint -> idGenerator.free(tPoint.getId()));
         TPoints.clear();
     }
