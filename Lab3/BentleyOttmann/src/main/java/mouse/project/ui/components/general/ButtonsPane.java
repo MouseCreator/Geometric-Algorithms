@@ -29,11 +29,10 @@ public class ButtonsPane implements AppComponent {
 
     private void onSegmentsButton() {
         logger.debug("Segments pressed!");
-        State.get().getProgramState().updateMode(ProgramMode.POINTS);
+        State.get().getProgramState().updateMode(ProgramMode.SEGMENTS);
     }
     private void onFindButton() {
         logger.debug("Find Intersections pressed!");
-        State.get().getProgramState().updateMode(ProgramMode.BOX);
     }
     private void onEraseButton() {
         logger.debug("Erase pressed!");

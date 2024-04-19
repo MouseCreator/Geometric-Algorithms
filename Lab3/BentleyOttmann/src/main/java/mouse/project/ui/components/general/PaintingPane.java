@@ -7,8 +7,6 @@ import mouse.project.event.service.EventListener;
 import mouse.project.event.service.Events;
 import mouse.project.event.type.*;
 import mouse.project.event.type.Event;
-import mouse.project.graphics.GraphicsChangeListener;
-import mouse.project.graphics.GraphicsChangeListenerImpl;
 import mouse.project.saver.SaveLoad;
 import mouse.project.state.ConstUtils;
 import mouse.project.state.MouseAction;
@@ -16,6 +14,9 @@ import mouse.project.state.ProgramMode;
 import mouse.project.state.State;
 import mouse.project.ui.components.draw.DrawManager;
 import mouse.project.ui.components.main.AppComponent;
+import mouse.project.ui.components.point.Segment;
+import mouse.project.ui.components.point.SegmentEnd;
+import mouse.project.ui.components.point.SegmentEndRecord;
 import mouse.project.ui.components.point.Segments;
 import mouse.project.utils.math.Position;
 
@@ -31,7 +32,7 @@ public class PaintingPane implements AppComponent, ProgramModeListener, EventLis
     private final DrawPanel drawPanel;
     private final DrawManager drawManager;
     private ClickHandler clickHandler = new ClickHandler() {};
-    private final ClickHandler rightClickHandler = new ClickHandler() {};
+    private final ClickHandler rightClickHandler = new RightClickHandler();
     private final Segments segments;
     private List<GeneralEventHandler> eventHandlers;
     private Algorithm algorithm;
@@ -39,7 +40,6 @@ public class PaintingPane implements AppComponent, ProgramModeListener, EventLis
     public PaintingPane() {
         this.drawPanel = new DrawPanel();
         drawManager = State.get().getProgramState().getDrawManager();
-        GraphicsChangeListener graphicsChangeListener = new GraphicsChangeListenerImpl(drawManager);
         clickHandlers = createClickHandlers();
         segments = new Segments(drawManager);
         State.get().getProgramState().registerListener(this);
@@ -56,6 +56,8 @@ public class PaintingPane implements AppComponent, ProgramModeListener, EventLis
 
     private List<ClickHandler> createClickHandlers() {
         List<ClickHandler> handlers = new ArrayList<>();
+        handlers.add(new EraseClickHandler());
+        handlers.add(new SegmentsClickHandler());
         return handlers;
     }
 
@@ -238,11 +240,145 @@ public class PaintingPane implements AppComponent, ProgramModeListener, EventLis
 
     private interface ClickHandler {
         default boolean isApplied(ProgramMode mode) {return false;}
+        default void press(Position position) {}
         default void drag(Position position) {}
         default void release(Position position) {}
-        default void press(Position position) {}
         default void onEnable() {}
         default void onDisable() {}
     }
+
+    public class RightClickHandler implements ClickHandler {
+
+        private SegmentEnd activeEnd = null;
+        private Segment ofSegment = null;
+        private Position startPosition = null;
+
+        private boolean isActive() {
+            return activeEnd != null;
+        }
+        @Override
+        public boolean isApplied(ProgramMode mode) {
+            return true;
+        }
+        @Override
+        public void press(Position position) {
+            Optional<SegmentEndRecord> endAt = segments.getEndAt(position);
+            endAt.ifPresent(segmentEnd -> {
+                activeEnd = segmentEnd.end();
+                ofSegment = segmentEnd.segment();
+                startPosition = position;
+            });
+        }
+        @Override
+        public void drag(Position position) {
+            if (position == null) {
+                activeEnd.setPosition(startPosition);
+                hide();
+            } else {
+                activeEnd.setPosition(position);
+            }
+        }
+        @Override
+        public void release(Position position) {
+            if (position == null || ofSegment.length() < ConstUtils.MIN_SEGMENT_LENGTH) {
+                activeEnd.setPosition(startPosition);
+            } else {
+                activeEnd.setPosition(position);
+            }
+            hide();
+        }
+
+        private void hide() {
+            activeEnd = null;
+            startPosition = null;
+            ofSegment = null;
+        }
+
+
+    }
+
+    public class SegmentsClickHandler implements ClickHandler {
+        private Segment currentSegment = null;
+        private SegmentEnd fromEnd = null;
+        private SegmentEnd toEnd = null;
+        private boolean active;
+        @Override
+        public boolean isApplied(ProgramMode mode) {
+            return mode == ProgramMode.SEGMENTS;
+        }
+        @Override
+        public void press(Position position) {
+            if (active) {
+                return;
+            }
+            active = true;
+            currentSegment = new Segment();
+            fromEnd = new SegmentEnd(position);
+            toEnd = new SegmentEnd(position);
+            currentSegment.setFrom(fromEnd);
+            currentSegment.setTo(toEnd);
+            drawManager.onAdd(currentSegment);
+        }
+        @Override
+        public void drag(Position position) {
+            if (!active) {
+                return;
+            }
+            if (position == null) {
+                hide();
+                removeFromGfx();
+                return;
+            }
+            toEnd.setPosition(position);
+        }
+
+        private void hide() {
+            active = false;
+            fromEnd = null;
+            toEnd = null;
+            currentSegment = null;
+        }
+
+        private void removeFromGfx() {
+            if (currentSegment != null) {
+                drawManager.onRemove(currentSegment);
+                currentSegment = null;
+            }
+        }
+
+        @Override
+        public void release(Position position) {
+            if (currentSegment.length() < ConstUtils.MIN_SEGMENT_LENGTH) {
+                hide();
+                removeFromGfx();
+                return;
+            }
+            segments.addSegment(currentSegment, false);
+            hide();
+        }
+
+        @Override
+        public void onEnable() {
+            hide();
+        }
+
+        @Override
+        public void onDisable() {
+            hide();
+        }
+    }
+
+    public class EraseClickHandler implements ClickHandler {
+        @Override
+        public boolean isApplied(ProgramMode mode) {
+            return mode == ProgramMode.ERASE;
+        }
+
+        @Override
+        public void press(Position position) {
+            segments.deleteSegmentsAt(position);
+        }
+    }
+
 
 }

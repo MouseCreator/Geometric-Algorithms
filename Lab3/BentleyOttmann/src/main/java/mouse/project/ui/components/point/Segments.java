@@ -46,7 +46,7 @@ public class Segments implements SavableHolder {
     @Override
     public void addSavable(Savable savable) {
         if (savable instanceof Segment) {
-            segmentList.add((Segment) savable);
+            onAdd((Segment) savable, true);
         }
     }
 
@@ -55,7 +55,27 @@ public class Segments implements SavableHolder {
     }
 
     public void clear() {
-        segmentList.forEach(c->drawManager.onRemove(c));
+        segmentList.forEach(drawManager::onRemove);
         segmentList.clear();
+    }
+
+    public void addSegment(Segment segment, boolean addToGraphics) {
+        onAdd(segment, addToGraphics);
+    }
+
+    private void onAdd(Segment segment, boolean addToGraphics) {
+        segmentList.add(segment);
+        if (addToGraphics)
+            drawManager.onAdd(segment);
+    }
+
+    public Optional<SegmentEndRecord> getEndAt(Position position) {
+        for (Segment segment : segmentList) {
+            Optional<SegmentEnd> endAt = segment.getEndAt(position);
+            if (endAt.isPresent()) {
+                return Optional.of(new SegmentEndRecord(segment, endAt.get()));
+            }
+        }
+        return Optional.empty();
     }
 }

@@ -2,6 +2,7 @@ package mouse.project.ui.components.point;
 
 import lombok.Data;
 import mouse.project.saver.Savable;
+import mouse.project.state.ConstUtils;
 import mouse.project.ui.components.main.Drawable;
 import mouse.project.utils.math.Position;
 
@@ -55,15 +56,45 @@ public class Segment implements Savable, Drawable {
     }
 
     public Optional<SegmentEnd> getEndAt(Position position) {
+        double p1 = position.distanceTo(from.getPosition());
+        double p2 = position.distanceTo(to.getPosition());
+        boolean p1Close = p1 < ConstUtils.END_AT_TOLERANCE;
+        boolean p2Close = p2 < ConstUtils.END_AT_TOLERANCE;
+        if (p1Close && p2Close) {
+            return p1 < p2 ? Optional.of(from) : Optional.of(to);
+        }
+        if (p1Close) {
+            return Optional.of(from);
+        }
+        if (p2Close) {
+            return Optional.of(to);
+        }
         return Optional.empty();
     }
 
     @Override
     public void draw(Graphics2D g2d) {
+        g2d.setStroke(new BasicStroke(ConstUtils.SEGMENT_THICKNESS));
+        g2d.setColor(ConstUtils.SEGMENT_COLOR);
+        int x1 = from.getPosition().x();
+        int y1 = from.getPosition().y();
+        int x2 = to.getPosition().x();
+        int y2 = to.getPosition().y();
+
+        g2d.drawLine(x1, y1, x2, y2);
+
+        int diameter = ConstUtils.SEGMENT_END_DIAMETER;
+        int radius = diameter >> 1;
+        g2d.fillOval(from.getPosition().x() - radius, from.getPosition().y() - radius, diameter, diameter);
+        g2d.fillOval(to.getPosition().x() - radius, to.getPosition().y() - radius, diameter, diameter);
     }
 
     @Override
     public int depth() {
         return 5;
+    }
+
+    public double length() {
+        return from.getPosition().distanceTo(to.getPosition());
     }
 }
