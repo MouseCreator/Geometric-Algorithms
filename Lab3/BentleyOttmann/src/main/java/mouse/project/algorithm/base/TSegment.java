@@ -1,7 +1,6 @@
 package mouse.project.algorithm.base;
 
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import mouse.project.utils.math.Position;
 @Data
 public class TSegment {
