@@ -63,6 +63,8 @@ public class YTreeImpl implements YTree {
         if (current.hasNoLeft()) {
             findInRangeRight(current, result, yMax);
         } else {
+            TreeSet set = new TreeSet();
+            set.subSet(0, 1)
             findInRangeLeft(current.prev(), result, yMax);
         }
     }
