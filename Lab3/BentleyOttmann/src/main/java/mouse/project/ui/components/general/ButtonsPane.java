@@ -27,12 +27,12 @@ public class ButtonsPane implements AppComponent {
         this.panel = new ButtonsFlow();
     }
 
-    private void onPointsButton() {
-        logger.debug("Points pressed!");
+    private void onSegmentsButton() {
+        logger.debug("Segments pressed!");
         State.get().getProgramState().updateMode(ProgramMode.POINTS);
     }
-    private void onBoxButton() {
-        logger.debug("Box pressed!");
+    private void onFindButton() {
+        logger.debug("Find Intersections pressed!");
         State.get().getProgramState().updateMode(ProgramMode.BOX);
     }
     private void onEraseButton() {
@@ -97,17 +97,17 @@ public class ButtonsPane implements AppComponent {
             subpanel.setLayout(new GridLayout(4, 1 ,10, 10));
             setBackground(ConstUtils.BACKGROUND_SECONDARY);
 
-            JToggleButton pointsBtn = createToggleButton("Points", ButtonsPane.this::onPointsButton);
-            JToggleButton boxBtn = createToggleButton("Box", ButtonsPane.this::onBoxButton);
+            JToggleButton segmentsBtn = createToggleButton("Segments", ButtonsPane.this::onSegmentsButton);
+            JToggleButton findBtn = createToggleButton("Find Intersections", ButtonsPane.this::onFindButton);
             JToggleButton eraseBtn = createToggleButton("Erase", ButtonsPane.this::onEraseButton);
 
 
-            btnGroup.add(pointsBtn);
-            btnGroup.add(boxBtn);
+            btnGroup.add(segmentsBtn);
+            btnGroup.add(findBtn);
             btnGroup.add(eraseBtn);
 
-            subpanel.add(pointsBtn);
-            subpanel.add(boxBtn);
+            subpanel.add(segmentsBtn);
+            subpanel.add(findBtn);
             subpanel.add(eraseBtn);
             return subpanel;
         }
