@@ -15,6 +15,8 @@ public class RBTreeImpl<T> implements RBTree<T> {
     public void insert(T value) {
         if (root.isLeaf()) {
             root = new InnerRBNode<>(value, Color.BLACK, nil, nil);
+            root.setParent(nil);
+            return;
         }
         RBNode<T> z = new InnerRBNode<>(value, Color.RED, nil, nil);
 
@@ -40,16 +42,18 @@ public class RBTreeImpl<T> implements RBTree<T> {
 
     private void insertFixup(RBNode<T> z) {
         while (color(p(z)) == Color.RED) {
-            if (p(z) == (left(p(p(z))))) {
+            if (p(z) == left(p(p(z)))) {
                 RBNode<T> y = right(p(p(z)));
                 if (color(y) == Color.RED) {
                     color(p(z), Color.BLACK);
                     color(y, Color.BLACK);
                     color(p(p(z)), Color.RED);
                     z = p(p(z));
-                } else if (z == right(p(z))) {
-                    z = p(z);
-                    leftRotate(p(p(z)));
+                } else {
+                    if (z == right(p(z))) {
+                        z = p(z);
+                        leftRotate(p(p(z)));
+                    }
                     color(p(z), Color.BLACK);
                     color(p(p(z)), Color.RED);
                     rightRotate(p(p(z)));
@@ -61,9 +65,11 @@ public class RBTreeImpl<T> implements RBTree<T> {
                     color(y, Color.BLACK);
                     color(p(p(z)), Color.RED);
                     z = p(p(z));
-                } else if (z == left(p(z))) {
-                    z = p(z);
-                    rightRotate(p(p(z)));
+                } else {
+                    if (z == left(p(z))) {
+                        z = p(z);
+                        rightRotate(p(p(z)));
+                    }
                     color(p(z), Color.BLACK);
                     color(p(p(z)), Color.RED);
                     leftRotate(p(p(z)));
@@ -72,7 +78,12 @@ public class RBTreeImpl<T> implements RBTree<T> {
         }
         color(root, Color.BLACK);
     }
-    private boolean delete(T value) {
+
+    public boolean contains(T value) {
+        Optional<RBNode<T>> toDelete = findValue(value);
+        return toDelete.isPresent();
+    }
+    public boolean delete(T value) {
         Optional<RBNode<T>> toDelete = findValue(value);
         if (toDelete.isEmpty()) {
             return false;
@@ -179,16 +190,22 @@ public class RBTreeImpl<T> implements RBTree<T> {
     private static final String ANSI_RESET = "\u001B[0m";
     private static final String ANSI_RED = "\u001B[31m";
     private void print(int tabLevel, RBNode<T> current) {
-        if (current.isLeaf()) {
-            return;
-        }
         String level = "--".repeat(tabLevel);
-        String key = current.key().toString();
+        String key = "";
+        if (!current.isLeaf()) {
+            key = current.key().toString();
+        }
         String total = level + key;
         if (current.color()==Color.RED) {
             total = ANSI_RED + total + ANSI_RESET;
         }
         System.out.println(total);
+        if (current.isLeaf()) {
+            return;
+        }
+        if (current.left().isLeaf() && current.right().isLeaf()) {
+            return;
+        }
         print(tabLevel+1, current.left());
         print(tabLevel+1, current.right());
     }
@@ -340,40 +357,37 @@ public class RBTreeImpl<T> implements RBTree<T> {
 
     private void leftRotate(RBNode<T> x) {
         RBNode<T> y = right(x);
-        if (y.isLeaf()) {
-            throw new RBTreeException("Left rotate on " + x + " but node does not have right child.");
-        }
-        right(left(y), x);
+        right(x, left(y));
+
         if (!left(y).isLeaf()) {
-            left(y).setParent(x);
+            p(left(y), x);
         }
-        y.setParent(x.parent());
+        p(y, p(x));
         if (p(x).isLeaf()) {
             setRoot(y);
-        }
-        else if (x == left(p(x))) {
+        } else if (x == left(p(x))) {
             left(p(x), y);
+        } else {
+            right(p(x), y);
         }
         left(y, x);
         p(x, y);
-
     }
 
     private void rightRotate(RBNode<T> x) {
         RBNode<T> y = left(x);
-        if (y.isLeaf()) {
-            throw new RBTreeException("Right rotate on " + x + " but node does not have left child.");
+        left(x, right(y));
+
+        if (right(y).isLeaf()) {
+            p(right(y), x);
         }
-        left(right(y), x);
-        if (!right(y).isLeaf()) {
-            right(y).setParent(x);
-        }
-        y.setParent(x.parent());
+        p(y, p(x));
         if (p(x).isLeaf()) {
             setRoot(y);
-        }
-        else if (x == right(p(x))) {
+        } else if (x == right(p(x))) {
             right(p(x), y);
+        } else {
+            left(p(x), y);
         }
         right(y, x);
         p(x, y);
@@ -390,13 +404,13 @@ public class RBTreeImpl<T> implements RBTree<T> {
     }
 
     private static <T> void left(RBNode<T> of, RBNode<T> set) {
-        of.setParent(set);
+        of.setLeft(set);
     }
     private static <T> void right(RBNode<T> of, RBNode<T> set) {
         of.setRight(set);
     }
     private static <T> void p(RBNode<T> of, RBNode<T> set) {
-        of.setLeft(set);
+        of.setParent(set);
     }
 
     private void setRoot(RBNode<T> root) {
