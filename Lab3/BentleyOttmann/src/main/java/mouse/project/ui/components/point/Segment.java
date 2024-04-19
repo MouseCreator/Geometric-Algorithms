@@ -4,10 +4,10 @@ import lombok.Data;
 import mouse.project.saver.Savable;
 import mouse.project.state.ConstUtils;
 import mouse.project.ui.components.main.Drawable;
-import mouse.project.utils.math.Box;
-import mouse.project.utils.math.MathUtils;
-import mouse.project.utils.math.Position;
-import mouse.project.utils.math.Vector2;
+import mouse.project.math.Box;
+import mouse.project.math.MathUtils;
+import mouse.project.math.Position;
+import mouse.project.math.Vector2;
 
 import java.awt.*;
 import java.util.Collection;

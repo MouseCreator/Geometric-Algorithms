@@ -3,7 +3,7 @@ package mouse.project.ui.components.point;
 import mouse.project.saver.Savable;
 import mouse.project.saver.SavableHolder;
 import mouse.project.ui.components.draw.DrawManager;
-import mouse.project.utils.math.Position;
+import mouse.project.math.Position;
 
 import java.util.*;
 import java.util.function.Supplier;

@@ -18,7 +18,7 @@ import mouse.project.ui.components.point.Segment;
 import mouse.project.ui.components.point.SegmentEnd;
 import mouse.project.ui.components.point.SegmentEndRecord;
 import mouse.project.ui.components.point.Segments;
-import mouse.project.utils.math.Position;
+import mouse.project.math.Position;
 
 import javax.swing.*;
 import java.awt.*;

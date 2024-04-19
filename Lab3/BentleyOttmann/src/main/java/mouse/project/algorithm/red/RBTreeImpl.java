@@ -2,8 +2,7 @@ package mouse.project.algorithm.red;
 
 import lombok.Setter;
 
-import java.util.Comparator;
-import java.util.Optional;
+import java.util.*;
 
 public class RBTreeImpl<T> implements RBTree<T> {
     private final Comparator<T> comparator;
@@ -185,6 +184,22 @@ public class RBTreeImpl<T> implements RBTree<T> {
 
     public void print() {
         print(0, root);
+    }
+
+    @Override
+    public Collection<T> collect() {
+        List<T> list = new ArrayList<>();
+        collect(root, list);
+        return list;
+    }
+
+    private void collect(RBNode<T> current, List<T> list) {
+        if (current.isLeaf()) {
+            return;
+        }
+        collect(current.left(), list);
+        list.add(current.key());
+        collect(current.right(), list);
     }
 
     private static final String ANSI_RESET = "\u001B[0m";

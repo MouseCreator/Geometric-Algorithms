@@ -1,7 +1,7 @@
 package mouse.project.ui.components.point;
 
 import lombok.Data;
-import mouse.project.utils.math.Position;
+import mouse.project.math.Position;
 @Data
 public class SegmentEnd {
     private Position position;

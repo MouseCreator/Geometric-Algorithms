@@ -1,6 +1,6 @@
 package mouse.project.algorithm.common;
 
-import mouse.project.utils.math.Position;
+import mouse.project.math.Position;
 
 public interface CommonSegment {
     Position from();
