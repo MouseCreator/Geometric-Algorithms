@@ -51,7 +51,14 @@ public class Segments implements SavableHolder {
     }
 
     public void deleteSegmentsAt(Position position) {
-
+        List<Segment> toBeRemoved = new ArrayList<>();
+        for (Segment segment : segmentList) {
+            if (segment.goesThrough(position)) {
+                toBeRemoved.add(segment);
+            }
+        }
+        toBeRemoved.forEach(drawManager::onRemove);
+        segmentList.removeAll(toBeRemoved);
     }
 
     public void clear() {

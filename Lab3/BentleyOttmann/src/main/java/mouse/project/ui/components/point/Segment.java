@@ -4,7 +4,10 @@ import lombok.Data;
 import mouse.project.saver.Savable;
 import mouse.project.state.ConstUtils;
 import mouse.project.ui.components.main.Drawable;
+import mouse.project.utils.math.Box;
+import mouse.project.utils.math.MathUtils;
 import mouse.project.utils.math.Position;
+import mouse.project.utils.math.Vector2;
 
 import java.awt.*;
 import java.util.Collection;
@@ -96,5 +99,25 @@ public class Segment implements Savable, Drawable {
 
     public double length() {
         return from.getPosition().distanceTo(to.getPosition());
+    }
+
+    public boolean goesThrough(Position position) {
+        return isClose(position);
+    }
+
+    private boolean isClose(Position c) {
+        Position a = from.getPosition();
+        Position b = to.getPosition();
+        Vector2 ac = Vector2.from(a, c);
+        Vector2 ad = MathUtils.getVectorProjection(a, b, c);
+        double magnitude = ac.subtract(ad).magnitude();
+        return insideEdgeBox(c) && magnitude < ConstUtils.END_AT_TOLERANCE;
+    }
+
+    private boolean insideEdgeBox(Position c) {
+        Position p1 = from.getPosition();
+        Position p2 = to.getPosition();
+        Box box = new Box(p1, p2);
+        return box.contains(c);
     }
 }
