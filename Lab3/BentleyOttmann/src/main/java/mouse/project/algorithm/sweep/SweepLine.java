@@ -2,21 +2,16 @@ package mouse.project.algorithm.sweep;
 
 import mouse.project.algorithm.heap.BinaryHeap;
 import mouse.project.algorithm.heap.Heap;
-import mouse.project.algorithm.red.RBTree;
-import mouse.project.algorithm.red.RBTreeImpl;
 import mouse.project.math.Position;
 import mouse.project.math.Vector2;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 public class SweepLine {
-    private final RBTree<TSegment> status;
+    private Status<TSegment> status;
     private final Heap<Event> eventHeap;
 
     public SweepLine() {
-        status = new RBTreeImpl<>(null); //fix
         eventHeap = new BinaryHeap<>(eventComparator);
     }
 
@@ -78,8 +73,49 @@ public class SweepLine {
             while (eventComparator.compare(eventHeap.minimum(), nextEvent) == 0) {
                 eventList.add(eventHeap.extractMin());
             }
-
+            List<IntersectionEvent> intersections = new ArrayList<>();
+            eventList.forEach(e -> {
+                if (e instanceof StartEvent) {
+                    TSegment segment = ((StartEvent) e).segment();
+                    Neighbors<TSegment> neighbors = status.insert(segment);
+                    if (neighbors.hasLeft()) {
+                        testIntersection(segment, neighbors.left());
+                    }
+                    if (neighbors.hasRight()) {
+                        testIntersection(segment, neighbors.right());
+                    }
+                } else if (e instanceof EndEvent) {
+                    Neighbors<TSegment> neighbors = status.delete(((EndEvent) e).segment());
+                    if (neighbors.hasLeft() && neighbors.hasRight()) {
+                        testIntersection(neighbors.left(), neighbors.right());
+                    }
+                } else if (e instanceof IntersectionEvent) {
+                    intersections.add((IntersectionEvent) e);
+                } else {
+                    throw new IllegalStateException("Unexpected event: " + e);
+                }
+            });
+            detectAllIntersections(eventList);
+            processIntersections(intersections);
         }
     }
+
+    private void detectAllIntersections(List<Event> eventList) {
+        // all segments in the events intersect at some point
+    }
+
+    private void processIntersections(List<IntersectionEvent> intersections) {
+        // reorder segments
+        Set<TSegment> set = new HashSet<>();
+        intersections.forEach(i -> {
+            set.add(i.s1());
+            set.add(i.s2());
+        });
+        status.reorder(set, angleComparator);
+    }
+
+    private void testIntersection(TSegment s1, TSegment s2) {
+    }
+
 
 }
