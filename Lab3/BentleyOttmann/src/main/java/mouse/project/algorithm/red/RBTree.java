@@ -10,4 +10,6 @@ public interface RBTree<T> {
     void print();
     void clear();
     Collection<T> collect();
+    int size();
+    boolean isEmpty();
 }

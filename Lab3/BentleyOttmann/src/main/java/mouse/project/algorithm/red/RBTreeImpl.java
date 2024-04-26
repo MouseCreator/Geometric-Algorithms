@@ -8,10 +8,12 @@ public class RBTreeImpl<T> implements RBTree<T> {
     private final Comparator<T> comparator;
     private final NilNode<T> nil = new NilNode<>();
     private RBNode<T> root = nil;
+    private int size = 0;
     public RBTreeImpl(Comparator<T> comparator) {
         this.comparator = comparator;
     }
     public void insert(T value) {
+        size++;
         if (root.isLeaf()) {
             root = new InnerRBNode<>(value, Color.BLACK, nil, nil);
             root.setParent(nil);
@@ -37,6 +39,7 @@ public class RBTreeImpl<T> implements RBTree<T> {
             right(y, z);
         }
         insertFixup(z);
+        nil.reset();
     }
 
     private void insertFixup(RBNode<T> z) {
@@ -87,8 +90,10 @@ public class RBTreeImpl<T> implements RBTree<T> {
         if (toDelete.isEmpty()) {
             return false;
         }
+        size--;
         RBNode<T> trbNode = toDelete.get();
         deleteNode(trbNode);
+        nil.reset();
         return true;
     }
 
@@ -243,6 +248,16 @@ public class RBTreeImpl<T> implements RBTree<T> {
         List<T> list = new ArrayList<>();
         collect(root, list);
         return list;
+    }
+
+    @Override
+    public int size() {
+        return size;
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return size == 0;
     }
 
     private void collect(RBNode<T> current, List<T> list) {

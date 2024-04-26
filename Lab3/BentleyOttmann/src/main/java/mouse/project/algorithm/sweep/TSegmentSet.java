@@ -1,5 +1,7 @@
 package mouse.project.algorithm.sweep;
 
-public class TSegmentSet {
+import java.util.Collection;
 
+public interface TSegmentSet {
+    Collection<TSegment> getAll();
 }
