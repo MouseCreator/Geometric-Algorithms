@@ -8,6 +8,7 @@ public class BinaryHeap<T> implements Heap<T> {
 
     private final List<T> list;
     private final Comparator<T> comparator;
+
     public BinaryHeap(Comparator<T> comparator) {
         this.comparator = comparator;
         this.list = new ArrayList<>();
@@ -16,11 +17,14 @@ public class BinaryHeap<T> implements Heap<T> {
     @Override
     public void insert(T value) {
         list.add(value);
-        heapify(last());
+        heapifyUp(list.size() - 1);
     }
 
-    private int last() {
-        return list.size() - 1;
+    private void heapifyUp(int index) {
+        while (index > 0 && less(index, parent(index))) {
+            swap(index, parent(index));
+            index = parent(index);
+        }
     }
 
     @Override
@@ -36,10 +40,30 @@ public class BinaryHeap<T> implements Heap<T> {
         if(isEmpty()) {
             throw new HeapException("Empty heap");
         }
-        T min = minimum();
-        list.set(0, list.remove(last()));
-        heapify(1);
+        T min = list.get(0);
+        list.set(0, list.remove(list.size() - 1));
+        if (!list.isEmpty()) {
+            heapifyDown(0);
+        }
         return min;
+    }
+
+    private void heapifyDown(int index) {
+        int smallest = index;
+        int left = left(index);
+        int right = right(index);
+
+        if (left < list.size() && less(left, smallest)) {
+            smallest = left;
+        }
+        if (right < list.size() && less(right, smallest)) {
+            smallest = right;
+        }
+
+        if (smallest != index) {
+            swap(index, smallest);
+            heapifyDown(smallest);
+        }
     }
 
     @Override
@@ -52,42 +76,23 @@ public class BinaryHeap<T> implements Heap<T> {
         return list.isEmpty();
     }
 
-    private void heapify(int i) {
-        int left = left(i);
-        int right = right(i);
-        int smallest;
-        if (left < size() && less(left, i)) {
-            smallest = left;
-        } else {
-            smallest = i;
-        }
-        if (right < size() && less(right, smallest)) {
-            smallest = right;
-        }
-        if (smallest != i) {
-            swap(i, smallest);
-            heapify(smallest);
-        }
-    }
-
     private void swap(int i1, int i2) {
-        T i1th = list.get(i1);
-        T i2th = list.get(i1);
-        list.set(i1, i2th);
-        list.set(i2, i1th);
+        T temp = list.get(i1);
+        list.set(i1, list.get(i2));
+        list.set(i2, temp);
     }
 
-    private boolean less(int left, int i) {
-        return comparator.compare(list.get(left), list.get(i)) < 0;
+    private boolean less(int i, int j) {
+        return comparator.compare(list.get(i), list.get(j)) < 0;
     }
 
     private int parent(int i) {
-        return (i >> 1) - 1;
+        return (i - 1) / 2;
     }
     private int left(int i) {
-        return (i << 1) - 1;
+        return 2 * i + 1;
     }
     private int right(int i) {
-        return (i << 1);
+        return 2 * i + 2;
     }
 }
