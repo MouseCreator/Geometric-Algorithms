@@ -8,5 +8,6 @@ public interface RBTree<T> {
     boolean contains(T value);
     boolean delete(T value);
     void print();
+    void clear();
     Collection<T> collect();
 }

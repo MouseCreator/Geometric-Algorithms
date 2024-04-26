@@ -6,7 +6,7 @@ import java.util.*;
 
 public class RBTreeImpl<T> implements RBTree<T> {
     private final Comparator<T> comparator;
-    private final RBNode<T> nil = new NilNode<>();
+    private final NilNode<T> nil = new NilNode<>();
     private RBNode<T> root = nil;
     public RBTreeImpl(Comparator<T> comparator) {
         this.comparator = comparator;
@@ -106,33 +106,57 @@ public class RBTreeImpl<T> implements RBTree<T> {
         }
         return Optional.empty();
     }
+
+    private void transplant(RBNode<T> u, RBNode<T> v) {
+        if (p(u).isLeaf()) {
+            setRoot(v);
+        }
+        else if (u == left(p(u))) {
+            left(p(u), v);
+        } else {
+            right(p(u), v);
+        }
+        p(v, p(u));
+    }
     private void deleteNode(RBNode<T> z) {
+        RBNode<T> y = z;
         RBNode<T> x;
-        RBNode<T> y;
-        if (left(z).isLeaf() || right(z).isLeaf()) {
-            y = z;
+        Color color = y.color();
+
+        if (left(z).isLeaf()) {
+            x = right(z);
+            transplant(z, right(z));
+        } else if (right(z).isLeaf()) {
+            x = left(z);
+            transplant(z, left(z));
         } else {
-            y = successor(z);
-        }
-        if (!left(y).isLeaf()) {
-            x = left(y);
-        } else {
+            y = minimum(right(z));
+            color = y.color();
             x = right(y);
+            if (p(y) == z) {
+                p(x, y);
+            } else {
+                transplant(y, right(y));
+                right(y, right(z));
+                p(right(y), y);
+            }
+            transplant(z, y);
+            left(y, left(z));
+            p(left(y), y);
+            color(y, color(z));
         }
-        if (p(y).isLeaf()) {
-            setRoot(x);
-        } else if (y == (left(p(y)))) {
-            left(p(y), x);
-        } else {
-            right(p(y), x);
-        }
-        if (y != z) {
-            key(z, key(y));
-        }
-        if (color(y) == Color.BLACK) {
+        if (color == Color.BLACK) {
             deleteFixup(x);
         }
-        // return y;
+    }
+
+    private RBNode<T> minimum(RBNode<T> current) {
+        RBNode<T> prev = current;
+        while (!current.isLeaf()) {
+            prev = current;
+            current = current.left();
+        }
+        return prev;
     }
 
     private void deleteFixup(RBNode<T> x) {
@@ -148,22 +172,45 @@ public class RBTreeImpl<T> implements RBTree<T> {
                 if (color(left(w)) == Color.BLACK && color(right(w)) == Color.BLACK) {
                     color(w, Color.RED);
                     x = p(x);
+                } else if (color(right(w)) == Color.BLACK) {
+                    color(left(w), Color.BLACK);
+                    color(w, Color.RED);
+                    rightRotate(w);
+                    w = right(p(x));
                 }
+                color(w, color(p(x)));
+                color(p(x), Color.BLACK);
+                color(right(w), Color.BLACK);
+                leftRotate(p(x));
+                break;
+            } else {
+                RBNode<T> w = left(p(x));
+                if (color(w) == Color.RED) {
+                    color(w, Color.BLACK);
+                    color(p(x), Color.RED);
+                    rightRotate((p(x)));
+                    w = left(p(x));
+                }
+                if (color(right(w)) == Color.BLACK && color(left(w)) == Color.BLACK) {
+                    color(w, Color.RED);
+                    x = p(x);
+                } else if (color(left(w)) == Color.BLACK) {
+                    color(right(w), Color.BLACK);
+                    color(w, Color.RED);
+                    leftRotate(w);
+                    w = left(p(x));
+                }
+                color(w, color(p(x)));
+                color(p(x), Color.BLACK);
+                color(left(w), Color.BLACK);
+                rightRotate(p(x));
+                break;
             }
         }
+        color(x, Color.BLACK);
     }
 
-    private RBNode<T> successor(RBNode<T> z) {
-        RBNode<T> current = right(z);
-        RBNode<T> prev = current;
-        while (!current.isLeaf()) {
-            prev = current;
-            current = current.left();
-        }
-        return prev;
-    }
-
-    private static  <T> void key(RBNode<T> z, T key) {
+    private static <T> void key(RBNode<T> z, T key) {
         z.setKey(key);
     }
 
@@ -184,6 +231,11 @@ public class RBTreeImpl<T> implements RBTree<T> {
 
     public void print() {
         print(0, root);
+    }
+
+    @Override
+    public void clear() {
+        root = nil;
     }
 
     @Override
@@ -257,6 +309,11 @@ public class RBTreeImpl<T> implements RBTree<T> {
         }
 
         @Override
+        public String toString() {
+            return color + ": " + key;
+        }
+
+        @Override
         public T key() {
             return key;
         }
@@ -308,8 +365,10 @@ public class RBTreeImpl<T> implements RBTree<T> {
     }
 
     private static class NilNode<T> implements RBNode<T> {
-        private final Color color;
-
+        private Color color;
+        private RBNode<T> parent = this;
+        private RBNode<T> left = this;
+        private RBNode<T> right = this;
         public NilNode() {
             color = Color.BLACK;
         }
@@ -326,17 +385,17 @@ public class RBTreeImpl<T> implements RBTree<T> {
 
         @Override
         public RBNode<T> left() {
-           throw new RBTreeException("Nil node does not have left child");
+            return left;
         }
 
         @Override
         public RBNode<T> right() {
-            throw new RBTreeException("Nil node does not have right child");
+            return right;
         }
 
         @Override
         public RBNode<T> parent() {
-            throw new RBTreeException("Nil node does not have defined parent");
+            return parent;
         }
 
         @Override
@@ -345,31 +404,44 @@ public class RBTreeImpl<T> implements RBTree<T> {
         }
 
         @Override
-        public void setRight(RBNode<T> left) {
-            throw new RBTreeException("Nil node cannot have right child");
+        public void setRight(RBNode<T> node) {
+            this.right = node;
         }
 
         @Override
         public void setLeft(RBNode<T> left) {
-            throw new RBTreeException("Nil node cannot have left child");
+            this.left = left;
         }
 
         @Override
         public void setParent(RBNode<T> x) {
-            throw new RBTreeException("Nil node cannot have parent");
+            this.parent = x;
         }
 
         @Override
         public void setColor(Color color) {
-            throw new RBTreeException("Nil node is always black");
+            this.color = color;
         }
 
         @Override
         public void setKey(T key) {
             throw new RBTreeException("Nil cannot have a key");
         }
-    }
 
+        @Override
+        public String toString() {
+            return "nil";
+        }
+
+        public void reset() {
+            this.left = this;
+            this.right = this;
+            this.parent = this;
+        }
+    }
+    private void resetNil() {
+        nil.reset();
+    }
     private void leftRotate(RBNode<T> x) {
         RBNode<T> y = right(x);
         right(x, left(y));
