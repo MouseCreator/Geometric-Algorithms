@@ -6,4 +6,5 @@ public interface Heap<T> {
     T extractMin();
     int size();
     boolean isEmpty();
+    void clear();
 }

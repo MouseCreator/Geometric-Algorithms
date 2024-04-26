@@ -41,6 +41,10 @@ public class BinaryHeap<T> implements Heap<T> {
             throw new HeapException("Empty heap");
         }
         T min = list.get(0);
+        if (size()==1) {
+            clear();
+            return min;
+        }
         list.set(0, list.remove(list.size() - 1));
         if (!list.isEmpty()) {
             heapifyDown(0);
@@ -94,5 +98,9 @@ public class BinaryHeap<T> implements Heap<T> {
     }
     private int right(int i) {
         return 2 * i + 2;
+    }
+
+    public void clear() {
+        list.clear();
     }
 }
