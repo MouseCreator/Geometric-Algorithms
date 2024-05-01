@@ -1,12 +1,10 @@
 package mouse.project.algorithm.red;
 
+import mouse.project.algorithm.red.node.RBNode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -80,5 +78,35 @@ class RBTreeImplTest {
         rbTree.delete(5);
         Collection<Integer> collect = new ArrayList<>(rbTree.collect());
         assertEquals(list, collect);
+    }
+
+    @Test
+    void testSuccessorPredecessor() {
+        int least = 1;
+        int max = 10;
+        List<Integer> list = range(least, max);
+        insertAll(rbTree, list);
+        list.forEach(i -> {
+            Optional<RBNode<Integer>> optNode = rbTree.find(i);
+            assertTrue(optNode.isPresent(), "Value not found: " + i);
+            RBNode<Integer> node = optNode.get();
+            assertEquals(i, node.key());
+            Optional<RBNode<Integer>> predecessor = rbTree.predecessor(node);
+            if (i == least) {
+                assertTrue(predecessor.isEmpty(), "Unexpected predecessor for " + i + ":" + predecessor);
+            } else {
+                assertTrue(predecessor.isPresent(), "Expected " + i + " to have predecessor");
+                assertEquals(i-1, predecessor.get().key(), "Unexpected predecessor");
+            }
+
+            Optional<RBNode<Integer>> successor = rbTree.successor(node);
+            if (i == max) {
+                assertTrue(successor.isEmpty(), "Unexpected successor for " + i + ": " + successor);
+            } else {
+                assertTrue(successor.isPresent(), "Expected " + i + " to have successor");
+                assertEquals(i+1, successor.get().key(), "Unexpected successor");
+            }
+        });
+
     }
 }

@@ -1,6 +1,10 @@
 package mouse.project.algorithm.red;
 
-import lombok.Setter;
+
+import mouse.project.algorithm.red.node.Color;
+import mouse.project.algorithm.red.node.InnerRBNode;
+import mouse.project.algorithm.red.node.NilNode;
+import mouse.project.algorithm.red.node.RBNode;
 
 import java.util.*;
 
@@ -12,12 +16,12 @@ public class RBTreeImpl<T> implements RBTree<T> {
     public RBTreeImpl(Comparator<T> comparator) {
         this.comparator = comparator;
     }
-    public void insert(T value) {
+    public RBNode<T> insert(T value) {
         size++;
         if (root.isLeaf()) {
             root = new InnerRBNode<>(value, Color.BLACK, nil, nil);
             root.setParent(nil);
-            return;
+            return root;
         }
         RBNode<T> z = new InnerRBNode<>(value, Color.RED, nil, nil);
 
@@ -38,11 +42,10 @@ public class RBTreeImpl<T> implements RBTree<T> {
         } else {
             right(y, z);
         }
-        insertFixup(z);
-        nil.reset();
+        return insertFixup(z);
     }
 
-    private void insertFixup(RBNode<T> z) {
+    private RBNode<T> insertFixup(RBNode<T> z) {
         while (color(p(z)) == Color.RED) {
             if (p(z) == left(p(p(z)))) {
                 RBNode<T> y = right(p(p(z)));
@@ -79,12 +82,70 @@ public class RBTreeImpl<T> implements RBTree<T> {
             }
         }
         color(root, Color.BLACK);
+        nil.reset();
+        return z;
     }
 
     public boolean contains(T value) {
         Optional<RBNode<T>> toDelete = findValue(value);
         return toDelete.isPresent();
     }
+
+    @Override
+    public Optional<RBNode<T>> find(T value) {
+        return findValue(value);
+    }
+
+    @Override
+    public Optional<RBNode<T>> successor(RBNode<T> node) {
+        if (node.isLeaf()) {
+            return Optional.empty();
+        }
+        if (!node.right().isLeaf()) {
+            RBNode<T> current = node.right();
+            while (!current.left().isLeaf()) {
+                current = current.left();
+            }
+            return Optional.of(current);
+        }
+        RBNode<T> prev = node;
+        RBNode<T> current = prev.parent();
+        while (!current.isLeaf()) {
+            if (prev == current.right()) {
+                prev = current;
+                current = current.parent();
+                continue;
+            }
+            return Optional.of(current);
+        }
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<RBNode<T>> predecessor(RBNode<T> node) {
+        if (node.isLeaf()) {
+            return Optional.empty();
+        }
+        if (!node.left().isLeaf()) {
+            RBNode<T> current = node.left();
+            while (!current.right().isLeaf()) {
+                current = current.right();
+            }
+            return Optional.of(current);
+        }
+        RBNode<T> prev = node;
+        RBNode<T> current = prev.parent();
+        while (!current.isLeaf()) {
+            if (prev == current.left()) {
+                prev = current;
+                current = current.parent();
+                continue;
+            }
+            return Optional.of(current);
+        }
+        return Optional.empty();
+    }
+
     public boolean delete(T value) {
         Optional<RBNode<T>> toDelete = findValue(value);
         if (toDelete.isEmpty()) {
@@ -278,7 +339,7 @@ public class RBTreeImpl<T> implements RBTree<T> {
             key = current.key().toString();
         }
         String total = level + key;
-        if (current.color()==Color.RED) {
+        if (current.color()== Color.RED) {
             total = ANSI_RED + total + ANSI_RESET;
         }
         System.out.println(total);
@@ -292,168 +353,8 @@ public class RBTreeImpl<T> implements RBTree<T> {
         print(tabLevel+1, current.right());
     }
 
-    private enum Color {
-        BLACK, RED
-    }
-    private interface RBNode<T> {
-        T key();
-        Color color();
-        RBNode<T> left();
-        RBNode<T> right();
-        RBNode<T> parent();
-        boolean isLeaf();
-        void setRight(RBNode<T> left);
-        void setLeft(RBNode<T> left);
-        void setParent(RBNode<T> x);
-        void setColor(Color color);
-        void setKey(T key);
-    }
-    private static class InnerRBNode<T> implements RBNode<T> {
-        private T key;
-        @Setter
-        private Color color;
-        private RBNode<T> left;
-        private RBNode<T> right;
-        private RBNode<T> parent;
 
-        public InnerRBNode(T key, Color color, RBNode<T> left, RBNode<T> right) {
-            this.key = key;
-            this.color = color;
-            this.left = left;
-            this.right = right;
-        }
 
-        @Override
-        public String toString() {
-            return color + ": " + key;
-        }
-
-        @Override
-        public T key() {
-            return key;
-        }
-
-        @Override
-        public Color color() {
-            return color;
-        }
-
-        @Override
-        public RBNode<T> left() {
-            return left;
-        }
-
-        @Override
-        public RBNode<T> right() {
-            return right;
-        }
-
-        @Override
-        public RBNode<T> parent() {
-            return parent;
-        }
-
-        @Override
-        public boolean isLeaf() {
-            return false;
-        }
-
-        @Override
-        public void setRight(RBNode<T> right) {
-            this.right = right;
-        }
-
-        @Override
-        public void setLeft(RBNode<T> left) {
-            this.left = left;
-        }
-
-        @Override
-        public void setParent(RBNode<T> parent) {
-            this.parent = parent;
-        }
-
-        @Override
-        public void setKey(T key) {
-            this.key = key;
-        }
-    }
-
-    private static class NilNode<T> implements RBNode<T> {
-        private Color color;
-        private RBNode<T> parent = this;
-        private RBNode<T> left = this;
-        private RBNode<T> right = this;
-        public NilNode() {
-            color = Color.BLACK;
-        }
-
-        @Override
-        public T key() {
-            throw new RBTreeException("Nil node has no key");
-        }
-
-        @Override
-        public Color color() {
-            return color;
-        }
-
-        @Override
-        public RBNode<T> left() {
-            return left;
-        }
-
-        @Override
-        public RBNode<T> right() {
-            return right;
-        }
-
-        @Override
-        public RBNode<T> parent() {
-            return parent;
-        }
-
-        @Override
-        public boolean isLeaf() {
-            return true;
-        }
-
-        @Override
-        public void setRight(RBNode<T> node) {
-            this.right = node;
-        }
-
-        @Override
-        public void setLeft(RBNode<T> left) {
-            this.left = left;
-        }
-
-        @Override
-        public void setParent(RBNode<T> x) {
-            this.parent = x;
-        }
-
-        @Override
-        public void setColor(Color color) {
-            this.color = color;
-        }
-
-        @Override
-        public void setKey(T key) {
-            throw new RBTreeException("Nil cannot have a key");
-        }
-
-        @Override
-        public String toString() {
-            return "nil";
-        }
-
-        public void reset() {
-            this.left = this;
-            this.right = this;
-            this.parent = this;
-        }
-    }
     private void resetNil() {
         nil.reset();
     }

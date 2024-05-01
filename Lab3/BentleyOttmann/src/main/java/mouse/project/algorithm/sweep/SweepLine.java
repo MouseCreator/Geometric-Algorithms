@@ -105,13 +105,12 @@ public class SweepLine {
     }
 
     private void processIntersections(List<IntersectionEvent> intersections) {
-        // reorder segments
         Set<TSegment> set = new HashSet<>();
         intersections.forEach(i -> {
             set.add(i.s1());
             set.add(i.s2());
         });
-        status.reorder(set, angleComparator);
+        status.reorder(set);
     }
 
     private void testIntersection(TSegment s1, TSegment s2) {
