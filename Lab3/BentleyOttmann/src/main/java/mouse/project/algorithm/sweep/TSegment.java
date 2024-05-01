@@ -11,4 +11,8 @@ public class TSegment {
     public Vector2 direction() {
         return Vector2.from(upper, lower).unit();
     }
+    public int getAtY(int y) {
+        //return x;
+        return 0;
+    }
 }

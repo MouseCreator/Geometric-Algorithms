@@ -10,10 +10,38 @@ import java.util.*;
 public class SweepLine {
     private Status<TSegment> status;
     private final Heap<Event> eventHeap;
-
+    private int currentY = 0;
     public SweepLine() {
         eventHeap = new BinaryHeap<>(eventComparator);
     }
+    private final Comparator<TSegment> segmentComparator = new Comparator<TSegment>() {
+        @Override
+        public int compare(TSegment o1, TSegment o2) {
+            if (o1 == o2) {
+                return 0;
+            }
+            if (o1.equals(o2)) {
+                return 0;
+            }
+            int x1 = o1.getAtY(currentY);
+            int x2 = o2.getAtY(currentY);
+            if (x1 != x2) {
+                return x1 - x2;
+            }
+            Vector2 v1 = o1.direction();
+            Vector2 v2 = o2.direction();
+            Vector2 xLeftUnit = Vector2.of(1, 0);
+            double diff = xLeftUnit.cos(v1) - xLeftUnit.cos(v2);
+            double tolerance = 0.0001;
+            if (Math.abs(diff) < tolerance) {
+                return 0;
+            }
+            if (diff < -tolerance) {
+                return -1;
+            }
+            return 1;
+        }
+    };
 
     private static final Comparator<Event> eventComparator = (e1, e2) -> {
         if (e1.position().y() < e2.position().y()) {
@@ -23,21 +51,6 @@ public class SweepLine {
             return 1;
         }
         return e1.position().x() - e2.position().x();
-    };
-
-    private static final Comparator<TSegment> angleComparator = (s1, s2) -> {
-        Vector2 v1 = s1.direction();
-        Vector2 v2 = s2.direction();
-        Vector2 left = Vector2.of(1, 0);
-        double diff = left.cos(v1) - left.cos(v2);
-        double tolerance = 0.0001;
-        if (Math.abs(diff) < tolerance) {
-            return 0;
-        }
-        if (diff < -tolerance) {
-            return -1;
-        }
-        return 1;
     };
 
     private interface Event {

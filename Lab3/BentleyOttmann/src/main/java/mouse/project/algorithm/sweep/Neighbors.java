@@ -5,4 +5,7 @@ public interface Neighbors<T> {
     T right();
     boolean hasLeft();
     boolean hasRight();
+
+    void setLeft(T left);
+    void setRight(T right);
 }
