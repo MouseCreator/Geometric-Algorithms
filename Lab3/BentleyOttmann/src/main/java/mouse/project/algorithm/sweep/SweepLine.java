@@ -1,5 +1,6 @@
 package mouse.project.algorithm.sweep;
 
+import lombok.Getter;
 import mouse.project.algorithm.heap.BinaryHeap;
 import mouse.project.algorithm.heap.Heap;
 import mouse.project.math.*;
@@ -9,10 +10,13 @@ import java.util.*;
 public class SweepLine {
     private final Status<TSegment> status;
     private final Heap<Event> eventHeap;
+    @Getter
+    private final Set<TIntersection> intersectionSet;
     private int currentY = 0;
     public SweepLine() {
         eventHeap = new BinaryHeap<>(eventComparator);
         status = new SegmentStatus(segmentComparator);
+        intersectionSet = new HashSet<>();
     }
     private final Comparator<TSegment> segmentComparator = (o1, o2) -> {
         if (o1 == o2) {
@@ -118,13 +122,15 @@ public class SweepLine {
                     throw new IllegalStateException("Unexpected event: " + e);
                 }
             });
-            detectAllIntersections(eventList);
+            detectAllIntersections(intersections);
             processIntersections(intersections);
         }
     }
 
-    private void detectAllIntersections(List<Event> eventList) {
-        // all segments in the events intersect at some point
+    private void detectAllIntersections(List<IntersectionEvent> eventList) {
+       eventList.forEach(e -> {
+           intersectionSet.add(new TIntersection(e.s1(), e.s2(), e.position()));
+       });
     }
 
     private void processIntersections(List<IntersectionEvent> intersections) {

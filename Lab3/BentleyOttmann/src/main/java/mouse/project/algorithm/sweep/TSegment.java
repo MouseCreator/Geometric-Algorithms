@@ -27,10 +27,6 @@ public class TSegment {
         }
         return optX;
     }
-
-    public boolean isParallelToOx() {
-        return asLine().isParallelToOx();
-    }
     public GenLine asLine() {
         int x0 = upper.x();
         int x1 = lower.x();
