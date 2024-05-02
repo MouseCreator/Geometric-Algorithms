@@ -18,4 +18,6 @@ public class ConstUtils {
     public static final double MIN_SEGMENT_LENGTH = 8.0;
     public static final Color SEGMENT_COLOR = Color.BLACK;
     public static final double END_AT_TOLERANCE = 4.0;
+    public static final Color INTERSECTION_COLOR = Color.ORANGE;
+    public static final int INTERSECTION_DIAMETER = 8;
 }

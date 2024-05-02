@@ -9,8 +9,14 @@ import java.util.Optional;
 
 @Data
 public class TSegment {
-    private Position upper;
-    private Position lower;
+    private final Position upper;
+    private final Position lower;
+
+    public TSegment(Position from, Position to) {
+        upper= from;
+        lower = to;
+    }
+
     public Vector2 direction() {
         return Vector2.from(upper, lower).unit();
     }
@@ -39,6 +45,10 @@ public class TSegment {
         double b = y1 - k * x1;
 
         return new GenLine(k, -1, b);
+    }
 
+    @Override
+    public String toString() {
+        return upper + "->" + lower;
     }
 }

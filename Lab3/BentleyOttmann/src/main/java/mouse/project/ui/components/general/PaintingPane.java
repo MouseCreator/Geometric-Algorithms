@@ -1,12 +1,14 @@
 package mouse.project.ui.components.general;
 
-import mouse.project.algorithm.Algorithm;
+import mouse.project.algorithm.BOAlgorithm;
 import mouse.project.event.service.EventAddRegister;
 import mouse.project.event.service.EventDeleteRegister;
 import mouse.project.event.service.EventListener;
 import mouse.project.event.service.Events;
 import mouse.project.event.type.*;
 import mouse.project.event.type.Event;
+import mouse.project.graphics.GraphicsChangeListener;
+import mouse.project.graphics.GraphicsChangeListenerImpl;
 import mouse.project.saver.SaveLoad;
 import mouse.project.state.ConstUtils;
 import mouse.project.state.MouseAction;
@@ -35,15 +37,17 @@ public class PaintingPane implements AppComponent, ProgramModeListener, EventLis
     private final ClickHandler rightClickHandler = new RightClickHandler();
     private final Segments segments;
     private List<GeneralEventHandler> eventHandlers;
-    private Algorithm algorithm;
+    private final BOAlgorithm algorithm;
     private final List<ClickHandler> clickHandlers;
     public PaintingPane() {
         this.drawPanel = new DrawPanel();
         drawManager = State.get().getProgramState().getDrawManager();
         clickHandlers = createClickHandlers();
         segments = new Segments(drawManager);
+        GraphicsChangeListener graphicsChangeListener = new GraphicsChangeListenerImpl(drawManager);
         State.get().getProgramState().registerListener(this);
         Events.register(this);
+        algorithm = new BOAlgorithm(graphicsChangeListener);
         createEventHandlers();
     }
 
@@ -271,6 +275,9 @@ public class PaintingPane implements AppComponent, ProgramModeListener, EventLis
         }
         @Override
         public void drag(Position position) {
+            if (!isActive()) {
+                return;
+            }
             if (position == null) {
                 activeEnd.setPosition(startPosition);
                 hide();

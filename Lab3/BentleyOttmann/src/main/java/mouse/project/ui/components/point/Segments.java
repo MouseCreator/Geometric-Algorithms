@@ -85,4 +85,8 @@ public class Segments implements SavableHolder {
         }
         return Optional.empty();
     }
+
+    public List<Segment> getAll() {
+        return new ArrayList<>(segmentList);
+    }
 }
