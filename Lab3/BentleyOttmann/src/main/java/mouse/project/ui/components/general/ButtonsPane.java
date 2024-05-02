@@ -32,6 +32,7 @@ public class ButtonsPane implements AppComponent {
         State.get().getProgramState().updateMode(ProgramMode.SEGMENTS);
     }
     private void onFindButton() {
+        State.get().getProgramState().updateMode(ProgramMode.FIND_INTERSECTIONS);
         logger.debug("Find Intersections pressed!");
     }
     private void onEraseButton() {

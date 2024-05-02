@@ -3,6 +3,7 @@ package mouse.project.ui.components.point;
 import lombok.Data;
 import mouse.project.saver.Savable;
 import mouse.project.state.ConstUtils;
+import mouse.project.state.State;
 import mouse.project.ui.components.main.Drawable;
 import mouse.project.math.Box;
 import mouse.project.math.MathUtils;
@@ -86,10 +87,44 @@ public class Segment implements Savable, Drawable {
 
         g2d.drawLine(x1, y1, x2, y2);
 
+        FontMetrics fontMetrics = g2d.getFontMetrics();
+        if (State.get().getGraphicState().isShowNames()) {
+            drawTitle(g2d, fontMetrics);
+        }
+        if (State.get().getGraphicState().isShowCoordinates()) {
+            drawEnd(g2d, from, fontMetrics);
+            drawEnd(g2d, to, fontMetrics);
+        }
         int diameter = ConstUtils.SEGMENT_END_DIAMETER;
         int radius = diameter >> 1;
         g2d.fillOval(from.getPosition().x() - radius, from.getPosition().y() - radius, diameter, diameter);
         g2d.fillOval(to.getPosition().x() - radius, to.getPosition().y() - radius, diameter, diameter);
+    }
+
+    private void drawTitle(Graphics2D g2d, FontMetrics fontMetrics) {
+        if (id == null) {
+            return;
+        }
+        int mx = (from.getPosition().x() + to.getPosition().x()) >>> 1;
+        int my = (from.getPosition().y() + to.getPosition().y()) >>> 1;
+        Position middle = Position.of(mx, my);
+        Vector2 vector = Vector2.from(from.getPosition(), to.getPosition());
+        Position textPos = middle.move(vector.orthogonal().multiply(5));
+        String text = id;
+        int textWidth = fontMetrics.stringWidth(text);
+        int textHeight = fontMetrics.getHeight();
+        int textX = textPos.x() + textWidth>>>1;
+        int textY = textPos.y() + textHeight>>>1;
+        g2d.drawString(text, textX, textY);
+    }
+
+    private void drawEnd(Graphics2D g2d, SegmentEnd end, FontMetrics fontMetrics) {
+        String positionText = end.getPosition().toString();
+        int textWidth = fontMetrics.stringWidth(positionText);
+        int textHeight = fontMetrics.getHeight();
+        int textX = end.getPosition().x() - ConstUtils.SEGMENT_END_DIAMETER >>> 1 - textWidth - 5;
+        int textY = end.getPosition().y() + (textHeight >>> 1);
+        g2d.drawString(positionText, textX, textY);
     }
 
     @Override

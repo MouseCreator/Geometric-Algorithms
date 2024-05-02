@@ -1,5 +1,6 @@
 package mouse.project.ui.components.point;
 
+import lombok.Getter;
 import mouse.project.saver.Savable;
 import mouse.project.saver.SavableHolder;
 import mouse.project.ui.components.draw.DrawManager;
@@ -12,9 +13,12 @@ public class Segments implements SavableHolder {
 
     private final List<Segment> segmentList;
     private final DrawManager drawManager;
+    @Getter
+    private final IdGenerator idGenerator;
     public Segments(DrawManager drawManager) {
         segmentList = new ArrayList<>();
         this.drawManager = drawManager;
+        idGenerator = new IdGeneratorImpl();
     }
 
     @Override
@@ -59,6 +63,7 @@ public class Segments implements SavableHolder {
         }
         toBeRemoved.forEach(drawManager::onRemove);
         segmentList.removeAll(toBeRemoved);
+        toBeRemoved.forEach(s -> idGenerator.free(s.getId()));
     }
 
     public void clear() {
@@ -72,8 +77,14 @@ public class Segments implements SavableHolder {
 
     private void onAdd(Segment segment, boolean addToGraphics) {
         segmentList.add(segment);
-        if (addToGraphics)
+        if (segment.getId()==null) {
+            segment.setId(idGenerator.generateAndPut());
+        } else {
+            idGenerator.put(segment.getId());
+        }
+        if (addToGraphics) {
             drawManager.onAdd(segment);
+        }
     }
 
     public Optional<SegmentEndRecord> getEndAt(Position position) {

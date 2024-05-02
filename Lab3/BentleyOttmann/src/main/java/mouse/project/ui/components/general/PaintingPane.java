@@ -62,6 +62,7 @@ public class PaintingPane implements AppComponent, ProgramModeListener, EventLis
         List<ClickHandler> handlers = new ArrayList<>();
         handlers.add(new EraseClickHandler());
         handlers.add(new SegmentsClickHandler());
+        handlers.add(new IntersectionsClickHandler());
         return handlers;
     }
 
@@ -320,6 +321,7 @@ public class PaintingPane implements AppComponent, ProgramModeListener, EventLis
             }
             active = true;
             currentSegment = new Segment();
+            currentSegment.setId(segments.getIdGenerator().generate());
             fromEnd = new SegmentEnd(position);
             toEnd = new SegmentEnd(position);
             currentSegment.setFrom(fromEnd);
@@ -343,6 +345,14 @@ public class PaintingPane implements AppComponent, ProgramModeListener, EventLis
             active = false;
             fromEnd = null;
             toEnd = null;
+            if (currentSegment != null)
+                segments.getIdGenerator().free(currentSegment.getId());
+            currentSegment = null;
+        }
+        private void saveAndHide() {
+            active = false;
+            fromEnd = null;
+            toEnd = null;
             currentSegment = null;
         }
 
@@ -361,7 +371,7 @@ public class PaintingPane implements AppComponent, ProgramModeListener, EventLis
                 return;
             }
             segments.addSegment(currentSegment, false);
-            hide();
+            saveAndHide();
         }
 
         @Override
@@ -372,6 +382,22 @@ public class PaintingPane implements AppComponent, ProgramModeListener, EventLis
         @Override
         public void onDisable() {
             hide();
+        }
+    }
+
+    public class IntersectionsClickHandler implements ClickHandler {
+        @Override
+        public boolean isApplied(ProgramMode mode) {
+            return mode == ProgramMode.FIND_INTERSECTIONS;
+        }
+        @Override
+        public void onEnable() {
+            algorithm.apply(segments);
+        }
+
+        @Override
+        public void onDisable() {
+            algorithm.clear();
         }
     }
 

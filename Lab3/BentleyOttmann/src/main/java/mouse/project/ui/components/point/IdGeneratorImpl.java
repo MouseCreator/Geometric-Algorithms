@@ -58,7 +58,6 @@ public class IdGeneratorImpl implements IdGenerator {
     private char fromChar(int k) {
         return k == 0 ? '_' : (char) (k + 'A' - 1);
     }
-
     protected List<String> keys() {
         return new ArrayList<>(localKeys);
     }
@@ -104,5 +103,10 @@ public class IdGeneratorImpl implements IdGenerator {
     }
     public void free(String id) {
         localKeys.remove(id);
+    }
+
+    @Override
+    public String generate() {
+        return generateNext();
     }
 }

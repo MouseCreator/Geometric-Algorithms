@@ -36,4 +36,8 @@ public class Position {
     public static Optional<Position> opt(int x, int y) {
         return Optional.of(Position.of(x,y));
     }
+
+    public Position move(Vector2 vector2) {
+        return Position.of((int)(x + vector2.x()), (int)(y + vector2.y()));
+    }
 }
