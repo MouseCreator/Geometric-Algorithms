@@ -33,11 +33,11 @@ public class Segments implements SavableHolder {
 
     @Override
     public Map<String, Supplier<Savable>> getKeyMap() {
+
         Map<String, Supplier<Savable>> map = new HashMap<>();
-        for (Segment segment : segmentList) {
-            map.put(segment.key(), () -> segment);
-        }
+        map.put("segment", Segment::new);
         return map;
+
     }
 
     @Override

@@ -32,11 +32,13 @@ public class BOAlgorithm implements Algorithm {
         allIntersections.forEach(i -> {
             graphicsChangeListener.add(new IntersectionsGFX(i.intersection()));
         });
+        graphicsChangeListener.show();
         logAll(allIntersections);
 
     }
 
     private void logAll(Set<TIntersection> allIntersections) {
+        logger.debug("Found " + allIntersections.size() + " intersections");
         allIntersections.forEach(i -> {
             logger.debug("INTERSECTION: " + i.print());
         });

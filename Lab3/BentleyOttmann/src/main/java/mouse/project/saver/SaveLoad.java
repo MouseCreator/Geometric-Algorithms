@@ -11,7 +11,9 @@ import java.nio.file.Paths;
 
 public class SaveLoad {
     private static final GenericSaver GENERIC_SAVER = new GenericSaver();
-    private static final String defaultName = "example.points";
+
+    private static final String extension = "segments";
+    private static final String defaultName = "example." + extension;
     public static void save(SavableHolder savableHolder) {
         String content = GENERIC_SAVER.toSaveString(savableHolder);
 
@@ -27,7 +29,7 @@ public class SaveLoad {
     private static JFileChooser initFileChooser() {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-        fileChooser.setFileFilter(new FileNameExtensionFilter("Point files (*.points)", "points"));
+        fileChooser.setFileFilter(new FileNameExtensionFilter("Files (*." + extension+")", extension));
         File file = chooseInitialPosition();
         fileChooser.setSelectedFile(file);
         return fileChooser;
@@ -37,7 +39,7 @@ public class SaveLoad {
         File fileToSave = fileChooser.getSelectedFile();
         String oldPath = fileToSave.getPath();
         if (!oldPath.endsWith(".points")) {
-            fileToSave = new File(oldPath + ".points");
+            fileToSave = new File(oldPath + "." + extension);
         }
         String newPath = fileToSave.getPath();
         FileManager fileManager = new FileManager();

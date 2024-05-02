@@ -97,7 +97,7 @@ public class SweepLine {
             currentY = nextEvent.position().y();
             List<Event> eventList = new ArrayList<>();
             eventList.add(nextEvent);
-            while (eventComparator.compare(eventHeap.minimum(), nextEvent) == 0) {
+            while (!eventHeap.isEmpty() && eventComparator.compare(eventHeap.minimum(), nextEvent) == 0) {
                 eventList.add(eventHeap.extractMin());
             }
             List<IntersectionEvent> intersections = new ArrayList<>();
