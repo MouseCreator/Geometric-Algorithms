@@ -34,21 +34,29 @@ public class PaintingPane implements AppComponent, ProgramModeListener, EventLis
     private final DrawPanel drawPanel;
     private final DrawManager drawManager;
     private ClickHandler clickHandler = new ClickHandler() {};
-    private final ClickHandler rightClickHandler = new RightClickHandler();
+    private ClickHandler rightClickHandler = new RightClickHandler();
     private final Segments segments;
     private List<GeneralEventHandler> eventHandlers;
     private final BOAlgorithm algorithm;
     private final List<ClickHandler> clickHandlers;
+    private final List<ClickHandler> rightClickHandlers;
     public PaintingPane() {
         this.drawPanel = new DrawPanel();
         drawManager = State.get().getProgramState().getDrawManager();
         clickHandlers = createClickHandlers();
+        rightClickHandlers = createRightClicks();
         segments = new Segments(drawManager);
         GraphicsChangeListener graphicsChangeListener = new GraphicsChangeListenerImpl(drawManager);
         State.get().getProgramState().registerListener(this);
         Events.register(this);
         algorithm = new BOAlgorithm(graphicsChangeListener);
         createEventHandlers();
+    }
+
+    private List<ClickHandler> createRightClicks() {
+        List<ClickHandler> handlers = new ArrayList<>();
+        handlers.add(new RightClickHandler());
+        return handlers;
     }
 
     private void createEventHandlers() {
@@ -77,9 +85,14 @@ public class PaintingPane implements AppComponent, ProgramModeListener, EventLis
     @Override
     public void onProgramModeChange(ProgramMode programMode) {
         Optional<ClickHandler> handler = clickHandlers.stream().filter(s -> s.isApplied(programMode)).findFirst();
+        Optional<ClickHandler> rightClick = rightClickHandlers.stream().filter(s -> s.isApplied(programMode)).findFirst();
         clickHandler.onDisable();
+        rightClickHandler.onDisable();
         clickHandler = handler.orElse(new ClickHandler() {});
+        rightClickHandler = rightClick.orElse(new ClickHandler() {});
         clickHandler.onEnable();
+        rightClickHandler.onEnable();
+
     }
 
     @Override
@@ -263,7 +276,7 @@ public class PaintingPane implements AppComponent, ProgramModeListener, EventLis
         }
         @Override
         public boolean isApplied(ProgramMode mode) {
-            return true;
+            return mode != ProgramMode.FIND_INTERSECTIONS;
         }
         @Override
         public void press(Position position) {

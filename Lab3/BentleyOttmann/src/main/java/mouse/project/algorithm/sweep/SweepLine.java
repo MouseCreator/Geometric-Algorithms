@@ -13,15 +13,13 @@ public class SweepLine {
     @Getter
     private final Set<TIntersection> intersectionSet;
     private int currentY = 0;
+    private boolean reordering = false;
     public SweepLine() {
         eventHeap = new BinaryHeap<>(eventComparator);
         status = new SegmentStatus(segmentComparator);
         intersectionSet = new HashSet<>();
     }
     private final Comparator<TSegment> segmentComparator = (o1, o2) -> {
-        if (o1 == o2) {
-            return 0;
-        }
         if (o1.equals(o2)) {
             return 0;
         }
@@ -49,10 +47,11 @@ public class SweepLine {
         if (Math.abs(diff) < tolerance) {
             return 0;
         }
-        if (diff < -tolerance) {
-            return -1;
+        if (reordering) {
+            return diff < -tolerance ? 1 : -1;
+        } else {
+            return diff < -tolerance ? -1 : 1;
         }
-        return 1;
     };
 
     private static final Comparator<Event> eventComparator = (e1, e2) -> {
@@ -70,12 +69,24 @@ public class SweepLine {
     }
 
     private record StartEvent(Position position, TSegment segment) implements Event {
+        @Override
+        public String toString() {
+            return "Start " + segment.getId() + ": " + position;
+        }
     }
 
     private record EndEvent(Position position, TSegment segment) implements Event {
+        @Override
+        public String toString() {
+            return "End " + segment.getId() + ": " + position;
+        }
     }
 
     private record IntersectionEvent(Position position, TSegment s1, TSegment s2) implements Event {
+        @Override
+        public String toString() {
+            return "Intersect " + s1.getId() + " and " + s2.getId() + ": " + position;
+        }
     }
 
     public void scan(TSegmentSet segmentSet) {
@@ -101,7 +112,7 @@ public class SweepLine {
                 eventList.add(eventHeap.extractMin());
             }
             List<IntersectionEvent> intersections = new ArrayList<>();
-            eventList.forEach(e -> {
+            for (Event e : eventList) {
                 if (e instanceof StartEvent) {
                     TSegment segment = ((StartEvent) e).segment();
                     Neighbors<TSegment> neighbors = status.insert(segment);
@@ -112,7 +123,8 @@ public class SweepLine {
                         testIntersection(segment, neighbors.right());
                     }
                 } else if (e instanceof EndEvent) {
-                    Neighbors<TSegment> neighbors = status.delete(((EndEvent) e).segment());
+                    TSegment segment = ((EndEvent) e).segment();
+                    Neighbors<TSegment> neighbors = status.delete(segment);
                     if (neighbors.hasLeft() && neighbors.hasRight()) {
                         testIntersection(neighbors.left(), neighbors.right());
                     }
@@ -121,7 +133,7 @@ public class SweepLine {
                 } else {
                     throw new IllegalStateException("Unexpected event: " + e);
                 }
-            });
+            }
             detectAllIntersections(intersections);
             processIntersections(intersections);
         }
@@ -139,12 +151,31 @@ public class SweepLine {
             set.add(i.s1());
             set.add(i.s2());
         });
-        status.reorder(set);
+        if (set.isEmpty()) {
+            return;
+        }
+        reordering = true;
+
+        for (TSegment tSegment : set) {
+            status.delete(tSegment);
+        }
+        reordering = false;
+        for (TSegment tSegment : set) {
+            Neighbors<TSegment> neighbors = status.insert(tSegment);
+            if (neighbors.hasLeft() && !set.contains(neighbors.left())) {
+                testIntersection(tSegment, neighbors.left());
+            }
+            if (neighbors.hasRight() && !set.contains(neighbors.right())) {
+                testIntersection(tSegment, neighbors.right());
+            }
+        }
+
     }
 
-    private void testIntersection(TSegment s1, TSegment s2) {
+    private boolean testIntersection(TSegment s1, TSegment s2) {
         Optional<Position> p1 = findIntersectionPosition(s1, s2);
         p1.ifPresent(position -> eventHeap.insert(new IntersectionEvent(position, s1, s2)));
+        return p1.isPresent();
     }
     private Optional<Position> findIntersectionPosition(TSegment s1, TSegment s2) {
         GenLine line1 = s1.asLine();

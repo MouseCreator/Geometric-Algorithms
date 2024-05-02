@@ -109,4 +109,13 @@ class RBTreeImplTest {
         });
 
     }
+
+    @Test
+    void testCertainOrder() {
+        //TODO: fix tree bug
+        rbTree.insert(3);
+        rbTree.insert(1);
+        rbTree.insert(2);
+        range(1, 3).forEach(s -> assertTrue(rbTree.contains(s)));
+    }
 }

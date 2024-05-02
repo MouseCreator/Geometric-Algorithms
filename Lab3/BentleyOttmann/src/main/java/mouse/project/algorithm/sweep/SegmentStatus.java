@@ -12,7 +12,6 @@ import java.util.Set;
 public class SegmentStatus implements Status<TSegment> {
 
     private final RBTree<TSegment> segmentRBTree;
-    private int comparingY;
 
     public SegmentStatus(Comparator<TSegment> c) {
         segmentRBTree = new RBTreeImpl<>(c);
@@ -26,7 +25,7 @@ public class SegmentStatus implements Status<TSegment> {
         Optional<RBNode<TSegment>> left = segmentRBTree.predecessor(inserted);
         left.ifPresent(i -> neighbors.setLeft(i.key()));
 
-        Optional<RBNode<TSegment>> right = segmentRBTree.predecessor(inserted);
+        Optional<RBNode<TSegment>> right = segmentRBTree.successor(inserted);
         right.ifPresent(i -> neighbors.setRight(i.key()));
         return neighbors;
     }
@@ -41,16 +40,17 @@ public class SegmentStatus implements Status<TSegment> {
         Optional<RBNode<TSegment>> left = segmentRBTree.predecessor(rbNode.get());
         left.ifPresent(i -> neighbors.setLeft(i.key()));
 
-        Optional<RBNode<TSegment>> right = segmentRBTree.predecessor(rbNode.get());
+        Optional<RBNode<TSegment>> right = segmentRBTree.successor(rbNode.get());
         right.ifPresent(i -> neighbors.setRight(i.key()));
 
         segmentRBTree.delete(segment);
         return neighbors;
     }
 
+
+
     @Override
-    public void reorder(Set<TSegment> set) {
-        set.forEach(this::delete);
-        set.forEach(this::insert);
+    public String toString() {
+        return "Tree={" + segmentRBTree + '}';
     }
 }

@@ -420,4 +420,26 @@ public class RBTreeImpl<T> implements RBTree<T> {
         this.root = root;
     }
 
+    @Override
+    public String toString() {
+        return "[ " + collectAll() + "]";
+    }
+
+    private String collectAll() {
+        if (isEmpty()) {
+            return "";
+        }
+        StringBuilder builder = new StringBuilder();
+        collectAll(builder, root);
+        return builder.toString();
+    }
+
+    private void collectAll(StringBuilder builder, RBNode<T> current) {
+        if (current.isLeaf()) {
+            return;
+        }
+        collectAll(builder, current.left());
+        builder.append(current.key()).append(" ");
+        collectAll(builder, current.right());
+    }
 }

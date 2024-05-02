@@ -103,4 +103,9 @@ public class BinaryHeap<T> implements Heap<T> {
     public void clear() {
         list.clear();
     }
+
+    @Override
+    public String toString() {
+        return "Heap: " + list;
+    }
 }
