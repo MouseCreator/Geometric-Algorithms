@@ -109,12 +109,16 @@ public class Segment implements Savable, Drawable {
         int my = (from.getPosition().y() + to.getPosition().y()) >>> 1;
         Position middle = Position.of(mx, my);
         Vector2 vector = Vector2.from(from.getPosition(), to.getPosition());
-        Position textPos = middle.move(vector.orthogonal().multiply(5));
+
+        Vector2 orth = vector.orthogonal();
+        int multiplier = orth.cos(Vector2.of(0,1)) > 0 ? -8 : 8;
+        orth = orth.multiply(multiplier);
+        Position textPos = middle.move(orth);
         String text = id;
         int textWidth = fontMetrics.stringWidth(text);
         int textHeight = fontMetrics.getHeight();
-        int textX = textPos.x() + textWidth>>>1;
-        int textY = textPos.y() + textHeight>>>1;
+        int textX = textPos.x() - (textWidth>>>1);
+        int textY = textPos.y() - (textHeight>>>1);
         g2d.drawString(text, textX, textY);
     }
 
@@ -122,7 +126,7 @@ public class Segment implements Savable, Drawable {
         String positionText = end.getPosition().toString();
         int textWidth = fontMetrics.stringWidth(positionText);
         int textHeight = fontMetrics.getHeight();
-        int textX = end.getPosition().x() - ConstUtils.SEGMENT_END_DIAMETER >>> 1 - textWidth - 5;
+        int textX = end.getPosition().x() - (ConstUtils.SEGMENT_END_DIAMETER >>> 1) - textWidth - 5;
         int textY = end.getPosition().y() + (textHeight >>> 1);
         g2d.drawString(positionText, textX, textY);
     }

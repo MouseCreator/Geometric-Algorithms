@@ -9,12 +9,14 @@ import java.util.Optional;
 
 @Data
 public class TSegment {
+    private final String id;
     private final Position upper;
     private final Position lower;
 
-    public TSegment(Position from, Position to) {
+    public TSegment(String id, Position from, Position to) {
         upper= from;
         lower = to;
+        this.id = id;
     }
 
     public Vector2 direction() {
@@ -49,6 +51,6 @@ public class TSegment {
 
     @Override
     public String toString() {
-        return upper + "->" + lower;
+        return id + ":" + upper + "->" + lower;
     }
 }

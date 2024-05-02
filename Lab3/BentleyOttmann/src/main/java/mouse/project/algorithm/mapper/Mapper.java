@@ -30,9 +30,9 @@ public class Mapper {
             Position from = s.getFrom().getPosition();
             Position to = s.getTo().getPosition();
             if (positionComparator.compare(from, to) < 0) {
-                return new TSegment(from, to);
+                return new TSegment(s.getId(), from, to);
             }
-            return new TSegment(to, from);
+            return new TSegment(s.getId(), to, from);
         }).toList();
         return new TSegmentSetImpl(list);
     }

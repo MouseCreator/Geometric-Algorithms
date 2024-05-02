@@ -288,6 +288,9 @@ public class PaintingPane implements AppComponent, ProgramModeListener, EventLis
         }
         @Override
         public void release(Position position) {
+            if (!isActive()) {
+                return;
+            }
             if (position == null || ofSegment.length() < ConstUtils.MIN_SEGMENT_LENGTH) {
                 activeEnd.setPosition(startPosition);
             } else {

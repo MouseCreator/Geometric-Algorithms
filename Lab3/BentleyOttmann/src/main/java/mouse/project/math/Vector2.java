@@ -48,10 +48,7 @@ public record Vector2(double x, double y) {
         if (x == 0 && y == 0) {
             return Vector2.zeros();
         }
-        if (x == 0) {
-            return Vector2.of(1, 0);
-        }
-        return Vector2.of(-y/x, 1).unit();
+        return Vector2.of(y, -x).unit();
     }
 }
 
