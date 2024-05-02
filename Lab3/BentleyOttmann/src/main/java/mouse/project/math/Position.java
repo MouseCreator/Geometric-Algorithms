@@ -2,6 +2,8 @@ package mouse.project.math;
 
 import lombok.EqualsAndHashCode;
 
+import java.util.Optional;
+
 @EqualsAndHashCode
 public class Position {
     private final int x;
@@ -29,5 +31,9 @@ public class Position {
     @Override
     public String toString() {
         return String.format("{%d %d}", x, y);
+    }
+
+    public static Optional<Position> opt(int x, int y) {
+        return Optional.of(Position.of(x,y));
     }
 }

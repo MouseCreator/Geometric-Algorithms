@@ -2,45 +2,53 @@ package mouse.project.algorithm.sweep;
 
 import mouse.project.algorithm.heap.BinaryHeap;
 import mouse.project.algorithm.heap.Heap;
-import mouse.project.math.Position;
-import mouse.project.math.Vector2;
+import mouse.project.math.*;
 
 import java.util.*;
 
 public class SweepLine {
-    private Status<TSegment> status;
+    private final Status<TSegment> status;
     private final Heap<Event> eventHeap;
     private int currentY = 0;
     public SweepLine() {
         eventHeap = new BinaryHeap<>(eventComparator);
+        status = new SegmentStatus(segmentComparator);
     }
-    private final Comparator<TSegment> segmentComparator = new Comparator<TSegment>() {
-        @Override
-        public int compare(TSegment o1, TSegment o2) {
-            if (o1 == o2) {
-                return 0;
-            }
-            if (o1.equals(o2)) {
-                return 0;
-            }
-            int x1 = o1.getAtY(currentY);
-            int x2 = o2.getAtY(currentY);
-            if (x1 != x2) {
-                return x1 - x2;
-            }
-            Vector2 v1 = o1.direction();
-            Vector2 v2 = o2.direction();
-            Vector2 xLeftUnit = Vector2.of(1, 0);
-            double diff = xLeftUnit.cos(v1) - xLeftUnit.cos(v2);
-            double tolerance = 0.0001;
-            if (Math.abs(diff) < tolerance) {
-                return 0;
-            }
-            if (diff < -tolerance) {
-                return -1;
-            }
+    private final Comparator<TSegment> segmentComparator = (o1, o2) -> {
+        if (o1 == o2) {
+            return 0;
+        }
+        if (o1.equals(o2)) {
+            return 0;
+        }
+        Optional<Integer> x1Opt = o1.getX(currentY);
+        Optional<Integer> x2Opt = o2.getX(currentY);
+        if (x1Opt.isEmpty() && x2Opt.isEmpty()) {
+            return 0;
+        }
+        if (x1Opt.isEmpty()) {
             return 1;
         }
+        if (x2Opt.isEmpty()) {
+            return -1;
+        }
+        int x1 = x1Opt.get();
+        int x2 = x2Opt.get();
+        if (x1 != x2) {
+            return x1 - x2;
+        }
+        Vector2 v1 = o1.direction();
+        Vector2 v2 = o2.direction();
+        Vector2 xLeftUnit = Vector2.of(1, 0);
+        double diff = xLeftUnit.cos(v1) - xLeftUnit.cos(v2);
+        double tolerance = 0.0001;
+        if (Math.abs(diff) < tolerance) {
+            return 0;
+        }
+        if (diff < -tolerance) {
+            return -1;
+        }
+        return 1;
     };
 
     private static final Comparator<Event> eventComparator = (e1, e2) -> {
@@ -69,6 +77,7 @@ public class SweepLine {
     public void scan(TSegmentSet segmentSet) {
         List<TSegment> all = new ArrayList<>(segmentSet.getAll());
         generateEventsFrom(all);
+        scanEvents();
     }
 
     private void generateEventsFrom(List<TSegment> all) {
@@ -81,6 +90,7 @@ public class SweepLine {
     private void scanEvents() {
         while (!eventHeap.isEmpty()) {
             Event nextEvent = eventHeap.extractMin();
+            currentY = nextEvent.position().y();
             List<Event> eventList = new ArrayList<>();
             eventList.add(nextEvent);
             while (eventComparator.compare(eventHeap.minimum(), nextEvent) == 0) {
@@ -127,6 +137,42 @@ public class SweepLine {
     }
 
     private void testIntersection(TSegment s1, TSegment s2) {
+        Optional<Position> p1 = findIntersectionPosition(s1, s2);
+        p1.ifPresent(position -> eventHeap.insert(new IntersectionEvent(position, s1, s2)));
+    }
+    private Optional<Position> findIntersectionPosition(TSegment s1, TSegment s2) {
+        GenLine line1 = s1.asLine();
+        GenLine line2 = s2.asLine();
+
+        if (line1.overlaps(line2)) {
+            if (line1.isParallelToOx()) {
+                TSegment rightMost = s1.getLower().x() > s2.getLower().x() ? s1 : s2;
+                TSegment leftMost = s1.getLower().x() > s2.getLower().x() ? s2 : s1;
+                if (leftMost.getLower().x() < rightMost.getUpper().x()) {
+                    return Position.opt(rightMost.getUpper().x(), currentY);
+                }
+                return Optional.empty();
+            }
+            Optional<Integer> x1Opt = line1.calculateX(currentY);
+            Optional<Integer> x2Opt = line2.calculateX(currentY);
+            assert x1Opt.isPresent() && x2Opt.isPresent();
+            int x1 = x1Opt.get();
+            int x2 = x2Opt.get();
+            return x1 == x2 ? Optional.of(Position.of(x1, currentY)) : Optional.empty();
+        }
+
+        Optional<Position> pOpt = line1.intersectionPoint(line2);
+        if (pOpt.isEmpty()) {
+            return Optional.empty();
+        }
+        Position lineIntersection = pOpt.get();
+
+        Box box1 = new Box(s1.getLower(), s1.getUpper());
+        Box box2 = new Box(s2.getUpper(), s2.getLower());
+        if (box1.contains(lineIntersection) && box2.contains(lineIntersection)) {
+            return Optional.of(lineIntersection);
+        }
+        return Optional.empty();
     }
 
 

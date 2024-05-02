@@ -14,6 +14,10 @@ public class Box {
         topRight = Position.of(upperX, upperY);
     }
 
+    public Box(int x1, int y1, int x2, int y2) {
+        this(Position.of(x1, y1), Position.of(x2, y2));
+    }
+
     public boolean contains(Position a) {
         int y = a.y();
         int x = a.x();
