@@ -238,17 +238,18 @@ public class RBTreeImpl<T> implements RBTree<T> {
                 if (color(left(w)) == Color.BLACK && color(right(w)) == Color.BLACK) {
                     color(w, Color.RED);
                     x = p(x);
-                } else if (color(right(w)) == Color.BLACK) {
-                    color(left(w), Color.BLACK);
-                    color(w, Color.RED);
-                    rightRotate(w);
-                    w = right(p(x));
+                } else {
+                    if (color(right(w)) == Color.BLACK) {
+                        color(left(w), Color.BLACK);
+                        color(w, Color.RED);
+                        rightRotate(w);
+                        w = right(p(x));
+                    }
+                    color(w, color(p(x)));
+                    color(p(x), Color.BLACK);
+                    color(right(w), Color.BLACK);
+                    leftRotate(p(x));
                 }
-                color(w, color(p(x)));
-                color(p(x), Color.BLACK);
-                color(right(w), Color.BLACK);
-                leftRotate(p(x));
-                setRoot(x);
             } else {
                 RBNode<T> w = left(p(x));
                 if (color(w) == Color.RED) {
@@ -260,17 +261,18 @@ public class RBTreeImpl<T> implements RBTree<T> {
                 if (color(right(w)) == Color.BLACK && color(left(w)) == Color.BLACK) {
                     color(w, Color.RED);
                     x = p(x);
-                } else if (color(left(w)) == Color.BLACK) {
-                    color(right(w), Color.BLACK);
-                    color(w, Color.RED);
-                    leftRotate(w);
-                    w = left(p(x));
+                } else {
+                    if (color(left(w)) == Color.BLACK) {
+                        color(right(w), Color.BLACK);
+                        color(w, Color.RED);
+                        leftRotate(w);
+                        w = left(p(x));
+                    }
+                    color(w, color(p(x)));
+                    color(p(x), Color.BLACK);
+                    color(left(w), Color.BLACK);
+                    rightRotate(p(x));
                 }
-                color(w, color(p(x)));
-                color(p(x), Color.BLACK);
-                color(left(w), Color.BLACK);
-                rightRotate(p(x));
-                setRoot(x);
             }
         }
         color(x, Color.BLACK);
