@@ -42,10 +42,11 @@ public class RBTreeImpl<T> implements RBTree<T> {
         } else {
             right(y, z);
         }
-        return insertFixup(z);
+        insertFixup(z);
+        return z;
     }
 
-    private RBNode<T> insertFixup(RBNode<T> z) {
+    private void insertFixup(RBNode<T> z) {
         while (color(p(z)) == Color.RED) {
             if (p(z) == left(p(p(z)))) {
                 RBNode<T> y = right(p(p(z)));
@@ -83,7 +84,6 @@ public class RBTreeImpl<T> implements RBTree<T> {
         }
         color(root, Color.BLACK);
         nil.reset();
-        return z;
     }
 
     public boolean contains(T value) {
@@ -248,7 +248,7 @@ public class RBTreeImpl<T> implements RBTree<T> {
                 color(p(x), Color.BLACK);
                 color(right(w), Color.BLACK);
                 leftRotate(p(x));
-                break;
+                setRoot(x);
             } else {
                 RBNode<T> w = left(p(x));
                 if (color(w) == Color.RED) {
@@ -270,7 +270,7 @@ public class RBTreeImpl<T> implements RBTree<T> {
                 color(p(x), Color.BLACK);
                 color(left(w), Color.BLACK);
                 rightRotate(p(x));
-                break;
+                setRoot(x);
             }
         }
         color(x, Color.BLACK);
@@ -418,6 +418,7 @@ public class RBTreeImpl<T> implements RBTree<T> {
 
     private void setRoot(RBNode<T> root) {
         this.root = root;
+        root.setParent(nil);
     }
 
     @Override

@@ -12,7 +12,7 @@ public class SweepLine {
     private final Heap<Event> eventHeap;
     @Getter
     private final Set<TIntersection> intersectionSet;
-    private int currentY = 0;
+    private double currentY = 0;
     private boolean reordering = false;
     public SweepLine() {
         eventHeap = new BinaryHeap<>(eventComparator);
@@ -23,8 +23,8 @@ public class SweepLine {
         if (o1.equals(o2)) {
             return 0;
         }
-        Optional<Integer> x1Opt = o1.getX(currentY);
-        Optional<Integer> x2Opt = o2.getX(currentY);
+        Optional<Double> x1Opt = o1.getX(currentY);
+        Optional<Double> x2Opt = o2.getX(currentY);
         if (x1Opt.isEmpty() && x2Opt.isEmpty()) {
             return 0;
         }
@@ -34,10 +34,10 @@ public class SweepLine {
         if (x2Opt.isEmpty()) {
             return -1;
         }
-        int x1 = x1Opt.get();
-        int x2 = x2Opt.get();
-        if (x1 != x2) {
-            return x1 - x2;
+        double x1 = x1Opt.get();
+        double x2 = x2Opt.get();
+        if (!Numbers.dEquals(x1, x2)) {
+            return x1 > x2 ? 1 : -1;
         }
         Vector2 v1 = o1.direction();
         Vector2 v2 = o2.direction();
@@ -55,34 +55,35 @@ public class SweepLine {
     };
 
     private static final Comparator<Event> eventComparator = (e1, e2) -> {
-        if (e1.position().y() < e2.position().y()) {
-            return -1;
+        if (Math.abs(e1.position().y() - e2.position().y()) < 0.0001) {
+            if (Math.abs(e1.position().x() - e2.position().x()) < 0.0001) {
+                return 0;
+            }
+            return  e1.position().x() > e2.position().x() ? 1 : -1;
         }
-        if (e1.position().y() > e2.position().y()) {
-            return 1;
-        }
-        return e1.position().x() - e2.position().x();
+
+        return  e1.position().y() > e2.position().y() ? 1 : -1;
     };
 
     private interface Event {
-        Position position();
+        FPosition position();
     }
 
-    private record StartEvent(Position position, TSegment segment) implements Event {
+    private record StartEvent(FPosition position, TSegment segment) implements Event {
         @Override
         public String toString() {
             return "Start " + segment.getId() + ": " + position;
         }
     }
 
-    private record EndEvent(Position position, TSegment segment) implements Event {
+    private record EndEvent(FPosition position, TSegment segment) implements Event {
         @Override
         public String toString() {
             return "End " + segment.getId() + ": " + position;
         }
     }
 
-    private record IntersectionEvent(Position position, TSegment s1, TSegment s2) implements Event {
+    private record IntersectionEvent(FPosition position, TSegment s1, TSegment s2) implements Event {
         @Override
         public String toString() {
             return "Intersect " + s1.getId() + " and " + s2.getId() + ": " + position;
@@ -173,11 +174,11 @@ public class SweepLine {
     }
 
     private boolean testIntersection(TSegment s1, TSegment s2) {
-        Optional<Position> p1 = findIntersectionPosition(s1, s2);
+        Optional<FPosition> p1 = findIntersectionPosition(s1, s2);
         p1.ifPresent(position -> eventHeap.insert(new IntersectionEvent(position, s1, s2)));
         return p1.isPresent();
     }
-    private Optional<Position> findIntersectionPosition(TSegment s1, TSegment s2) {
+    private Optional<FPosition> findIntersectionPosition(TSegment s1, TSegment s2) {
         GenLine line1 = s1.asLine();
         GenLine line2 = s2.asLine();
 
@@ -186,28 +187,28 @@ public class SweepLine {
                 TSegment rightMost = s1.getLower().x() > s2.getLower().x() ? s1 : s2;
                 TSegment leftMost = s1.getLower().x() > s2.getLower().x() ? s2 : s1;
                 if (leftMost.getLower().x() < rightMost.getUpper().x()) {
-                    return Position.opt(rightMost.getUpper().x(), currentY);
+                    return FPosition.opt(rightMost.getUpper().x(), currentY);
                 }
                 return Optional.empty();
             }
-            Optional<Integer> x1Opt = line1.calculateX(currentY);
-            Optional<Integer> x2Opt = line2.calculateX(currentY);
+            Optional<Double> x1Opt = line1.calculateX(currentY);
+            Optional<Double> x2Opt = line2.calculateX(currentY);
             assert x1Opt.isPresent() && x2Opt.isPresent();
-            int x1 = x1Opt.get();
-            int x2 = x2Opt.get();
-            return x1 == x2 ? Optional.of(Position.of(x1, currentY)) : Optional.empty();
+            double x1 = x1Opt.get();
+            double x2 = x2Opt.get();
+            return (Numbers.dEquals(x1, x2)) ? FPosition.opt(x1, currentY) : Optional.empty();
         }
 
-        Optional<Position> pOpt = line1.intersectionPoint(line2);
+        Optional<FPosition> pOpt = line1.intersectionPoint(line2);
         if (pOpt.isEmpty()) {
             return Optional.empty();
         }
-        Position lineIntersection = pOpt.get();
+        FPosition lineIntersection = pOpt.get();
         if (lineIntersection.y() < currentY) {
             return Optional.empty();
         }
-        Box box1 = new Box(s1.getLower(), s1.getUpper());
-        Box box2 = new Box(s2.getUpper(), s2.getLower());
+        FBox box1 = new FBox(s1.getLower(), s1.getUpper());
+        FBox box2 = new FBox(s2.getUpper(), s2.getLower());
         if (box1.contains(lineIntersection) && box2.contains(lineIntersection)) {
             return Optional.of(lineIntersection);
         }

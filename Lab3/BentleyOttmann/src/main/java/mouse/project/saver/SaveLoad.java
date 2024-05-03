@@ -38,7 +38,7 @@ public class SaveLoad {
     private static void onSave(JFileChooser fileChooser, String content) {
         File fileToSave = fileChooser.getSelectedFile();
         String oldPath = fileToSave.getPath();
-        if (!oldPath.endsWith(".points")) {
+        if (!oldPath.endsWith("."+extension)) {
             fileToSave = new File(oldPath + "." + extension);
         }
         String newPath = fileToSave.getPath();

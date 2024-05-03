@@ -14,6 +14,9 @@ public record Vector2(double x, double y) {
     public static Vector2 from(Position origin, Position destination) {
         return Vector2.of(destination.x()-origin.x(), destination.y()-origin.y());
     }
+    public static Vector2 from(FPosition origin, FPosition destination) {
+        return Vector2.of(destination.x()-origin.x(), destination.y()-origin.y());
+    }
 
     public double dot(Vector2 other) {
         return x * other.x + y * other.y;

@@ -37,12 +37,69 @@ class RBTreeImplTest {
     void insertShuffled() {
         List<Integer> list = range(1, 100);
         for (int i = 1; i < 10; i++) {
-            Collections.shuffle(list);
-            insertAll(rbTree, list);
+            List<Integer> s = new ArrayList<>(list);
+            Collections.shuffle(s);
+            insertAll(rbTree, s);
             List<Integer> collect = new ArrayList<> (rbTree.collect());
-            assertEquals(list, collect, "Invalid result for: " + list);
+            assertEquals(list, collect, "Invalid result for: " + s);
             rbTree.clear();
         }
+    }
+
+    @Test
+    void insertDebug() {
+        List<Integer> list = range(1, 100);
+        List<Integer> minExample = new ArrayList<>();
+        for (int i = 1; i < 100; i++) {
+            List<Integer> s = new ArrayList<>(list);
+            Collections.shuffle(s);
+            List<Integer> integers = insertAndFind(s);
+            if (integers.size() < minExample.size() || minExample.isEmpty()) {
+                minExample = integers;
+            }
+            rbTree.clear();
+        }
+        System.out.println(minExample);
+
+    }
+
+    @Test
+    void insertExample() {
+        List<Integer> integers = List.of(11, 3, 2, 9, 4, 1, 6, 5, 10, 12, 8, 7);
+        for (int i : integers) {
+            rbTree.insert(i);
+            System.out.println(rbTree.collect());
+        }
+    }
+
+    private List<Integer> normalize(List<Integer> integers) {
+        List<Integer> temp = new ArrayList<>(integers);
+        temp.sort(Integer::compareTo);
+        List<Integer> result = new ArrayList<>();
+        HashMap<Integer, Integer> mapped = new HashMap<>();
+        for (int i = 0; i < temp.size(); i++) {
+            Integer val = temp.get(i);
+            mapped.put(val, i+1);
+        }
+        for (int i : integers) {
+            result.add(mapped.get(i));
+        }
+        return result;
+
+    }
+
+    private  List<Integer> insertAndFind(List<Integer> s) {
+        List<Integer> example = new ArrayList<>();
+        int count = 0;
+        for (Integer t : s) {
+            rbTree.insert(t);
+            example.add(t);
+            count++;
+            if (count != rbTree.collect().size()) {
+                break;
+            }
+        }
+        return example;
     }
 
     private void insertAll(RBTree<Integer> rbTree, List<Integer> list) {

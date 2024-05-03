@@ -30,7 +30,7 @@ public class BOAlgorithm implements Algorithm {
         TSegmentSet set = mapper.mapSegments(segments);
         Set<TIntersection> allIntersections = facade.findAllIntersections(set);
         allIntersections.forEach(i -> {
-            graphicsChangeListener.add(new IntersectionsGFX(i.intersection()));
+            graphicsChangeListener.add(new IntersectionsGFX(i.intersection().ints()));
         });
         graphicsChangeListener.show();
         logAll(allIntersections);

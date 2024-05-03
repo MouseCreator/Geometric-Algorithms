@@ -1,8 +1,8 @@
 package mouse.project.algorithm.sweep;
 
 import lombok.Data;
+import mouse.project.math.FPosition;
 import mouse.project.math.GenLine;
-import mouse.project.math.Position;
 import mouse.project.math.Vector2;
 
 import java.util.Optional;
@@ -10,10 +10,10 @@ import java.util.Optional;
 @Data
 public class TSegment {
     private final String id;
-    private final Position upper;
-    private final Position lower;
+    private final FPosition upper;
+    private final FPosition lower;
 
-    public TSegment(String id, Position from, Position to) {
+    public TSegment(String id, FPosition from, FPosition to) {
         upper= from;
         lower = to;
         this.id = id;
@@ -22,24 +22,14 @@ public class TSegment {
     public Vector2 direction() {
         return Vector2.from(upper, lower).unit();
     }
-    public Optional<Integer> getX(int y) {
-        Optional<Integer> optX = asLine().calculateX(y);
-        if (optX.isEmpty()) {
-            return optX;
-        }
-        int x = optX.get();
-        int min = Math.min(upper.x(), lower.x());
-        int max = Math.max(upper.x(), lower.x());
-        if (x < min || x > max) {
-            return Optional.empty();
-        }
-        return optX;
+    public Optional<Double> getX(double y) {
+        return asLine().calculateX(y);
     }
     public GenLine asLine() {
-        int x0 = upper.x();
-        int x1 = lower.x();
-        int y0 = upper.y();
-        int y1 = lower.y();
+        double x0 = upper.x();
+        double x1 = lower.x();
+        double y0 = upper.y();
+        double y1 = lower.y();
         if (x0 == x1) {
            return new GenLine(1, 0, -x0);
         }
@@ -51,6 +41,6 @@ public class TSegment {
 
     @Override
     public String toString() {
-        return id + ":" + upper + "->" + lower;
+        return id;
     }
 }

@@ -8,7 +8,20 @@ public record GenLine(double a, double b, double c){
 
     @Override
     public String toString() {
-        return String.format("%.2f*x+%.2f*y+%.2f",a,b,c);
+
+        String a1 = String.format("%.2f*x", a);
+        String b1 = String.format("%.2f*y", b);
+        String c1 = String.format("%.2f", c);
+        String result = a1;
+        if (b > 0) {
+            result += "+";
+        }
+        result += b1;
+        if (c > 0) {
+            result += "+";
+        }
+        result += c1;
+        return result;
     }
 
     public boolean isParallelTo(GenLine o) {
@@ -22,18 +35,18 @@ public record GenLine(double a, double b, double c){
         return Math.abs(a / o.a - b / o.b) < TOLERANCE;
     }
 
-    public Optional<Integer> calculateX(int y) {
+    public Optional<Double> calculateX(double y) {
         if (Math.abs(a) < TOLERANCE) {
             return Optional.empty();
         }
-        int res = (int) ((b*y+c) / -a);
+        double res = ((b*y+c) / -a);
         return Optional.of(res);
     }
-    public Optional<Integer> calculateY(int x) {
+    public Optional<Double> calculateY(double x) {
         if (Math.abs(b) < TOLERANCE) {
             return Optional.empty();
         }
-        int res = (int) ((a*x+c) / -b);
+        double res = ((a*x+c) / -b);
         return Optional.of(res);
     }
 
@@ -41,24 +54,24 @@ public record GenLine(double a, double b, double c){
         return Math.abs(b) < TOLERANCE;
     }
 
-    public Optional<Position> intersectionPoint(GenLine o) {
+    public Optional<FPosition> intersectionPoint(GenLine o) {
         if (isParallelTo(o)) {
             return Optional.empty();
         }
         if (isParallelToOx()) {
-            int x = (int) (-c / a);
-            Optional<Integer> yOpt = o.calculateY(x);
-            return yOpt.map(y -> Position.of(x,y));
+            double x = (-c / a);
+            Optional<Double> yOpt = o.calculateY(x);
+            return yOpt.map(y -> FPosition.of(x,y));
         }
         if (o.isParallelToOx()) {
-            int x = (int) (-o.c / -o.a);
-            Optional<Integer> yOpt = calculateY(x);
-            return yOpt.map(y -> Position.of(x, y));
+            double x = (-o.c / -o.a);
+            Optional<Double> yOpt = calculateY(x);
+            return yOpt.map(y -> FPosition.of(x, y));
         }
 
-        int y = (int) ((c * o.a - o.c * a) / (o.b * a - b * o.a));
-        int x = (int) ((- b*y - c) / a);
-        return Optional.of(Position.of(x, y));
+        double y = ((c * o.a - o.c * a) / (o.b * a - b * o.a));
+        double x = ((- b*y - c) / a);
+        return FPosition.opt(x, y);
     }
 
     public boolean overlaps(GenLine o) {

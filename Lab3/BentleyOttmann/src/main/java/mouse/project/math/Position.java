@@ -40,4 +40,8 @@ public class Position {
     public Position move(Vector2 vector2) {
         return Position.of((int)(x + vector2.x()), (int)(y + vector2.y()));
     }
+
+    public FPosition floats() {
+        return FPosition.of(x, y);
+    }
 }

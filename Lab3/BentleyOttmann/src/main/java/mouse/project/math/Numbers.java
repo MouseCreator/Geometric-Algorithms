@@ -16,4 +16,11 @@ public class Numbers {
         }
         return max;
     }
+
+    public static boolean dEquals(double d1, double d2) {
+        return dEquals(d1, d2, 0.0001);
+    }
+    public static boolean dEquals(double d1, double d2, double th) {
+        return Math.abs(d1 - d2) < th;
+    }
 }
