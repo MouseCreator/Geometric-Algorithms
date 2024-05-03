@@ -141,9 +141,23 @@ public class SweepLine {
     }
 
     private void detectAllIntersections(List<IntersectionEvent> eventList) {
-       eventList.forEach(e -> {
-           intersectionSet.add(new TIntersection(e.s1(), e.s2(), e.position()));
-       });
+        if (eventList.isEmpty()) {
+            return;
+        }
+        FPosition position = eventList.get(0).position();
+        Set<TSegment> set = new HashSet<>();
+        eventList.forEach(e -> {
+            set.add(e.s1());
+            set.add(e.s2());
+        });
+        List<TSegment> list = new ArrayList<>(set);
+        for (int i = 0; i < list.size(); i++) {
+            for (int j = 0; j < i; j++) {
+                TSegment s1 = list.get(i);
+                TSegment s2 = list.get(j);
+                intersectionSet.add(new TIntersection(s1, s2, position));
+            }
+        }
     }
 
     private void processIntersections(List<IntersectionEvent> intersections) {
