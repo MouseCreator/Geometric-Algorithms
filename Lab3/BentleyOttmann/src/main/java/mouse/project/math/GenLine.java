@@ -51,7 +51,7 @@ public record GenLine(double a, double b, double c){
     }
 
     public boolean isParallelToOx() {
-        return Math.abs(b) < TOLERANCE;
+        return Math.abs(a) < TOLERANCE;
     }
 
     public Optional<FPosition> intersectionPoint(GenLine o) {
@@ -59,14 +59,14 @@ public record GenLine(double a, double b, double c){
             return Optional.empty();
         }
         if (isParallelToOx()) {
-            double x = (-c / a);
-            Optional<Double> yOpt = o.calculateY(x);
-            return yOpt.map(y -> FPosition.of(x,y));
+            double y = (-c / b);
+            Optional<Double> xOpt = o.calculateX(y);
+            return xOpt.map(x -> FPosition.of(x,y));
         }
         if (o.isParallelToOx()) {
-            double x = (-o.c / -o.a);
-            Optional<Double> yOpt = calculateY(x);
-            return yOpt.map(y -> FPosition.of(x, y));
+            double y = (-o.c / o.b);
+            Optional<Double> xOpt = calculateX(y);
+            return xOpt.map(x -> FPosition.of(x,y));
         }
 
         double y = ((c * o.a - o.c * a) / (o.b * a - b * o.a));
