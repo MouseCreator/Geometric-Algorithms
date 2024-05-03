@@ -186,7 +186,7 @@ public class SweepLine {
             if (line1.isParallelToOx()) {
                 TSegment rightMost = s1.getLower().x() > s2.getLower().x() ? s1 : s2;
                 TSegment leftMost = s1.getLower().x() > s2.getLower().x() ? s2 : s1;
-                if (leftMost.getLower().x() < rightMost.getUpper().x()) {
+                if (leftMost.getLower().x() > rightMost.getUpper().x()) {
                     return FPosition.opt(rightMost.getUpper().x(), currentY);
                 }
                 return Optional.empty();

@@ -83,6 +83,10 @@ public record GenLine(double a, double b, double c){
             return true;
         }
 
+        if (isParallelToOx() && o.isParallelToOx()) {
+            return Numbers.dEquals(c, o.c);
+        }
+
         return Math.abs(a / o.a - c / o.c) < TOLERANCE;
 
     }
