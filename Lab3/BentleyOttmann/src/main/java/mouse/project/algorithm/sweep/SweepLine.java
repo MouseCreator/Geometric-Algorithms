@@ -6,7 +6,6 @@ import mouse.project.algorithm.heap.Heap;
 import mouse.project.math.*;
 
 import java.util.*;
-// TODO : fix start-end intersection
 public class SweepLine {
     private final Status<TSegment> status;
     private final Heap<Event> eventHeap;
@@ -102,7 +101,36 @@ public class SweepLine {
             eventHeap.insert(new EndEvent(e.getLower(), e));
         });
     }
-
+    private final Comparator<Event> typeComparator = (e1, e2) -> {
+        if (e1 instanceof StartEvent) {
+            if (e2 instanceof StartEvent) {
+                return 0;
+            }
+            return 1;
+        }
+        if (e2 instanceof StartEvent) {
+            return -1;
+        }
+        if (e1 instanceof IntersectionEvent) {
+            if (e2 instanceof IntersectionEvent) {
+                return 0;
+            }
+            return 1;
+        }
+        if (e2 instanceof IntersectionEvent) {
+            return -1;
+        }
+        if (e1 instanceof EndEvent) {
+            if (e2 instanceof EndEvent) {
+                return 0;
+            }
+            return 1;
+        }
+        if (e2 instanceof EndEvent) {
+            return -1;
+        }
+        return 0;
+    };
     private void scanEvents() {
         while (!eventHeap.isEmpty()) {
             Event nextEvent = eventHeap.extractMin();
@@ -112,6 +140,7 @@ public class SweepLine {
             while (!eventHeap.isEmpty() && eventComparator.compare(eventHeap.minimum(), nextEvent) == 0) {
                 eventList.add(eventHeap.extractMin());
             }
+            eventList.sort(typeComparator);
             List<IntersectionEvent> intersections = new ArrayList<>();
             for (Event e : eventList) {
                 if (e instanceof StartEvent) {
@@ -135,19 +164,27 @@ public class SweepLine {
                     throw new IllegalStateException("Unexpected event: " + e);
                 }
             }
-            detectAllIntersections(intersections);
+            detectAllIntersections(eventList);
             processIntersections(intersections);
         }
     }
-    private void detectAllIntersections(List<IntersectionEvent> eventList) {
+    private void detectAllIntersections(List<Event> eventList) {
         if (eventList.isEmpty()) {
             return;
         }
         FPosition position = eventList.get(0).position();
         Set<TSegment> set = new HashSet<>();
         eventList.forEach(e -> {
-            set.add(e.s1());
-            set.add(e.s2());
+            if (e instanceof IntersectionEvent) {
+                set.add(((IntersectionEvent) e).s1());
+                set.add(((IntersectionEvent) e).s2());
+            }
+            else if (e instanceof StartEvent) {
+                set.add(((StartEvent) e).segment);
+            }
+            else if (e instanceof EndEvent) {
+                set.add(((EndEvent) e).segment);
+            }
         });
         List<TSegment> list = new ArrayList<>(set);
         for (int i = 0; i < list.size(); i++) {
