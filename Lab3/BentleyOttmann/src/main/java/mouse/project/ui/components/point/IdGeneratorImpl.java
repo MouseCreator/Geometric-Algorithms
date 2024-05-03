@@ -86,12 +86,12 @@ public class IdGeneratorImpl implements IdGenerator {
         String current = "_";
         for (int i = 0; i < localKeys.size(); i++) {
             String key = localKeys.get(i);
+            if (keyDistance(id, key) == 0) {
+                throw new IllegalArgumentException("Duplicate key: " + id);
+            }
             if (keyDistance(current, key) == 1) {
                 current = key;
             } else {
-                if (keyDistance(id, key) == 0) {
-                    throw new IllegalArgumentException("Duplicate key: " + id);
-                }
                 localKeys.add(i, id);
                 return;
             }

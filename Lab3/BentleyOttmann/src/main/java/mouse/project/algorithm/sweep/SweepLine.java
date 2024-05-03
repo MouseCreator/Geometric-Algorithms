@@ -6,7 +6,6 @@ import mouse.project.algorithm.heap.Heap;
 import mouse.project.math.*;
 
 import java.util.*;
-// TODO : fix duplicate key detection when loads
 // TODO : fix start-end intersection
 public class SweepLine {
     private final Status<TSegment> status;
