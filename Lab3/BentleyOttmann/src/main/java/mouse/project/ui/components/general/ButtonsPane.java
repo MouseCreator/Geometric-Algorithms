@@ -125,7 +125,7 @@ public class ButtonsPane implements AppComponent {
             JCheckBox coordinatesBox = createCheckBox("Point coordinates",
                     e -> State.get().getGraphicState().setShowCoordinates(e.getStateChange() == ItemEvent.SELECTED));
 
-            JCheckBox namesBox = createCheckBox("Point names",
+            JCheckBox namesBox = createCheckBox("Segment names",
                     e -> State.get().getGraphicState().setShowNames(e.getStateChange() == ItemEvent.SELECTED));
 
             subpanel.add(saveBtn);

@@ -249,6 +249,7 @@ public class RBTreeImpl<T> implements RBTree<T> {
                     color(p(x), Color.BLACK);
                     color(right(w), Color.BLACK);
                     leftRotate(p(x));
+                    break;
                 }
             } else {
                 RBNode<T> w = left(p(x));
@@ -272,6 +273,7 @@ public class RBTreeImpl<T> implements RBTree<T> {
                     color(p(x), Color.BLACK);
                     color(left(w), Color.BLACK);
                     rightRotate(p(x));
+                    break;
                 }
             }
         }

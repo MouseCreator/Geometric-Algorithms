@@ -138,6 +138,38 @@ class RBTreeImplTest {
     }
 
     @Test
+    void deleteRandom() {
+        for (int c = 0; c < 100; c++) {
+            List<Integer> list = range(1, 12);
+            List<Integer> temp = new ArrayList<>(list);
+            Collections.shuffle(temp);
+            insertAll(rbTree, list);
+            System.out.println(temp);
+            for (int i : temp) {
+                list.removeAll(List.of(i));
+                rbTree.delete(i);
+                Collection<Integer> collect = new ArrayList<>(rbTree.collect());
+                assertEquals(list, collect);
+            }
+        }
+    }
+    @Test
+    void deleteOrder() {
+        List<Integer> list = range(1, 12);
+        List<Integer> deleteOrdered = List.of(4, 6, 5, 7, 9, 2, 12, 1, 11, 8, 10, 3);
+        insertAll(rbTree, list);
+        for (int curr : deleteOrdered) {
+            System.out.println("Removing " + curr + "...");
+            rbTree.delete(curr);
+            List<Integer> collect = new ArrayList<>(rbTree.collect());
+
+            System.out.println(collect);
+            list.removeAll(List.of(curr));
+            assertEquals(collect, list);
+        }
+    }
+
+    @Test
     void testSuccessorPredecessor() {
         int least = 1;
         int max = 10;
