@@ -381,7 +381,7 @@ public class RBTreeImpl<T> implements RBTree<T> {
         RBNode<T> y = left(x);
         left(x, right(y));
 
-        if (right(y).isLeaf()) {
+        if (!right(y).isLeaf()) {
             p(right(y), x);
         }
         p(y, p(x));
