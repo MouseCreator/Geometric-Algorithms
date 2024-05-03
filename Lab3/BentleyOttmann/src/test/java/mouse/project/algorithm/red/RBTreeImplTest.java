@@ -112,7 +112,6 @@ class RBTreeImplTest {
 
     @Test
     void testCertainOrder() {
-        //TODO: fix tree bug
         rbTree.insert(3);
         rbTree.insert(1);
         rbTree.insert(2);

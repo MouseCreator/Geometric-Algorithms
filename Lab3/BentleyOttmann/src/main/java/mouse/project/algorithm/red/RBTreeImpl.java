@@ -57,7 +57,7 @@ public class RBTreeImpl<T> implements RBTree<T> {
                 } else {
                     if (z == right(p(z))) {
                         z = p(z);
-                        leftRotate(p(p(z)));
+                        leftRotate(z);
                     }
                     color(p(z), Color.BLACK);
                     color(p(p(z)), Color.RED);
@@ -73,7 +73,7 @@ public class RBTreeImpl<T> implements RBTree<T> {
                 } else {
                     if (z == left(p(z))) {
                         z = p(z);
-                        rightRotate(p(p(z)));
+                        rightRotate(z);
                     }
                     color(p(z), Color.BLACK);
                     color(p(p(z)), Color.RED);
