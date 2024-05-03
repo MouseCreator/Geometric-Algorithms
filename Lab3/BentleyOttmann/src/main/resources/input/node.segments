@@ -1,0 +1,3 @@
+segment A 100 100 500 500
+segment B 300 100 300 500
+segment C 100 500 500 100
