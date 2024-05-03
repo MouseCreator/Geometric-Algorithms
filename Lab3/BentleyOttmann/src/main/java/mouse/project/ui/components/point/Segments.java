@@ -68,6 +68,7 @@ public class Segments implements SavableHolder {
 
     public void clear() {
         segmentList.forEach(drawManager::onRemove);
+        segmentList.forEach(s -> idGenerator.free(s.getId()));
         segmentList.clear();
     }
 

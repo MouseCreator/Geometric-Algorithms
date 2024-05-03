@@ -203,7 +203,9 @@ public class SweepLine {
             return Optional.empty();
         }
         Position lineIntersection = pOpt.get();
-
+        if (lineIntersection.y() < currentY) {
+            return Optional.empty();
+        }
         Box box1 = new Box(s1.getLower(), s1.getUpper());
         Box box2 = new Box(s2.getUpper(), s2.getLower());
         if (box1.contains(lineIntersection) && box2.contains(lineIntersection)) {
