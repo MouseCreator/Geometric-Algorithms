@@ -35,6 +35,11 @@ public class ParabolaService {
     }
 
     public Parabola getParabolaFromSiteAndLine(Site s0, double y) {
+
+        if (s0.getPosition().y() > y) {
+            throw new IllegalArgumentException("Unexpected: Parabola is facing down (with positive Y direction)");
+        }
+
         double x1 = s0.getPosition().x();
         double y1 = s0.getPosition().y();
 
