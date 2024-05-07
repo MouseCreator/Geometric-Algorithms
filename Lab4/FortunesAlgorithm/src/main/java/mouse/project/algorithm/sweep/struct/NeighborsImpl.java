@@ -1,4 +1,4 @@
-package mouse.project.algorithm.sweep;
+package mouse.project.algorithm.sweep.struct;
 
 public class NeighborsImpl<T> implements Neighbors<T> {
 

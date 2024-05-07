@@ -16,6 +16,10 @@ public class FPosition {
         return new FPosition(x, y);
     }
 
+    public static FPosition zeros() {
+        return FPosition.of(0,0);
+    }
+
     public double x() {
         return x;
     }
