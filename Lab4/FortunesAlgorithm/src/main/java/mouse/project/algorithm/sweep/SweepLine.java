@@ -106,7 +106,7 @@ public class SweepLine {
         Site pI = siteNode.getSite();
         Site pJ = next.get().getSite();
 
-        diagramBuilder.appendDanglingEdgeBetween(new VoronoiEdge(pI, pJ));
+        diagramBuilder.appendDanglingEdge(new VoronoiEdge(pI, pJ));
 
     }
 
@@ -116,11 +116,11 @@ public class SweepLine {
         status.remove(pk);
         FPosition center = e.circle().center();
         diagramBuilder.createAndJoin(center, new VoronoiEdge(e.pI(), e.pI()), new VoronoiEdge(e.pJ(), e.pK()));
-        diagramBuilder.appendDanglingEdgeBetween(new VoronoiEdge(e.pI(), e.pK()));
+        diagramBuilder.appendDanglingEdge(new VoronoiEdge(e.pI(), e.pK()));
         sitesToIgnore.add(e.pJ());
 
-        // generate event for pA - pI - pK
-        // generate event for pI - pK - pZ
+        // TODO: generate event for pA - pI - pK
+        // TODO: generate event for pI - pK - pZ
     }
 
 
