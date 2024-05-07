@@ -231,16 +231,15 @@ def readSegments(file):
     return segments
 
 def plotSegments(segments):
-    plt.figure()
+    plt.figure(dpi=300)
     for seg in segments:
-        plt.plot([seg.x1, seg.x2], [seg.y1, seg.y2], marker='o')
+        plt.plot([seg.x1, seg.x2], [seg.y1, seg.y2], linewidth=0.5)
 
     plt.xlabel('X axis')
     plt.ylabel('Y axis')
     plt.title('Plot of Segments')
-    plt.grid(True)
     plt.show()
 
-input = readSegments("segments.txt")
+input = readSegments("segments2.txt")
 plotSegments(input)
 sweep(input)
