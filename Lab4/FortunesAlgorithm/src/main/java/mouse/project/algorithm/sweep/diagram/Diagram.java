@@ -1,4 +1,4 @@
-package mouse.project.algorithm.sweep.struct;
+package mouse.project.algorithm.sweep.diagram;
 
 import mouse.project.math.FPosition;
 

@@ -85,4 +85,19 @@ public class SiteStatus {
         SiteNode node = new SiteNode(this, site, index);
         return Optional.of(node);
     }
+
+    public boolean isEmpty() {
+        return sites.isEmpty();
+    }
+
+    public void insertFirst(Site e) {
+        sites.add(e);
+    }
+
+    public void remove(Site site) {
+        while (sites.contains(site)) {
+            sites.remove(site);
+        }
+        //TODO: replace with binary search;
+    }
 }
