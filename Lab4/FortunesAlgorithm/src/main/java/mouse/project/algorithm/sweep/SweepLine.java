@@ -7,6 +7,7 @@ import mouse.project.algorithm.heap.BinaryHeap;
 import mouse.project.algorithm.heap.Heap;
 import mouse.project.algorithm.sweep.circle.Circle;
 import mouse.project.algorithm.sweep.diagram.DiagramBuilder;
+import mouse.project.algorithm.sweep.diagram.LoggingDiagramBuilder;
 import mouse.project.algorithm.sweep.diagram.VoronoiEdge;
 import mouse.project.algorithm.sweep.neighbors.Neighbors;
 import mouse.project.algorithm.sweep.struct.Site;
@@ -16,13 +17,16 @@ import mouse.project.math.*;
 
 import java.util.*;
 public class SweepLine {
-    private SiteStatus status;
+    private final SiteStatus status;
     private final Heap<Event> eventHeap;
-    private Set<Site> sitesToIgnore;
+    private final Set<Site> sitesToIgnore;
     private double currentY = 0;
-    private DiagramBuilder diagramBuilder;
+    private final DiagramBuilder diagramBuilder;
     public SweepLine() {
         eventHeap = new BinaryHeap<>(eventComparator);
+        status = new SiteStatus();
+        sitesToIgnore= new HashSet<>();
+        diagramBuilder = new LoggingDiagramBuilder();
     }
     private static final Comparator<Event> eventComparator = (e1, e2) -> {
         if (Numbers.dEquals(e1.position().y(), e2.position().y())) {
@@ -38,9 +42,9 @@ public class SweepLine {
     private interface Event {
         FPosition position();
     }
-
+    @Getter
     public static class SiteEvent implements Event {
-        @Getter
+
         private final Site origin;
 
         public SiteEvent(Site origin) {
@@ -73,6 +77,8 @@ public class SweepLine {
     private void scanEvents() {
         while (!eventHeap.isEmpty()) {
             Event nextEvent = eventHeap.extractMin();
+            if (ignoreEvent(nextEvent))
+                continue;
             currentY = nextEvent.position().y();
             List<Event> eventList = new ArrayList<>();
             eventList.add(nextEvent);
@@ -83,6 +89,18 @@ public class SweepLine {
                 handleEvent(e);
             }
         }
+    }
+
+    private boolean ignoreEvent(Event event) {
+        if (event instanceof CircleEvent circleEvent) {
+            List<Site> sites = List.of(circleEvent.pI(), circleEvent.pJ(), circleEvent.pK());
+            for (Site s : sites) {
+                if (sitesToIgnore.contains(s)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     private void handleEvent(Event e) {
@@ -109,7 +127,7 @@ public class SweepLine {
 
         diagramBuilder.appendDanglingEdge(new VoronoiEdge(pI, pJ));
 
-        //Generating new circle events
+        //Generate new circle events
         Optional<SiteNode> pK1 = next.get().next();
         pK1.ifPresent(node -> generateCircleEvent(pI, pJ, node.getSite()));
 
