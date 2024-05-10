@@ -144,7 +144,7 @@ public class SweepLine {
         GenLine bisector2 = s2.bisector();
 
         if(bisector1.overlaps(bisector2)) {
-            throw new IllegalArgumentException("Points are on one line: " + List.of(pI, pJ, pK));
+            throw new IllegalArgumentException("Sites are on one line: " + List.of(pI, pJ, pK));
         }
 
         Optional<FPosition> centerOpt = bisector1.intersectionPoint(bisector2);
