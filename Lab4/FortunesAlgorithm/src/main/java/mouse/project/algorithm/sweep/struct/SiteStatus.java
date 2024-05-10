@@ -79,7 +79,7 @@ public class SiteStatus {
     }
 
     public Optional<SiteNode> get(int index) {
-        if (index < 0 || index > sites.size()) {
+        if (index < 0 || index >= sites.size()) {
             return Optional.empty();
         }
         Site site = sites.get(index);

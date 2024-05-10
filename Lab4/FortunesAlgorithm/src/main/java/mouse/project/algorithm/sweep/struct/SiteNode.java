@@ -13,6 +13,7 @@ public class SiteNode {
 
     public SiteNode(SiteStatus status, Site site, int index) {
         this.site = site;
+        this.status = status;
         this.index = index;
     }
 
