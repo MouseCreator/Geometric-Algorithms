@@ -1,6 +1,8 @@
 package mouse.project.algorithm.sweep.struct;
 
 
+import mouse.project.algorithm.sweep.neighbors.Neighbors;
+import mouse.project.algorithm.sweep.neighbors.NeighborsImpl;
 import mouse.project.algorithm.sweep.parabola.Parabola;
 import mouse.project.algorithm.sweep.parabola.ParabolaService;
 import mouse.project.math.FPosition;
@@ -15,8 +17,8 @@ public class SiteStatus {
         sites = new ArrayList<>();
         parabolaService = new ParabolaService();
     }
-    public SiteNode insertAndSplit(Site pI) {
-        int index = findSiteAbove(pI);
+    public SiteNode insertAndSplit(Site pI, double y) {
+        int index = findSiteAbove(pI, y);
         Site pJ = sites.get(index);
         if (Numbers.dEquals(pI.getPosition().x(), pJ.getPosition().x())) {
             throw new UnsupportedOperationException(pJ + " is right above " + pI);
@@ -26,13 +28,12 @@ public class SiteStatus {
         return new SiteNode(this, pI ,index+1);
     }
 
-    private int findSiteAbove(Site p) {
+    private int findSiteAbove(Site p, double y) {
         double x = p.getPosition().x();
-        double y = p.getPosition().y();
         int low = 0;
         int high = sites.size();
         if (low == high) {
-            throw new IllegalStateException("Cannot find site above if status is empty");
+            throw new IllegalStateException("Cannot find site above " + p + " if status is empty");
         }
         while (true) {
             int interval = high - low;
@@ -94,10 +95,16 @@ public class SiteStatus {
         sites.add(e);
     }
 
-    public void remove(Site site) {
-        while (sites.contains(site)) {
-            sites.remove(site);
+    public Neighbors<SiteNode> remove(Site site, double y) {
+        int siteAbove = findSiteAbove(site, y);
+        Neighbors<SiteNode> result = new NeighborsImpl<>();
+        sites.remove(siteAbove);
+        if (siteAbove != 0) {
+            result.setLeft(new SiteNode(this, sites.get(siteAbove-1), siteAbove-1));
         }
-        //TODO: replace with binary search;
+        if (siteAbove != sites.size()) {
+            result.setRight(new SiteNode(this, sites.get(siteAbove), siteAbove));
+        }
+        return result;
     }
 }

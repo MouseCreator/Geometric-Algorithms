@@ -8,6 +8,7 @@ import mouse.project.algorithm.heap.Heap;
 import mouse.project.algorithm.sweep.circle.Circle;
 import mouse.project.algorithm.sweep.diagram.DiagramBuilder;
 import mouse.project.algorithm.sweep.diagram.VoronoiEdge;
+import mouse.project.algorithm.sweep.neighbors.Neighbors;
 import mouse.project.algorithm.sweep.struct.Site;
 import mouse.project.algorithm.sweep.struct.SiteNode;
 import mouse.project.algorithm.sweep.struct.SiteStatus;
@@ -100,7 +101,7 @@ public class SweepLine {
             status.insertFirst(origin);
             return;
         }
-        SiteNode siteNode = status.insertAndSplit(origin);
+        SiteNode siteNode = status.insertAndSplit(origin, currentY);
         Optional<SiteNode> next = siteNode.next();
         assert next.isPresent();
         Site pI = siteNode.getSite();
@@ -108,19 +109,61 @@ public class SweepLine {
 
         diagramBuilder.appendDanglingEdge(new VoronoiEdge(pI, pJ));
 
+        //Generating new circle events
+        Optional<SiteNode> pK1 = next.get().next();
+        pK1.ifPresent(node -> generateCircleEvent(pI, pJ, node.getSite()));
+
+        Optional<SiteNode> prev = siteNode.prev();
+        assert prev.isPresent();
+        Optional<SiteNode> pK2 = prev.get().prev();
+        pK2.ifPresent(node -> generateCircleEvent(pI, pJ, node.getSite()));
+    }
+
+    private void generateCircleEvent(Site pI, Site pJ, Site pK) {
+        FSegment s1 = new FSegment(pI.getPosition(), pJ.getPosition());
+        FSegment s2 = new FSegment(pJ.getPosition(), pK.getPosition());
+        GenLine bisector1 = s1.bisector();
+        GenLine bisector2 = s2.bisector();
+
+        if(bisector1.overlaps(bisector2)) {
+            throw new IllegalArgumentException("Points are on one line: " + List.of(pI, pJ, pK));
+        }
+
+        Optional<FPosition> centerOpt = bisector1.intersectionPoint(bisector2);
+        if (centerOpt.isEmpty()) {
+            throw new IllegalArgumentException("Bisectors do not intersect");
+        }
+
+        FPosition center = centerOpt.get();
+        double radius = pI.getPosition().distanceTo(center);
+
+        Circle circle = new Circle(center, radius);
+        eventHeap.insert(new CircleEvent(circle, pI, pJ, pK));
     }
 
 
     private void handleCircleEvent(CircleEvent e) {
         Site pk = e.pK();
-        status.remove(pk);
+        Neighbors<SiteNode> neighborNodes = status.remove(pk, currentY);
         FPosition center = e.circle().center();
         diagramBuilder.createAndJoin(center, new VoronoiEdge(e.pI(), e.pI()), new VoronoiEdge(e.pJ(), e.pK()));
         diagramBuilder.appendDanglingEdge(new VoronoiEdge(e.pI(), e.pK()));
         sitesToIgnore.add(e.pJ());
 
-        // TODO: generate event for pA - pI - pK
-        // TODO: generate event for pI - pK - pZ
+        if (neighborNodes.hasLeft()) {
+            SiteNode pI = neighborNodes.left();
+
+            Optional<SiteNode> pANode = pI.prev();
+            pANode.ifPresent(pA -> generateCircleEvent(pA.getSite(), e.pI(), e.pK()));
+        }
+
+        if (neighborNodes.hasRight()) {
+            SiteNode pK = neighborNodes.right();
+
+            Optional<SiteNode> pZNode = pK.next();
+            pZNode.ifPresent(pZ -> generateCircleEvent(e.pI(), e.pK(), pZ.getSite()));
+        }
+
     }
 
 

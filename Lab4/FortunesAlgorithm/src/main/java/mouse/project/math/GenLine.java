@@ -6,6 +6,29 @@ public record GenLine(double a, double b, double c){
 
     private static final double TOLERANCE = 0.00001;
 
+    public static GenLine of(Vector2 direction, FPosition point) {
+        if (Numbers.dEquals(direction.magnitude(), 0)) {
+            throw new IllegalArgumentException("Cannot construct a line with no direction");
+        }
+        if (Numbers.dEquals(direction.x(), 0)) {
+            double a = 1;
+            double c = -a * point.x();
+            return new GenLine(a, 0, c);
+        }
+        double b = 1;
+        FPosition v2 = point.move(direction);
+
+        double x1 = point.x();
+        double y1 = point.y();
+        double x2 = v2.x();
+        double y2 = v2.y();
+
+        double a = (y1 - y2) / (x2 - x1);
+        double c = - a * x1 - y1;
+
+        return new GenLine(a, b, c);
+    }
+
     @Override
     public String toString() {
 
