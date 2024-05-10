@@ -9,6 +9,7 @@ import mouse.project.algorithm.sweep.circle.Circle;
 import mouse.project.algorithm.sweep.diagram.DiagramBuilder;
 import mouse.project.algorithm.sweep.diagram.LoggingDiagramBuilder;
 import mouse.project.algorithm.sweep.diagram.VoronoiEdge;
+import mouse.project.algorithm.sweep.diagram.VoronoiVertex;
 import mouse.project.algorithm.sweep.neighbors.Neighbors;
 import mouse.project.algorithm.sweep.struct.Site;
 import mouse.project.algorithm.sweep.struct.SiteNode;
@@ -125,7 +126,7 @@ public class SweepLine {
         Site pI = siteNode.getSite();
         Site pJ = next.get().getSite();
 
-        diagramBuilder.appendDanglingEdge(new VoronoiEdge(pI, pJ));
+        diagramBuilder.appendEdgeOnBisector(pI, pJ);
 
         //Generate new circle events
         Optional<SiteNode> pK1 = next.get().next();
@@ -164,8 +165,11 @@ public class SweepLine {
         Site pk = e.pK();
         Neighbors<SiteNode> neighborNodes = status.remove(pk, currentY);
         FPosition center = e.circle().center();
-        diagramBuilder.createAndJoin(center, new VoronoiEdge(e.pI(), e.pI()), new VoronoiEdge(e.pJ(), e.pK()));
-        diagramBuilder.appendDanglingEdge(new VoronoiEdge(e.pI(), e.pK()));
+        VoronoiVertex vertex = diagramBuilder.createVertex(center);
+        VoronoiEdge edge1 = diagramBuilder.appendEdgeOnBisector(e.pI(), e.pJ());
+        VoronoiEdge edge2 = diagramBuilder.appendEdgeOnBisector(e.pJ(), e.pK());
+        diagramBuilder.joinEdge(vertex, edge1);
+        diagramBuilder.joinEdge(vertex, edge2);
         sitesToIgnore.add(e.pJ());
 
         if (neighborNodes.hasLeft()) {

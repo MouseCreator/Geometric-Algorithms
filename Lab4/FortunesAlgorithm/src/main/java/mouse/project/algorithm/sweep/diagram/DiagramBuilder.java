@@ -1,9 +1,11 @@
 package mouse.project.algorithm.sweep.diagram;
 
+import mouse.project.algorithm.sweep.struct.Site;
 import mouse.project.math.FPosition;
 
 public interface DiagramBuilder {
-    void appendDanglingEdge(VoronoiEdge voronoiEdge);
     Diagram getResult();
-    void createAndJoin(FPosition center, VoronoiEdge voronoiEdge, VoronoiEdge voronoiEdge1);
+    VoronoiVertex createVertex(FPosition position);
+    void joinEdge(VoronoiVertex vertex, VoronoiEdge edge);
+    VoronoiEdge appendEdgeOnBisector(Site pI, Site pJ);
 }
