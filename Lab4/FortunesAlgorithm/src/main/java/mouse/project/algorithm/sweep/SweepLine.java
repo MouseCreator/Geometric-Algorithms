@@ -26,6 +26,10 @@ public class SweepLine {
         sitesToIgnore= new HashSet<>();
         diagramBuilder = new LoggingDiagramBuilder(new VDiagramBuilder());
     }
+
+    public Diagram diagram() {
+        return diagramBuilder.getResult();
+    }
     private static final Comparator<Event> eventComparator = (e1, e2) -> {
         if (Numbers.dEquals(e1.position().y(), e2.position().y())) {
             if (Numbers.dEquals(e1.position().x(), e2.position().x())) {
