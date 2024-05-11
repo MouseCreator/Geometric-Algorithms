@@ -123,7 +123,7 @@ public class SweepLine {
         Site pI = siteNode.getSite();
         Site pJ = next.get().getSite();
 
-        diagramBuilder.appendEdgeOnBisector(pI, pJ);
+        diagramBuilder.edgeOnBisector(pI, pJ);
 
         //Generate new circle events
         Optional<SiteNode> pK1 = next.get().next();
@@ -162,14 +162,14 @@ public class SweepLine {
         Site pk = e.pK();
         Neighbors<SiteNode> neighborNodes = status.remove(pk, currentY);
         FPosition center = e.circle().center();
-        VoronoiVertex vertex = diagramBuilder.createVertex(center);
-        VoronoiEdge edge1 = diagramBuilder.getEdgeAtBisector(e.pI(), e.pJ());
-        VoronoiEdge edge2 = diagramBuilder.getEdgeAtBisector(e.pJ(), e.pK());
-        diagramBuilder.joinEdge(vertex, edge1);
-        diagramBuilder.joinEdge(vertex, edge2);
+        VoronoiVertex vertex = diagramBuilder.generateVoronoiVertex(center);
+        VoronoiEdge edge1 = diagramBuilder.edgeOnBisector(e.pI(), e.pJ());
+        VoronoiEdge edge2 = diagramBuilder.edgeOnBisector(e.pJ(), e.pK());
+        diagramBuilder.bindEdgeOnBisectorToVertex(edge1, vertex);
+        diagramBuilder.bindEdgeOnBisectorToVertex(edge2, vertex);
         sitesToIgnore.add(e.pJ());
 
-        diagramBuilder.appendEdgeOnBisector(e.pI(), e.pK());
+        diagramBuilder.edgeOnBisector(e.pI(), e.pK());
 
         if (neighborNodes.hasLeft()) {
             SiteNode pI = neighborNodes.left();
