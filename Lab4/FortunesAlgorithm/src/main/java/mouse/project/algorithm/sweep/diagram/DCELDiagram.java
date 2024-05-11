@@ -93,7 +93,7 @@ public class DCELDiagram {
         List<VoronoiVertex> sortedFrame = new ArrayList<>(frame);
         Vector2 Ox = Vector2.of(1, 0);
 
-        frame.sort((v1, v2) -> {
+        sortedFrame.sort((v1, v2) -> {
             FPosition p1 = v1.getPosition();
             FPosition p2 = v2.getPosition();
             Vector2 vector1 = Vector2.from(center, p1);
@@ -103,7 +103,7 @@ public class DCELDiagram {
             if (Numbers.dEquals(angle1, angle2)) {
                 return 0;
             }
-            return angle1 > angle2 ? 1 : -1;
+            return angle1 < angle2 ? 1 : -1;
         });
 
         List<VerEdge> result = new ArrayList<>();

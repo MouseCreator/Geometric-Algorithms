@@ -47,6 +47,7 @@ public class ForturnsAlgorithm implements Algorithm {
             PolygonGFX polygonGFX = new PolygonGFX(positions, generateRandomColor());
             graphicsChangeListener.add(polygonGFX);
         }
+        graphicsChangeListener.show();
     }
 
     private Color generateRandomColor() {

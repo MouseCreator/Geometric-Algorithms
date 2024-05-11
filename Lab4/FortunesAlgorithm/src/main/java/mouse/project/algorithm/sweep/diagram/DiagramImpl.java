@@ -15,10 +15,31 @@ public class DiagramImpl implements Diagram{
         if (faces != null) {
             return;
         }
+        if (vertices.isEmpty()) {
+            faces = new ArrayList<>();
+            return;
+        }
+        VoronoiVertex bottomLeft = vertices.getFirst();
+        VoronoiVertex topRight = vertices.getFirst();
+        VoronoiVertex bottomRight = vertices.getFirst();
+        VoronoiVertex topLeft = vertices.getFirst();
         for (VoronoiVertex vertex : vertices) {
             vertexInfoMap.put(vertex , new TempVertexInfo(vertex));
+            if (Numbers.dLess(vertex.getPosition().x(), bottomLeft.getPosition().x()) && Numbers.dLess(vertex.getPosition().y(), bottomLeft.getPosition().y())) {
+                bottomLeft = vertex;
+            }
+            if (Numbers.dGreater(vertex.getPosition().x(), bottomRight.getPosition().x()) && Numbers.dLess(vertex.getPosition().y(), bottomRight.getPosition().y())) {
+                bottomRight = vertex;
+            }
+            if ( Numbers.dLess (vertex.getPosition().x(), topLeft.getPosition().x()) && Numbers.dGreater (vertex.getPosition().y(), topLeft.getPosition().y())) {
+                topLeft = vertex;
+            }
+            if ( Numbers.dGreater (vertex.getPosition().x(), topRight.getPosition().x()) && Numbers.dGreater (vertex.getPosition().y(), topRight.getPosition().y())) {
+                topRight = vertex;
+            }
         }
-        Set<HalfEdge> halfEdges = new HashSet<>();
+        List<HalfEdge> halfEdges = new ArrayList<>();
+        List<VoronoiVertex> bounds = List.of(bottomLeft, topRight, bottomRight, topLeft);
         int index = 0;
         for (VerEdge verEdge : edges) {
             VoronoiVertex v1 = verEdge.getV1();
@@ -49,21 +70,32 @@ public class DiagramImpl implements Diagram{
         faces = new ArrayList<>();
         while (!halfEdgesNotInFace.isEmpty()) {
             HalfEdge first = halfEdgesNotInFace.getFirst();
-            Face face = createFaceStartingAt(halfEdgesNotInFace, first);
-            faces.add(face);
+            TempFace face = createFaceStartingAt(halfEdgesNotInFace, first);
+            if (new HashSet<>(face.vertices()).containsAll(bounds)) {
+                continue;
+            }
+            Face finalFace = face.toFinalFace();
+            faces.add(finalFace);
         }
 
     }
 
-    private Face createFaceStartingAt(List<HalfEdge> halfEdgesNotInFace, HalfEdge start) {
+    private record TempFace(List<VoronoiVertex> vertices) {
+        public Face toFinalFace() {
+            List<FPosition> positions = vertices.stream().map(VoronoiVertex::getPosition).toList();
+            return new Face(positions);
+        }
+    }
+
+    private TempFace createFaceStartingAt(List<HalfEdge> halfEdgesNotInFace, HalfEdge start) {
         HalfEdge current = start;
-        List<FPosition> positionList = new ArrayList<>();
+        List<VoronoiVertex> positionList = new ArrayList<>();
         do {
             halfEdgesNotInFace.remove(current);
-            positionList.add(current.to.getPosition());
+            positionList.add(current.to);
             current = current.nextOrder;
         } while (current != start);
-        return new Face(positionList);
+        return new TempFace(positionList);
     }
 
     @Override
@@ -116,7 +148,7 @@ public class DiagramImpl implements Diagram{
                 p2 = e2.to.getPosition();
                 double angle2 = Vector2.of(1, 0).angle(Vector2.from(p1, p2));
 
-                return Numbers.dCompare(angle1, angle2);
+                return Numbers.dCompare(angle2, angle1);
             });
             if (index < 0) {
                 index = - index - 1;
@@ -138,7 +170,7 @@ public class DiagramImpl implements Diagram{
             HalfEdge first = sortedHalfEdges.getFirst();
             HalfEdge last = sortedHalfEdges.getLast();
 
-            orderPair(first, last);
+            orderPair(last, first);
         }
 
         private void orderPair(HalfEdge e, HalfEdge nextToE) {

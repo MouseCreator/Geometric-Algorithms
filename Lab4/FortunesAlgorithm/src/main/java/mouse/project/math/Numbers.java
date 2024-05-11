@@ -1,6 +1,8 @@
 package mouse.project.math;
 
 public class Numbers {
+
+    private final static double TOLERANCE = 0.0001;
     public static int min(int... numbers) {
         int min = Integer.MAX_VALUE;
         for (int n : numbers) {
@@ -18,7 +20,7 @@ public class Numbers {
     }
 
     public static boolean dEquals(double d1, double d2) {
-        return dEquals(d1, d2, 0.0001);
+        return dEquals(d1, d2, TOLERANCE);
     }
     public static boolean dEquals(double d1, double d2, double th) {
         return Math.abs(d1 - d2) < th;
@@ -31,6 +33,13 @@ public class Numbers {
         return d1 > d2 ? 1 : -1;
     }
     public static int dCompare(double d1, double d2) {
-        return dCompare(d1, d2, 0.0001);
+        return dCompare(d1, d2, TOLERANCE);
+    }
+
+    public static boolean dLess(double x, double x1) {
+        return x1 - x > TOLERANCE;
+    }
+    public static boolean dGreater(double x, double x1) {
+        return x - x1 > TOLERANCE;
     }
 }
