@@ -4,41 +4,124 @@ import mouse.project.math.FPosition;
 import mouse.project.math.Numbers;
 import mouse.project.math.Vector2;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class DiagramImpl implements Diagram{
-    private Map<VoronoiVertex, VertexInfo> vertexInfoMap;
+    private Map<VoronoiVertex, TermpVertexInfo> vertexInfoMap;
+    private List<Face> faces;
     @Override
     public void initialize(List<VoronoiVertex> vertices, List<VerEdge> edges) {
+        if (faces != null) {
+            return;
+        }
         for (VoronoiVertex vertex : vertices) {
-            vertexInfoMap.put(vertex , new VertexInfo(vertex));
+            vertexInfoMap.put(vertex , new TermpVertexInfo(vertex));
+        }
+        Set<HalfEdge> halfEdges = new HashSet<>();
+        int index = 0;
+        for (VerEdge verEdge : edges) {
+            VoronoiVertex v1 = verEdge.getV1();
+            VoronoiVertex v2 = verEdge.getV2();
+
+            TermpVertexInfo info1 = vertexInfoMap.get(v1);
+            TermpVertexInfo info2 = vertexInfoMap.get(v2);
+
+            HalfEdge halfEdge1 = new HalfEdge(index++, v2);
+            HalfEdge halfEdge2 = new HalfEdge(index++, v1);
+
+            info1.appendEdgeTo(halfEdge1);
+            info2.appendEdgeTo(halfEdge2);
+
+            halfEdge1.twin = halfEdge2;
+            halfEdge2.twin = halfEdge1;
+
+            halfEdges.add(halfEdge1);
+            halfEdges.add(halfEdge2);
+        }
+        for (VoronoiVertex vertex : vertexInfoMap.keySet()) {
+            TermpVertexInfo termpVertexInfo = vertexInfoMap.get(vertex);
+            termpVertexInfo.orderHalfEdges();
+        }
+
+        List<HalfEdge> halfEdgesNotInFace = new ArrayList<>(halfEdges);
+        while (!halfEdgesNotInFace.isEmpty()) {
+            HalfEdge first = halfEdgesNotInFace.getFirst();
+            Face face = createFaceStartingAt(halfEdgesNotInFace, first);
+            faces.add(face);
+        }
+
+    }
+
+    private Face createFaceStartingAt(List<HalfEdge> halfEdgesNotInFace, HalfEdge start) {
+        HalfEdge current = start;
+        List<FPosition> positionList = new ArrayList<>();
+        do {
+            halfEdgesNotInFace.remove(current);
+            positionList.add(current.to.getPosition());
+            current = current.nextOrder;
+        } while (current != start);
+        return new Face(positionList);
+    }
+
+    @Override
+    public Collection<Face> getFaces() {
+        return faces;
+    }
+
+    private static class VertexStart {
+        HalfEdge startsAt;
+
+        public VertexStart(HalfEdge startsAt) {
+            this.startsAt = startsAt;
         }
     }
-    private class HalfEdge {
-        private VoronoiVertex from;
-        private VoronoiVertex to;
+    private static class FaceStart {
+        HalfEdge startsAt;
     }
-    private static class VertexInfo {
-        private final List<VoronoiVertex> sortedNeighbors;
+    private static class HalfEdge {
+        private final VoronoiVertex to;
+        private HalfEdge twin;
+        private HalfEdge nextInVertex;
+        private HalfEdge prevInVertex;
+        private HalfEdge nextOrder;
+        private HalfEdge prevOrder;
+        private final int index;
+        public HalfEdge(int index, VoronoiVertex to) {
+            this.to = to;
+            this.index = index;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            HalfEdge halfEdge = (HalfEdge) o;
+            return index == halfEdge.index;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(index);
+        }
+    }
+    private class TermpVertexInfo {
+        private final List<HalfEdge> sortedHalfEdges;
         private final VoronoiVertex myVertex;
-        public VertexInfo(VoronoiVertex vertex) {
-            sortedNeighbors = new ArrayList<>();
+        public TermpVertexInfo(VoronoiVertex vertex) {
+            sortedHalfEdges = new ArrayList<>();
             myVertex = vertex;
         }
-        public void appendEdgeTo(VoronoiVertex vertex) {
-            if (sortedNeighbors.isEmpty()) {
-                sortedNeighbors.add(vertex);
+        public void appendEdgeTo(HalfEdge halfEdge) {
+            if (sortedHalfEdges.isEmpty()) {
+                sortedHalfEdges.add(halfEdge);
                 return;
             }
-            int index = Collections.binarySearch(sortedNeighbors, vertex, (v1, v2) -> {
+            int index = Collections.binarySearch(sortedHalfEdges, halfEdge, (e1, e2) -> {
                 FPosition p1 = myVertex.getPosition();
-                FPosition p2 = v1.getPosition();
+                FPosition p2 = e1.to.getPosition();
                 double angle1 = Vector2.of(1, 0).angle(Vector2.from(p1, p2));
 
-                p2 = v2.getPosition();
+                p2 = e2.to.getPosition();
                 double angle2 = Vector2.of(1, 0).angle(Vector2.from(p1, p2));
 
                 return Numbers.dCompare(angle1, angle2);
@@ -46,7 +129,39 @@ public class DiagramImpl implements Diagram{
             if (index < 0) {
                 index = - index - 1;
             }
-            sortedNeighbors.add(index, vertex);
+            sortedHalfEdges.add(index, halfEdge);
+        }
+
+        public void orderHalfEdges() {
+            if (sortedHalfEdges.isEmpty()) {
+                return;
+            }
+            int size = sortedHalfEdges.size();
+            for (int i = 0; i < size - 1; i++) {
+                HalfEdge e = sortedHalfEdges.get(i);
+                HalfEdge nextToE = sortedHalfEdges.get(i + 1);
+
+                orderPair(e, nextToE);
+            }
+            HalfEdge first = sortedHalfEdges.getFirst();
+            HalfEdge last = sortedHalfEdges.getLast();
+
+            orderPair(first, last);
+        }
+
+        private void orderPair(HalfEdge e, HalfEdge nextToE) {
+            e.nextInVertex = nextToE;
+            nextToE.prevInVertex = e;
+
+            e.twin.nextOrder = nextToE;
+            nextToE.prevOrder = e.twin;
+        }
+        public Optional<VertexStart> toVertexStart() {
+            if (sortedHalfEdges.isEmpty()) {
+                return Optional.empty();
+            }
+            VertexStart vertexStart = new VertexStart(sortedHalfEdges.getFirst());
+            return Optional.of(vertexStart);
         }
     }
 }
