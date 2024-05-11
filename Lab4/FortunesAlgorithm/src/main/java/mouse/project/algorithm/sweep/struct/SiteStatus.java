@@ -6,7 +6,6 @@ import mouse.project.algorithm.sweep.neighbors.NeighborsImpl;
 import mouse.project.algorithm.sweep.parabola.Parabola;
 import mouse.project.algorithm.sweep.parabola.ParabolaService;
 import mouse.project.math.FPosition;
-import mouse.project.math.Numbers;
 
 import java.util.*;
 
@@ -20,9 +19,6 @@ public class SiteStatus {
     public SiteNode insertAndSplit(Site pI, double y) {
         int index = findSiteAbove(pI, y);
         Site pJ = sites.get(index);
-        if (Numbers.dEquals(pI.getPosition().x(), pJ.getPosition().x())) {
-            throw new UnsupportedOperationException(pJ + " is right above " + pI);
-        }
         sites.add(index+1, pI);
         sites.add(index+2, pJ);
         return new SiteNode(this, pI ,index+1);

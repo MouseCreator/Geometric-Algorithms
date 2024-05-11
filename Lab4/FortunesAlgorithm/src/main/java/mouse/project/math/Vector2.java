@@ -67,7 +67,7 @@ public record Vector2(double x, double y) {
                 }
             }
             if (other.y < 0) {
-                return angleOrigin + Math.PI;
+                return 2 * Math.PI - angleOrigin;
             } else {
                 return angleOrigin;
             }
@@ -76,7 +76,7 @@ public record Vector2(double x, double y) {
         Vector2 otherAfterTransform = transform.multiplyRight(other);
 
         if (otherAfterTransform.y < 0) {
-            return angleOrigin + Math.PI;
+            return 2 * Math.PI - angleOrigin;
         } else {
             return angleOrigin;
         }
