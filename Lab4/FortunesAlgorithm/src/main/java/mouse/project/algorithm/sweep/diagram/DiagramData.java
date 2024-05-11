@@ -12,4 +12,9 @@ public class DiagramData {
         vertices = new ArrayList<>();
         edges = new ArrayList<>();
     }
+
+    public DiagramData(List<VoronoiVertex> vertices, List<ConnectedEdge> edges) {
+        this.vertices = vertices;
+        this.edges = edges;
+    }
 }

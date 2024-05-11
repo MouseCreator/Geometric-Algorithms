@@ -7,15 +7,16 @@ import mouse.project.math.Vector2;
 import java.util.*;
 
 public class DiagramImpl implements Diagram{
-    private Map<VoronoiVertex, TermpVertexInfo> vertexInfoMap;
-    private List<Face> faces;
+
+    private List<Face> faces = null;
     @Override
     public void initialize(List<VoronoiVertex> vertices, List<VerEdge> edges) {
+        Map<VoronoiVertex, TempVertexInfo> vertexInfoMap = new HashMap<>();
         if (faces != null) {
             return;
         }
         for (VoronoiVertex vertex : vertices) {
-            vertexInfoMap.put(vertex , new TermpVertexInfo(vertex));
+            vertexInfoMap.put(vertex , new TempVertexInfo(vertex));
         }
         Set<HalfEdge> halfEdges = new HashSet<>();
         int index = 0;
@@ -23,8 +24,8 @@ public class DiagramImpl implements Diagram{
             VoronoiVertex v1 = verEdge.getV1();
             VoronoiVertex v2 = verEdge.getV2();
 
-            TermpVertexInfo info1 = vertexInfoMap.get(v1);
-            TermpVertexInfo info2 = vertexInfoMap.get(v2);
+            TempVertexInfo info1 = vertexInfoMap.get(v1);
+            TempVertexInfo info2 = vertexInfoMap.get(v2);
 
             HalfEdge halfEdge1 = new HalfEdge(index++, v2);
             HalfEdge halfEdge2 = new HalfEdge(index++, v1);
@@ -39,11 +40,13 @@ public class DiagramImpl implements Diagram{
             halfEdges.add(halfEdge2);
         }
         for (VoronoiVertex vertex : vertexInfoMap.keySet()) {
-            TermpVertexInfo termpVertexInfo = vertexInfoMap.get(vertex);
-            termpVertexInfo.orderHalfEdges();
+            TempVertexInfo tempVertexInfo = vertexInfoMap.get(vertex);
+            tempVertexInfo.orderHalfEdges();
         }
 
         List<HalfEdge> halfEdgesNotInFace = new ArrayList<>(halfEdges);
+
+        faces = new ArrayList<>();
         while (!halfEdgesNotInFace.isEmpty()) {
             HalfEdge first = halfEdgesNotInFace.getFirst();
             Face face = createFaceStartingAt(halfEdgesNotInFace, first);
@@ -66,17 +69,6 @@ public class DiagramImpl implements Diagram{
     @Override
     public Collection<Face> getFaces() {
         return faces;
-    }
-
-    private static class VertexStart {
-        HalfEdge startsAt;
-
-        public VertexStart(HalfEdge startsAt) {
-            this.startsAt = startsAt;
-        }
-    }
-    private static class FaceStart {
-        HalfEdge startsAt;
     }
     private static class HalfEdge {
         private final VoronoiVertex to;
@@ -104,10 +96,10 @@ public class DiagramImpl implements Diagram{
             return Objects.hash(index);
         }
     }
-    private class TermpVertexInfo {
+    private static class TempVertexInfo {
         private final List<HalfEdge> sortedHalfEdges;
         private final VoronoiVertex myVertex;
-        public TermpVertexInfo(VoronoiVertex vertex) {
+        public TempVertexInfo(VoronoiVertex vertex) {
             sortedHalfEdges = new ArrayList<>();
             myVertex = vertex;
         }
@@ -155,13 +147,6 @@ public class DiagramImpl implements Diagram{
 
             e.twin.nextOrder = nextToE;
             nextToE.prevOrder = e.twin;
-        }
-        public Optional<VertexStart> toVertexStart() {
-            if (sortedHalfEdges.isEmpty()) {
-                return Optional.empty();
-            }
-            VertexStart vertexStart = new VertexStart(sortedHalfEdges.getFirst());
-            return Optional.of(vertexStart);
         }
     }
 }

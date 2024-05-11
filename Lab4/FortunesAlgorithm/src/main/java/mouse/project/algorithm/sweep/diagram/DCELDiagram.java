@@ -7,18 +7,11 @@ import java.util.List;
 import java.util.Optional;
 
 public class DCELDiagram {
-    public Diagram createDiagram(DiagramData diagramData) {
-        System.out.println(diagramData.getEdges());
-        System.out.println(diagramData.getVertices());
-        return null;
-    }
 
     public Diagram buildBoundedDiagram(DiagramData diagramData, FBox box) {
         DiagramVertexEdgeCollections diagramVertexEdgeCollections = getVerEdges(diagramData, box);
         return buildDiagram(diagramVertexEdgeCollections);
     }
-
-
 
     private record DiagramVertexEdgeCollections(List<VoronoiVertex> vertexList, List<VerEdge> edges) {}
     private DiagramVertexEdgeCollections getVerEdges(DiagramData diagramData, FBox box) {
