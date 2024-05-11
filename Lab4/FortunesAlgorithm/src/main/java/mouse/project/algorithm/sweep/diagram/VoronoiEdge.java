@@ -7,8 +7,11 @@ import mouse.project.math.GenLine;
 
 @Data
 public class VoronoiEdge {
-    private GenLine line;
-    public VoronoiEdge(GenLine line) {
-        this.line = line;
+    private Site s1;
+    private Site s2;
+
+    public VoronoiEdge(Site s1, Site s2) {
+        this.s1 = s1;
+        this.s2 = s2;
     }
 }

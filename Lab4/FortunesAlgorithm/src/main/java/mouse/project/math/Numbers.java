@@ -23,4 +23,14 @@ public class Numbers {
     public static boolean dEquals(double d1, double d2, double th) {
         return Math.abs(d1 - d2) < th;
     }
+
+    public static int dCompare(double d1, double d2, double th) {
+        if (dEquals(d1, d2, th)) {
+            return 0;
+        }
+        return d1 > d2 ? 1 : -1;
+    }
+    public static int dCompare(double d1, double d2) {
+        return dCompare(d1, d2, 0.0001);
+    }
 }

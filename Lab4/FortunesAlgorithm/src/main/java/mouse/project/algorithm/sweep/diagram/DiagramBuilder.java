@@ -5,7 +5,7 @@ import mouse.project.math.FPosition;
 
 public interface DiagramBuilder {
     Diagram getResult();
-    VoronoiVertex createVertex(FPosition position);
-    void joinEdge(VoronoiVertex vertex, VoronoiEdge edge);
-    VoronoiEdge appendEdgeOnBisector(Site pI, Site pJ);
+    VoronoiVertex generateVoronoiVertex(FPosition fPosition);
+    VoronoiEdge edgeOnBisector(Site s1, Site s2);
+    void bindEdgeOnBisectorToVertex(VoronoiEdge edge, VoronoiVertex startingVertex);
 }

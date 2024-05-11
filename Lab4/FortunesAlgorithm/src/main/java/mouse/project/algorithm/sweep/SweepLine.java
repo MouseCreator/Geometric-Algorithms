@@ -6,10 +6,7 @@ import mouse.project.algorithm.data.PointSet;
 import mouse.project.algorithm.heap.BinaryHeap;
 import mouse.project.algorithm.heap.Heap;
 import mouse.project.algorithm.sweep.circle.Circle;
-import mouse.project.algorithm.sweep.diagram.DiagramBuilder;
-import mouse.project.algorithm.sweep.diagram.LoggingDiagramBuilder;
-import mouse.project.algorithm.sweep.diagram.VoronoiEdge;
-import mouse.project.algorithm.sweep.diagram.VoronoiVertex;
+import mouse.project.algorithm.sweep.diagram.*;
 import mouse.project.algorithm.sweep.neighbors.Neighbors;
 import mouse.project.algorithm.sweep.struct.Site;
 import mouse.project.algorithm.sweep.struct.SiteNode;
@@ -27,7 +24,7 @@ public class SweepLine {
         eventHeap = new BinaryHeap<>(eventComparator);
         status = new SiteStatus();
         sitesToIgnore= new HashSet<>();
-        diagramBuilder = new LoggingDiagramBuilder();
+        diagramBuilder = new LoggingDiagramBuilder(new VDiagramBuilder());
     }
     private static final Comparator<Event> eventComparator = (e1, e2) -> {
         if (Numbers.dEquals(e1.position().y(), e2.position().y())) {
@@ -166,11 +163,13 @@ public class SweepLine {
         Neighbors<SiteNode> neighborNodes = status.remove(pk, currentY);
         FPosition center = e.circle().center();
         VoronoiVertex vertex = diagramBuilder.createVertex(center);
-        VoronoiEdge edge1 = diagramBuilder.appendEdgeOnBisector(e.pI(), e.pJ());
-        VoronoiEdge edge2 = diagramBuilder.appendEdgeOnBisector(e.pJ(), e.pK());
+        VoronoiEdge edge1 = diagramBuilder.getEdgeAtBisector(e.pI(), e.pJ());
+        VoronoiEdge edge2 = diagramBuilder.getEdgeAtBisector(e.pJ(), e.pK());
         diagramBuilder.joinEdge(vertex, edge1);
         diagramBuilder.joinEdge(vertex, edge2);
         sitesToIgnore.add(e.pJ());
+
+        diagramBuilder.appendEdgeOnBisector(e.pI(), e.pK());
 
         if (neighborNodes.hasLeft()) {
             SiteNode pI = neighborNodes.left();

@@ -5,7 +5,8 @@ import mouse.project.math.FPosition;
 @Data
 public class VoronoiVertex {
     private FPosition position;
-    public VoronoiVertex(FPosition position) {
+    private boolean imaginary;
+    public VoronoiVertex(FPosition position, boolean imaginary) {
         this.position = position;
     }
 }

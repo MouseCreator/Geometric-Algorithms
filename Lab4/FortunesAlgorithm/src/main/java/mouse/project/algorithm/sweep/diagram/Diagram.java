@@ -1,7 +1,8 @@
 package mouse.project.algorithm.sweep.diagram;
 
-import mouse.project.math.FPosition;
+
+import java.util.List;
 
 public interface Diagram {
-    void addEdge(FPosition pi, FPosition pj);
+    void initialize(List<VoronoiVertex> vertices, List<VerEdge> edges);
 }

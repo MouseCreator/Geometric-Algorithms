@@ -53,5 +53,33 @@ public record Vector2(double x, double y) {
         }
         return Vector2.of(y, -x).unit();
     }
+
+    public double angle(Vector2 other) {
+        double cos = cos(other);
+        double angleOrigin = Math.acos(cos);
+        if (Numbers.dEquals(y, 0)) {
+            if (Numbers.dEquals(other.y, 0)) {
+                if (Math.signum(x) == Math.signum(other.x)) {
+                    return 0;
+                }
+                else {
+                    return Math.PI;
+                }
+            }
+            if (other.y < 0) {
+                return angleOrigin + Math.PI;
+            } else {
+                return angleOrigin;
+            }
+        }
+        Matrix2 transform = new Matrix2(1, (1-x)/y, 1, -x/y);
+        Vector2 otherAfterTransform = transform.multiplyRight(other);
+
+        if (otherAfterTransform.y < 0) {
+            return angleOrigin + Math.PI;
+        } else {
+            return angleOrigin;
+        }
+    }
 }
 
