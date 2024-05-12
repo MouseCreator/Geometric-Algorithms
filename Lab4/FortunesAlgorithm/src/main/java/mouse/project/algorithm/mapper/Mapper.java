@@ -10,7 +10,7 @@ public class Mapper {
     public PointSet mapPointSet(mouse.project.ui.components.point.PointSet pointSet) {
         List<Point> list = pointSet.getPoints()
                 .stream()
-                .map(p -> new Point(p.position().floats()))
+                .map(p -> new Point(p.position().floats(), p.getId()))
                 .toList();
         return new PointSetImpl(list);
     }

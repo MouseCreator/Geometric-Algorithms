@@ -5,8 +5,9 @@ import mouse.project.math.FPosition;
 @Data
 public class Point {
     private FPosition fPosition;
-
-    public Point(FPosition fPosition) {
+    private String id;
+    public Point(FPosition fPosition, String id) {
         this.fPosition = fPosition;
+        this.id = id;
     }
 }

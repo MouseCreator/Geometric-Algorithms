@@ -63,7 +63,7 @@ public class SweepLine {
 
         @Override
         public String toString() {
-            return "Site{" +
+            return "SiteEvent{" +
                     origin +
                     '}';
         }
@@ -92,7 +92,7 @@ public class SweepLine {
     }
 
     private void generateEventsFrom(List<Point> all) {
-        List<Site> list = all.stream().map(t -> status.generateSite(t.getFPosition())).toList();
+        List<Site> list = all.stream().map(t -> status.generateSite(t.getId(), t.getFPosition())).toList();
         list.forEach(e -> eventHeap.insert(new SiteEvent(e)));
     }
 
@@ -111,6 +111,7 @@ public class SweepLine {
             for (Event e : eventList) {
                 handleEvent(e);
             }
+            logger.debug(status.print());
         }
     }
 

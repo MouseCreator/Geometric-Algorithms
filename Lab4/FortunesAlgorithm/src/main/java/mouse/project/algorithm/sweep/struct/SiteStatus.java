@@ -21,8 +21,8 @@ public class SiteStatus {
     public SiteNode insertAndSplit(Site pI, double y) {
         int index = findSiteAbove(pI.getPosition().x(), y);
         Site pJ = sites.get(index);
-        sites.add(index+1, new Site(pI.getPosition(), idCount++));
-        sites.add(index+2, new Site(pJ.getPosition(), idCount++));
+        sites.add(index+1, new Site(pI.getPosition(), pI.getLetter(), idCount++));
+        sites.add(index+2, new Site(pJ.getPosition(), pJ.getLetter(), idCount++));
         return new SiteNode(this, pI ,index+1);
     }
 
@@ -107,7 +107,11 @@ public class SiteStatus {
         return result;
     }
 
-    public Site generateSite(FPosition fPosition) {
-        return new Site(fPosition, idCount++);
+    public Site generateSite(String idString, FPosition fPosition) {
+        return new Site(fPosition, idString, idCount++);
+    }
+
+    public String print() {
+        return sites.stream().map(Site::getLetter).toList().toString();
     }
 }
