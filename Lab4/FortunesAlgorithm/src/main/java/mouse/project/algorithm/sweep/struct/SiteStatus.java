@@ -56,13 +56,10 @@ public class SiteStatus {
 
             double breakPoint1 = calculateBreakpoint(s0, s1, y);
             double breakPoint2 = calculateBreakpoint(s1, s2, y);
-            if (Numbers.dEquals(breakPoint1, x) && Numbers.dEquals(x, breakPoint2)) {
+            if (Numbers.dLessOrEquals(breakPoint1 ,x) && Numbers.dLessOrEquals(x , breakPoint2)) {
                 return mid;
             }
-            if (breakPoint1 < x && x < breakPoint2) {
-                return mid;
-            }
-            if (breakPoint1 > x) {
+            if (breakPoint1 < x) {
                 low = mid;
             } else {
                 high = mid;

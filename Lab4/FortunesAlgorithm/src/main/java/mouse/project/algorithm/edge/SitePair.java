@@ -8,9 +8,9 @@ import mouse.project.math.Numbers;
 import java.util.Comparator;
 @Data
 public class SitePair {
-    private final Site s1;
-    private final Site s2;
-    private SitePair(Site s1, Site s2) {
+    private final String s1;
+    private final String s2;
+    private SitePair(String s1, String s2) {
         this.s1 = s1;
         this.s2 = s2;
     }
@@ -24,11 +24,11 @@ public class SitePair {
         return p1.y() > p2.y() ? 1 : -1;
     };
     public static SitePair of(Site gen1, Site gen2) {
-        FPosition p1 = gen1.getPosition();
-        FPosition p2 = gen2.getPosition();
-        boolean firstSmaller = positionComparator.compare(p1, p2) < 0;
-        Site low = firstSmaller ? gen1 : gen2;
-        Site high = firstSmaller ? gen2 : gen1;
+        String key1 = gen1.getLetter();
+        String key2 = gen2.getLetter();
+        boolean firstSmaller = key1.compareTo(key2) < 0;
+        String low = firstSmaller ? key1 : key2;
+        String high = firstSmaller ? key2 : key1;
         return new SitePair(low, high);
     }
 }

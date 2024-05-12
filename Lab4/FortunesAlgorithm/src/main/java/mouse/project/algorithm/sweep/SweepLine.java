@@ -20,13 +20,25 @@ public class SweepLine {
     private final SiteStatus status;
     private final Heap<Event> eventHeap;
     private final Set<Site> sitesToIgnore;
+    private final Set<HandledCircle> handledCircles;
     private double currentY = 0;
     private final DiagramBuilder diagramBuilder;
     private final Logger logger = LogManager.getLogger(SweepLine.class);
+
+    private record HandledCircle(String s1, String s2, String s3) {
+        public HandledCircle(String s1, String s2, String s3) {
+            List<String> strings = new ArrayList<>(List.of(s1, s2, s3));
+            strings.sort(String::compareTo);
+            this.s1 = strings.get(0);
+            this.s2 = strings.get(1);
+            this.s3 = strings.get(2);
+        }
+    }
     public SweepLine() {
         eventHeap = new BinaryHeap<>(eventComparator);
         status = new SiteStatus();
         sitesToIgnore= new HashSet<>();
+        handledCircles = new HashSet<>();
         diagramBuilder = new VDiagramBuilder();
     }
 
@@ -180,6 +192,10 @@ public class SweepLine {
         double radius = pI.getPosition().distanceTo(center);
 
         Circle circle = new Circle(center, radius);
+        HandledCircle handledCircle = new HandledCircle(pI.getLetter(), pJ.getLetter(), pK.getLetter());
+        if (handledCircles.contains(handledCircle)) {
+            return;
+        }
         eventHeap.insert(new CircleEvent(circle, pI, pJ, pK));
     }
 
@@ -196,7 +212,7 @@ public class SweepLine {
 
         VoronoiEdge edge3 = diagramBuilder.edgeOnBisector(e.pI(), e.pK());
         diagramBuilder.bindEdgeOnBisectorToVertex(edge3, vertex);
-
+        handledCircles.add(new HandledCircle(e.pI().getLetter(), e.pJ().getLetter(), e.pK().getLetter()));
         if (neighborNodes.hasLeft()) {
             SiteNode pI = neighborNodes.left();
 

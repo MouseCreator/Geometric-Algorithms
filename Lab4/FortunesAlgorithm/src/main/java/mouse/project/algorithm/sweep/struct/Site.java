@@ -23,6 +23,6 @@ public class Site {
 
     @Override
     public String toString() {
-        return "Site{" + letter + "_" + id + "}";
+        return "Site{" + letter + "_" + id + "->" + position + "}";
     }
 }
