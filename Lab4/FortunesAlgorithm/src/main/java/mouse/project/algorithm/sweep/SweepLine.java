@@ -57,11 +57,28 @@ public class SweepLine {
         public FPosition position() {
             return origin.getPosition();
         }
+
+        @Override
+        public String toString() {
+            return "Site{" +
+                    origin +
+                    '}';
+        }
     }
     public record CircleEvent(Circle circle, Site pI, Site pJ, Site pK) implements Event {
         @Override
         public FPosition position() {
             return circle.bottom();
+        }
+
+        @Override
+        public String toString() {
+            return "CircleEvent{" +
+                    "circle=" + circle +
+                    ", pI=" + pI +
+                    ", pJ=" + pJ +
+                    ", pK=" + pK +
+                    '}';
         }
     }
 

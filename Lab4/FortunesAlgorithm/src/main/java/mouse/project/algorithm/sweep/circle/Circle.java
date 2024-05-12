@@ -18,4 +18,12 @@ public class Circle {
     public FPosition center() {
         return center;
     }
+
+    @Override
+    public String toString() {
+        return "Circle{" +
+                 center + "->" +
+                 radius +
+                '}';
+    }
 }
