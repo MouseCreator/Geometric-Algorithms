@@ -173,7 +173,8 @@ public class SweepLine {
         diagramBuilder.bindEdgeOnBisectorToVertex(edge2, vertex);
         sitesToIgnore.add(e.pJ());
 
-        diagramBuilder.edgeOnBisector(e.pI(), e.pK());
+        VoronoiEdge edge3 = diagramBuilder.edgeOnBisector(e.pI(), e.pK());
+        diagramBuilder.bindEdgeOnBisectorToVertex(edge3, vertex);
 
         if (neighborNodes.hasLeft()) {
             SiteNode pI = neighborNodes.left();

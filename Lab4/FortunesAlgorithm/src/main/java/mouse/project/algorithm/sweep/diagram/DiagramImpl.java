@@ -19,27 +19,10 @@ public class DiagramImpl implements Diagram{
             faces = new ArrayList<>();
             return;
         }
-        VoronoiVertex bottomLeft = vertices.getFirst();
-        VoronoiVertex topRight = vertices.getFirst();
-        VoronoiVertex bottomRight = vertices.getFirst();
-        VoronoiVertex topLeft = vertices.getFirst();
         for (VoronoiVertex vertex : vertices) {
             vertexInfoMap.put(vertex , new TempVertexInfo(vertex));
-            if (Numbers.dLess(vertex.getPosition().x(), bottomLeft.getPosition().x()) && Numbers.dLess(vertex.getPosition().y(), bottomLeft.getPosition().y())) {
-                bottomLeft = vertex;
-            }
-            if (Numbers.dGreater(vertex.getPosition().x(), bottomRight.getPosition().x()) && Numbers.dLess(vertex.getPosition().y(), bottomRight.getPosition().y())) {
-                bottomRight = vertex;
-            }
-            if ( Numbers.dLess (vertex.getPosition().x(), topLeft.getPosition().x()) && Numbers.dGreater (vertex.getPosition().y(), topLeft.getPosition().y())) {
-                topLeft = vertex;
-            }
-            if ( Numbers.dGreater (vertex.getPosition().x(), topRight.getPosition().x()) && Numbers.dGreater (vertex.getPosition().y(), topRight.getPosition().y())) {
-                topRight = vertex;
-            }
         }
         List<HalfEdge> halfEdges = new ArrayList<>();
-        List<VoronoiVertex> bounds = List.of(bottomLeft, topRight, bottomRight, topLeft);
         int index = 0;
         for (VerEdge verEdge : edges) {
             VoronoiVertex v1 = verEdge.getV1();
@@ -67,17 +50,41 @@ public class DiagramImpl implements Diagram{
 
         List<HalfEdge> halfEdgesNotInFace = new ArrayList<>(halfEdges);
 
-        faces = new ArrayList<>();
+        List<TempFace> tempFaces = new ArrayList<>();
         while (!halfEdgesNotInFace.isEmpty()) {
             HalfEdge first = halfEdgesNotInFace.getFirst();
             TempFace face = createFaceStartingAt(halfEdgesNotInFace, first);
-            if (new HashSet<>(face.vertices()).containsAll(bounds)) {
-                continue;
-            }
-            Face finalFace = face.toFinalFace();
-            faces.add(finalFace);
+
+            tempFaces.add(face);
         }
 
+        removeOutsideFace(tempFaces, vertices);
+        faces = tempFaces.stream().map(TempFace::toFinalFace).toList();
+    }
+
+    private void removeOutsideFace(List<TempFace> faces, List<VoronoiVertex> vertices) {
+        VoronoiVertex bottomLeft = vertices.getFirst();
+        VoronoiVertex topRight = vertices.getFirst();
+        VoronoiVertex bottomRight = vertices.getFirst();
+        VoronoiVertex topLeft = vertices.getFirst();
+        for (VoronoiVertex vertex : vertices) {
+            if (Numbers.dLess(vertex.getPosition().x(), bottomLeft.getPosition().x()) && Numbers.dLess(vertex.getPosition().y(), bottomLeft.getPosition().y())) {
+                bottomLeft = vertex;
+            }
+            if (Numbers.dGreater(vertex.getPosition().x(), bottomRight.getPosition().x()) && Numbers.dLess(vertex.getPosition().y(), bottomRight.getPosition().y())) {
+                bottomRight = vertex;
+            }
+            if (Numbers.dLess (vertex.getPosition().x(), topLeft.getPosition().x()) && Numbers.dGreater (vertex.getPosition().y(), topLeft.getPosition().y())) {
+                topLeft = vertex;
+            }
+            if (Numbers.dGreater (vertex.getPosition().x(), topRight.getPosition().x()) && Numbers.dGreater (vertex.getPosition().y(), topRight.getPosition().y())) {
+                topRight = vertex;
+            }
+        }
+
+
+        List<VoronoiVertex> bounds = List.of(bottomLeft, topRight, bottomRight, topLeft);
+        faces.removeIf(f -> new HashSet<>(f.vertices()).containsAll(bounds));
     }
 
     private record TempFace(List<VoronoiVertex> vertices) {
