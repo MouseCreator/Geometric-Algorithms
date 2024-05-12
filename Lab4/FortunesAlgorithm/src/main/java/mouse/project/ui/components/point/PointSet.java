@@ -24,6 +24,7 @@ public class PointSet implements SavableHolder {
     }
     public void clear() {
         TPoints.forEach(drawManager::onRemove);
+        TPoints.forEach(t -> idGenerator.free(t.getId()));
         TPoints.clear();
     }
     public void add(TPoint tPoint) {

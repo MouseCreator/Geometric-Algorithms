@@ -111,9 +111,7 @@ public class SweepLine {
     private void scanEvents() {
         while (!eventHeap.isEmpty()) {
             Event nextEvent = eventHeap.extractMin();
-            if (ignoreEvent(nextEvent))
-                continue;
-            logger.debug("Handling event: " + nextEvent);
+
             currentY = nextEvent.position().y();
             List<Event> eventList = new ArrayList<>();
             eventList.add(nextEvent);
@@ -121,6 +119,9 @@ public class SweepLine {
                 eventList.add(eventHeap.extractMin());
             }
             for (Event e : eventList) {
+                if (ignoreEvent(nextEvent))
+                    continue;
+                logger.debug("Handling event: " + e);
                 handleEvent(e);
             }
             logger.debug(status.print());
@@ -161,8 +162,6 @@ public class SweepLine {
         Site pI = siteNode.getSite();
         Site pJ = next.get().getSite();
 
-        diagramBuilder.edgeOnBisector(pI, pJ);
-
         //Generate new circle events
         Optional<SiteNode> pK1 = next.get().next();
         pK1.ifPresent(node -> generateCircleEvent(pI, pJ, node.getSite()));
@@ -174,6 +173,7 @@ public class SweepLine {
     }
 
     private void generateCircleEvent(Site pI, Site pJ, Site pK) {
+        if (!areUniqueLetters(pI, pJ, pK)) return;
         FSegment s1 = new FSegment(pI.getPosition(), pJ.getPosition());
         FSegment s2 = new FSegment(pJ.getPosition(), pK.getPosition());
         GenLine bisector1 = s1.bisector();
@@ -199,19 +199,23 @@ public class SweepLine {
         eventHeap.insert(new CircleEvent(circle, pI, pJ, pK));
     }
 
+    private static boolean areUniqueLetters(Site pI, Site pJ, Site pK) {
+        HashSet<String> letterSet = new HashSet<>();
+        letterSet.add(pI.getLetter());
+        letterSet.add(pJ.getLetter());
+        letterSet.add(pK.getLetter());
+        return letterSet.size() == 3;
+    }
+
 
     private void handleCircleEvent(CircleEvent e) {
         FPosition center = e.circle().center();
         Neighbors<SiteNode> neighborNodes = status.remove(center.x(), currentY);
         VoronoiVertex vertex = diagramBuilder.generateVoronoiVertex(center);
-        VoronoiEdge edge1 = diagramBuilder.edgeOnBisector(e.pI(), e.pJ());
-        VoronoiEdge edge2 = diagramBuilder.edgeOnBisector(e.pJ(), e.pK());
-        diagramBuilder.bindEdgeOnBisectorToVertex(edge1, vertex);
-        diagramBuilder.bindEdgeOnBisectorToVertex(edge2, vertex);
         sitesToIgnore.add(e.pJ());
 
-        VoronoiEdge edge3 = diagramBuilder.edgeOnBisector(e.pI(), e.pK());
-        diagramBuilder.bindEdgeOnBisectorToVertex(edge3, vertex);
+        determineWhichEdgesStartAndWhichEnd(e, vertex);
+
         handledCircles.add(new HandledCircle(e.pI().getLetter(), e.pJ().getLetter(), e.pK().getLetter()));
         if (neighborNodes.hasLeft()) {
             SiteNode pI = neighborNodes.left();
@@ -227,6 +231,46 @@ public class SweepLine {
             pZNode.ifPresent(pZ -> generateCircleEvent(e.pI(), e.pK(), pZ.getSite()));
         }
 
+    }
+
+    private void determineWhichEdgesStartAndWhichEnd(CircleEvent e, VoronoiVertex vertex) {
+        Circle circle = e.circle();
+        findStartEnd(e.pI(), e.pJ(), e.pK(), circle, vertex);
+        findStartEnd(e.pJ(), e.pI(), e.pK(), circle, vertex);
+        findStartEnd(e.pK(), e.pI(), e.pJ(), circle, vertex);
+    }
+    private final Comparator<FPosition> positionComparator = (p1, p2) -> {
+        if (Numbers.dEquals(p1.y(), p2.y())) {
+            if (Numbers.dEquals(p1.x(), p2.x())) {
+                return 0;
+            }
+            return p1.x() > p2.x() ? 1 : -1;
+        }
+        return p1.y() > p2.y() ? 1 : -1;
+    };
+    private void findStartEnd(Site out, Site end1, Site end2, Circle circle, VoronoiVertex vertex) {
+        ConnectedEdge connectedEdge = diagramBuilder.getConnectedEdge(end1, end2);
+        GenLine bisector = connectedEdge.getBisector();
+        FPosition[] intersections = circle.intersectionsWith(bisector);
+        assert intersections.length == 2;
+        FPosition origin = connectedEdge.getOrigin();
+
+        boolean firstLower = positionComparator.compare(intersections[0], intersections[1]) < 0;
+        FPosition lowerIntersection = firstLower ? intersections[0] : intersections[1];
+        FPosition upperIntersection = firstLower ? intersections[1] : intersections[0];
+
+        Vector2 toLower = Vector2.from(origin, lowerIntersection);
+        Vector2 toUpper = Vector2.from(origin, upperIntersection);
+
+        Vector2 toOut = Vector2.from(origin, out.getPosition());
+
+        double cosToLower = toLower.cos(toOut);
+        double cosToUpper = toUpper.cos(toOut);
+        if (Numbers.dLess(cosToLower, cosToUpper)) {
+            diagramBuilder.setStartVertex(connectedEdge, vertex);
+        } else {
+            diagramBuilder.setEndVertex(connectedEdge, vertex);
+        }
     }
 
 

@@ -42,7 +42,7 @@ public class SiteStatus {
                     Site site1 = sites.get(low);
                     Site site2 = sites.get(low + 1);
                     double breakpoint = calculateBreakpoint(site1, site2, y);
-                    if (breakpoint < x) {
+                    if (Numbers.dLess(x, breakpoint)) {
                         return low;
                     } else {
                         return low + 1;
