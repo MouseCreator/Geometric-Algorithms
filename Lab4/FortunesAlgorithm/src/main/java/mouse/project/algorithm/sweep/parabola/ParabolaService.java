@@ -2,6 +2,7 @@ package mouse.project.algorithm.sweep.parabola;
 
 import mouse.project.algorithm.sweep.struct.Site;
 import mouse.project.math.FPosition;
+import mouse.project.math.Numbers;
 
 public class ParabolaService {
     public FPosition findIntersection(Parabola t, Parabola o) {
@@ -18,15 +19,15 @@ public class ParabolaService {
             return FPosition.of(x, y);
         }
         if (solution.length == 2) {
-            double x1 = t.lowestPoint().x();
-            double x2 = o.lowestPoint().x();
+            double a1 = t.a();
+            double a2 = o.a();
             double sol1 = solution[0];
             double sol2 = solution[1];
             double sol;
-            if (x1 > x2) {
+            boolean tIsNarrow = Numbers.dLess(Math.abs(a1), Math.abs(a2));
+            if (tIsNarrow) {
                 sol = Math.min(sol1, sol2);
-            }
-            else {
+            } else {
                 sol = Math.max(sol1, sol2);
             }
             return FPosition.of(sol, t.yAt(sol));

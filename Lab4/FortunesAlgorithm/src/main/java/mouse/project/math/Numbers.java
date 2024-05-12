@@ -42,4 +42,11 @@ public class Numbers {
     public static boolean dGreater(double x, double x1) {
         return x - x1 > TOLERANCE;
     }
+
+    public static boolean dLessOrEquals(double x1, double x2) {
+        return dLessOrEquals(x1, x2, TOLERANCE);
+    }
+    public static boolean dLessOrEquals(double x1, double x2, double th) {
+        return x1 - x2 > -th;
+    }
 }

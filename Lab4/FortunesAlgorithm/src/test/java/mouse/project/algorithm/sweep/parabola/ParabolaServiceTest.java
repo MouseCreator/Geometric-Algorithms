@@ -46,6 +46,20 @@ class ParabolaServiceTest {
         Parabola p1 = new Parabola(1, 2,3);
         Parabola p2 = new Parabola(0.2, 4, 6);
         FPosition intersection = parabolaService.findIntersection(p1, p2);
-        assertPositionsEquals(FPosition.of(-1.054886114323,2.003012485545), intersection);
+        assertPositionsEquals(FPosition.of(3.55488611432322,22.74698751445), intersection);
+
+        FPosition intersection2 = parabolaService.findIntersection(p2, p1);
+        assertPositionsEquals(FPosition.of(-1.054886114323,2.003012485545), intersection2);
+    }
+
+    @Test
+    void findIntersectionUpsideDown() {
+        Parabola p1 = new Parabola(-1, 2,3);
+        Parabola p2 = new Parabola(-0.2, 4, -3);
+        FPosition intersection = parabolaService.findIntersection(p1, p2);
+        assertPositionsEquals(FPosition.of(1.760398644698074,3.4217939011413323), intersection);
+
+        FPosition intersection2 = parabolaService.findIntersection(p2, p1);
+        assertPositionsEquals(FPosition.of(-4.260398644698074,-23.671793901141335), intersection2);
     }
 }
