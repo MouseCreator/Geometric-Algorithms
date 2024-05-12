@@ -83,7 +83,7 @@ public class VDiagramBuilder implements DiagramBuilder {
         if (compared == 0) {
             throw new IllegalStateException("Edge goes through a voronoi vertex: " + edge + ", " + vertex);
         }
-        if (compared > 0) {
+        if (compared < 0) {
             connectedEdge.setStart(vertex);
         } else {
             connectedEdge.setEnd(vertex);
