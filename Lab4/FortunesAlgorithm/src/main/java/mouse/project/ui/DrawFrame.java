@@ -16,7 +16,7 @@ public class DrawFrame extends JFrame {
     public void startApp() {
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setResizable(true);
-        this.setTitle("Region (Range) Tree");
+        this.setTitle("Voronoi Diagram");
         this.setSize(new Dimension(ConstUtils.WINDOW_WIDTH, ConstUtils.WINDOW_HEIGHT));
         this.setResizable(false);
         AppLoop loop = new AppLoop();
