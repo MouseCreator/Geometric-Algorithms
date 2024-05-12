@@ -12,6 +12,8 @@ import mouse.project.algorithm.sweep.struct.Site;
 import mouse.project.algorithm.sweep.struct.SiteNode;
 import mouse.project.algorithm.sweep.struct.SiteStatus;
 import mouse.project.math.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.*;
 public class SweepLine {
@@ -20,11 +22,12 @@ public class SweepLine {
     private final Set<Site> sitesToIgnore;
     private double currentY = 0;
     private final DiagramBuilder diagramBuilder;
+    private final Logger logger = LogManager.getLogger(SweepLine.class);
     public SweepLine() {
         eventHeap = new BinaryHeap<>(eventComparator);
         status = new SiteStatus();
         sitesToIgnore= new HashSet<>();
-        diagramBuilder = new LoggingDiagramBuilder(new VDiagramBuilder());
+        diagramBuilder = new VDiagramBuilder();
     }
 
     public Diagram diagram() {
@@ -89,7 +92,7 @@ public class SweepLine {
     }
 
     private void generateEventsFrom(List<Point> all) {
-        List<Site> list = all.stream().map(t -> new Site(t.getFPosition())).toList();
+        List<Site> list = all.stream().map(t -> status.generateSite(t.getFPosition())).toList();
         list.forEach(e -> eventHeap.insert(new SiteEvent(e)));
     }
 
@@ -98,6 +101,7 @@ public class SweepLine {
             Event nextEvent = eventHeap.extractMin();
             if (ignoreEvent(nextEvent))
                 continue;
+            logger.debug("Handling event: " + nextEvent);
             currentY = nextEvent.position().y();
             List<Event> eventList = new ArrayList<>();
             eventList.add(nextEvent);
@@ -180,9 +184,8 @@ public class SweepLine {
 
 
     private void handleCircleEvent(CircleEvent e) {
-        Site pk = e.pK();
-        Neighbors<SiteNode> neighborNodes = status.remove(pk, currentY);
         FPosition center = e.circle().center();
+        Neighbors<SiteNode> neighborNodes = status.remove(center.x(), currentY);
         VoronoiVertex vertex = diagramBuilder.generateVoronoiVertex(center);
         VoronoiEdge edge1 = diagramBuilder.edgeOnBisector(e.pI(), e.pJ());
         VoronoiEdge edge2 = diagramBuilder.edgeOnBisector(e.pJ(), e.pK());

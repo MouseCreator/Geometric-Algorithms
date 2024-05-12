@@ -6,7 +6,9 @@ import mouse.project.math.FPosition;
 @Data
 public class Site {
     private FPosition position;
-    public Site(FPosition fPosition) {
+    private int id;
+    public Site(FPosition fPosition, int id) {
         this.position = fPosition;
+        this.id = id;
     }
 }

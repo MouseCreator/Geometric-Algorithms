@@ -6,30 +6,31 @@ import mouse.project.algorithm.sweep.neighbors.NeighborsImpl;
 import mouse.project.algorithm.sweep.parabola.Parabola;
 import mouse.project.algorithm.sweep.parabola.ParabolaService;
 import mouse.project.math.FPosition;
+import mouse.project.math.Numbers;
 
 import java.util.*;
 
 public class SiteStatus {
     private final List<Site> sites;
     private final ParabolaService parabolaService;
+    private int idCount = 0;
     public SiteStatus() {
         sites = new ArrayList<>();
         parabolaService = new ParabolaService();
     }
     public SiteNode insertAndSplit(Site pI, double y) {
-        int index = findSiteAbove(pI, y);
+        int index = findSiteAbove(pI.getPosition().x(), y);
         Site pJ = sites.get(index);
-        sites.add(index+1, pI);
-        sites.add(index+2, pJ);
+        sites.add(index+1, new Site(pI.getPosition(), idCount++));
+        sites.add(index+2, new Site(pJ.getPosition(), idCount++));
         return new SiteNode(this, pI ,index+1);
     }
 
-    private int findSiteAbove(Site p, double y) {
-        double x = p.getPosition().x();
+    private int findSiteAbove(double x, double y) {
         int low = 0;
         int high = sites.size();
         if (low == high) {
-            throw new IllegalStateException("Cannot find site above " + p + " if status is empty");
+            throw new IllegalStateException("Cannot find site above (" + x + ", " + y + ") if status is empty");
         }
         while (true) {
             int interval = high - low;
@@ -55,7 +56,9 @@ public class SiteStatus {
 
             double breakPoint1 = calculateBreakpoint(s0, s1, y);
             double breakPoint2 = calculateBreakpoint(s1, s2, y);
-
+            if (Numbers.dEquals(breakPoint1, x) && Numbers.dEquals(x, breakPoint2)) {
+                return mid;
+            }
             if (breakPoint1 < x && x < breakPoint2) {
                 return mid;
             }
@@ -91,8 +94,8 @@ public class SiteStatus {
         sites.add(e);
     }
 
-    public Neighbors<SiteNode> remove(Site site, double y) {
-        int siteAbove = findSiteAbove(site, y);
+    public Neighbors<SiteNode> remove(double x, double y) {
+        int siteAbove = findSiteAbove(x, y);
         Neighbors<SiteNode> result = new NeighborsImpl<>();
         sites.remove(siteAbove);
         if (siteAbove != 0) {
@@ -102,5 +105,9 @@ public class SiteStatus {
             result.setRight(new SiteNode(this, sites.get(siteAbove), siteAbove));
         }
         return result;
+    }
+
+    public Site generateSite(FPosition fPosition) {
+        return new Site(fPosition, idCount++);
     }
 }

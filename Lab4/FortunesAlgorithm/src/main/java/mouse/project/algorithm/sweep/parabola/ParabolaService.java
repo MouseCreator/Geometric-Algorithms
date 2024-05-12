@@ -5,9 +5,9 @@ import mouse.project.math.FPosition;
 
 public class ParabolaService {
     public FPosition findIntersection(Parabola t, Parabola o) {
-        double da = t.a - o.a;
-        double db = t.b - o.b;
-        double dc = t.c - o.c;
+        double da = t.a() - o.a();
+        double db = t.b() - o.b();
+        double dc = t.c() - o.c();
         double[] solution = Solver.solveQuadratic(da, db, dc);
         if (solution.length == 0) {
             throw new IllegalStateException("Parabolas " + this + " and " + o + " do not intersect");
@@ -23,7 +23,7 @@ public class ParabolaService {
             double sol1 = solution[0];
             double sol2 = solution[1];
             double sol;
-            if (x1 < x2) {
+            if (x1 > x2) {
                 sol = Math.min(sol1, sol2);
             }
             else {
@@ -34,19 +34,19 @@ public class ParabolaService {
         throw new IllegalStateException("Unexpected number of solutions: " + solution.length);
     }
 
-    public Parabola getParabolaFromSiteAndLine(Site s0, double y) {
+    public Parabola getParabolaFromSiteAndLine(Site s0, double yL) {
 
-        if (s0.getPosition().y() > y) {
+        if (s0.getPosition().y() > yL) {
             throw new IllegalArgumentException("Unexpected: Parabola is facing down (with positive Y direction)");
         }
 
-        double x1 = s0.getPosition().x();
-        double y1 = s0.getPosition().y();
+        double xS = s0.getPosition().x();
+        double yS = s0.getPosition().y();
 
         return new Parabola(
-                1.0 / (2.0 * (y1 - y)),
-                x1 / (y1 - y),
-                (x1*x1 + y1*y1 - y * y)/(2*(y1- y))
+                1.0 / (2.0 * (yS - yL)),
+                xS / (yL - yS),
+                (xS * xS + yS * yS - yL * yL)/(2.0 * (yS - yL))
         );
     }
 }
