@@ -36,12 +36,12 @@ public class VDiagramBuilder implements DiagramBuilder {
     }
 
     public VoronoiEdge edgeOnBisector(Site s1, Site s2) {
-        ConnectedEdge connectedEdge = getConnectedEdge(s1, s2);
+        ConnectedEdge connectedEdge = withConnectedEdge(s1, s2);
         return toVoronoiEdge(connectedEdge);
     }
 
     @Override
-    public ConnectedEdge getConnectedEdge(Site s1, Site s2) {
+    public ConnectedEdge withConnectedEdge(Site s1, Site s2) {
         SitePair sitePair = SitePair.of(s1, s2);
         ConnectedEdge connectedEdge = edgeMap.get(sitePair);
         if (connectedEdge == null) {

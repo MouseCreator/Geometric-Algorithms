@@ -8,5 +8,6 @@ public class VoronoiVertex {
     private boolean imaginary;
     public VoronoiVertex(FPosition position, boolean imaginary) {
         this.position = position;
+        this.imaginary = imaginary;
     }
 }

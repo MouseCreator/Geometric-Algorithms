@@ -28,7 +28,7 @@ public class Circle {
     public String toString() {
         return "Circle{" +
                  center + "->" +
-                 radius +
+                 String.format("%.2f",  radius) +
                 '}';
     }
     private record CircleEquation(double a, double b, double r) {
@@ -87,7 +87,6 @@ public class Circle {
     private static Double findYOfIntersection(GenLine line, double x) {
         Optional<Double> yAt = line.calculateY(x);
         assert yAt.isPresent();
-        Double y = yAt.get();
-        return y;
+        return yAt.get();
     }
 }

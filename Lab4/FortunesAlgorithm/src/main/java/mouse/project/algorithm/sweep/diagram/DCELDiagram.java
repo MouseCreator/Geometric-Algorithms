@@ -33,8 +33,11 @@ public class DCELDiagram {
         GenLine rightLine = GenLine.of(Vector2.of(0, 1), FPosition.of(right, bottom));
         List<VerEdge> verEdges = new ArrayList<>();
         for (ConnectedEdge edge : diagramData.getEdges()) {
-            if (isOutOfBounds(box, edge.getStart())) {
-                Optional<FPosition> topIntersectionOpt = edge.getBisector().intersectionPoint(topLine);
+            if (isOutsideTheBox(box, edge)) {
+                continue;
+            }
+            if (isOutOfBoundsOrInfinity(box, edge.getStart())) {
+                Optional<FPosition> topIntersectionOpt = edge.getBisector().intersectionPoint(bottomLine);
                 FPosition newVertexPos;
                 if (topIntersectionOpt.isPresent()) {
                     newVertexPos = topIntersectionOpt.get();
@@ -46,8 +49,8 @@ public class DCELDiagram {
                 VoronoiVertex v = addVertex(frame, newVertexPos);
                 edge.setStart(v);
             }
-            if (isOutOfBounds(box, edge.getEnd())) {
-                Optional<FPosition> bottomIntersectionOpt = edge.getBisector().intersectionPoint(bottomLine);
+            if (isOutOfBoundsOrInfinity(box, edge.getEnd())) {
+                Optional<FPosition> bottomIntersectionOpt = edge.getBisector().intersectionPoint(topLine);
                 FPosition newVertexPos;
                 if (bottomIntersectionOpt.isPresent()) {
                     newVertexPos = bottomIntersectionOpt.get();
@@ -66,17 +69,36 @@ public class DCELDiagram {
         verEdges.addAll(frameEdges);
 
         List<VoronoiVertex> vertices = diagramData.getVertices();
+        vertices.removeIf(v -> isVertexOutsideTheBox(box, v));
         vertices.addAll(frame);
 
         return new DiagramVertexEdgeCollections(vertices, verEdges);
     }
 
-    private boolean isOutOfBounds(FBox box, VoronoiVertex start) {
+    private boolean isOutsideTheBox(FBox box, ConnectedEdge edge) {
+        if (edge.getStart().isImaginary() && edge.getEnd().isImaginary()) {
+            return false;
+        }
+        if (!edge.getEnd().isImaginary() && edge.getEnd().getPosition().y() < box.bottom()) {
+            return true;
+        }
+        if (!edge.getStart().isImaginary() && edge.getStart().getPosition().y() > box.top()) {
+            return true;
+        }
+
+        return false;
+
+    }
+
+    private boolean isVertexOutsideTheBox(FBox box, VoronoiVertex v) {
+        return !box.contains(v.getPosition());
+    }
+
+    private boolean isOutOfBoundsOrInfinity(FBox box, VoronoiVertex start) {
         if (start.isImaginary()) {
             return true;
         }
-        FPosition position = start.getPosition();
-        return !box.contains(position);
+        return isVertexOutsideTheBox(box, start);
     }
 
     private VerEdge toVerEdge(ConnectedEdge edge) {

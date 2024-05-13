@@ -152,6 +152,7 @@ public class SweepLine {
     }
     private void handleSiteEvent(SiteEvent e) {
         Site origin = e.getOrigin();
+
         if (status.isEmpty()) {
             status.insertFirst(origin);
             return;
@@ -162,18 +163,21 @@ public class SweepLine {
         Site pI = siteNode.getSite();
         Site pJ = next.get().getSite();
 
+        diagramBuilder.withConnectedEdge(pI, pJ);
         //Generate new circle events
         Optional<SiteNode> pK1 = next.get().next();
-        pK1.ifPresent(node -> generateCircleEvent(pI, pJ, node.getSite()));
+        pK1.ifPresent(pk -> generateCircleEvent(pI, pJ, pk.getSite()));
 
         Optional<SiteNode> prev = siteNode.prev();
         assert prev.isPresent();
+        Site pJ2 = prev.get().getSite();
         Optional<SiteNode> pK2 = prev.get().prev();
-        pK2.ifPresent(node -> generateCircleEvent(pI, pJ, node.getSite()));
+        pK2.ifPresent(pk -> generateCircleEvent(pI, pJ2, pk.getSite()));
     }
 
     private void generateCircleEvent(Site pI, Site pJ, Site pK) {
-        if (!areUniqueLetters(pI, pJ, pK)) return;
+        if (!areUniqueLetters(pI, pJ, pK))
+            return;
         FSegment s1 = new FSegment(pI.getPosition(), pJ.getPosition());
         FSegment s2 = new FSegment(pJ.getPosition(), pK.getPosition());
         GenLine bisector1 = s1.bisector();
@@ -196,6 +200,9 @@ public class SweepLine {
         if (handledCircles.contains(handledCircle)) {
             return;
         }
+        if (Numbers.dLess(circle.bottom().y(), currentY)) {
+            return;
+        }
         eventHeap.insert(new CircleEvent(circle, pI, pJ, pK));
     }
 
@@ -210,6 +217,10 @@ public class SweepLine {
 
     private void handleCircleEvent(CircleEvent e) {
         FPosition center = e.circle().center();
+        boolean p = false;
+        if (p) {
+            return;
+        }
         Neighbors<SiteNode> neighborNodes = status.remove(center.x(), currentY);
         VoronoiVertex vertex = diagramBuilder.generateVoronoiVertex(center);
         sitesToIgnore.add(e.pJ());
@@ -249,7 +260,7 @@ public class SweepLine {
         return p1.y() > p2.y() ? 1 : -1;
     };
     private void findStartEnd(Site out, Site end1, Site end2, Circle circle, VoronoiVertex vertex) {
-        ConnectedEdge connectedEdge = diagramBuilder.getConnectedEdge(end1, end2);
+        ConnectedEdge connectedEdge = diagramBuilder.withConnectedEdge(end1, end2);
         GenLine bisector = connectedEdge.getBisector();
         FPosition[] intersections = circle.intersectionsWith(bisector);
         assert intersections.length == 2;
@@ -267,9 +278,9 @@ public class SweepLine {
         double cosToLower = toLower.cos(toOut);
         double cosToUpper = toUpper.cos(toOut);
         if (Numbers.dLess(cosToLower, cosToUpper)) {
-            diagramBuilder.setStartVertex(connectedEdge, vertex);
-        } else {
             diagramBuilder.setEndVertex(connectedEdge, vertex);
+        } else {
+            diagramBuilder.setStartVertex(connectedEdge, vertex);
         }
     }
 
