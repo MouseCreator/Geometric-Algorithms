@@ -200,10 +200,14 @@ public class SweepLine {
         if (handledCircles.contains(handledCircle)) {
             return;
         }
-        if (Numbers.dLess(circle.bottom().y(), currentY)) {
+        if (isStepBack(circle)) {
             return;
         }
         eventHeap.insert(new CircleEvent(circle, pI, pJ, pK));
+    }
+
+    private boolean isStepBack(Circle circle) {
+        return Numbers.dLess(circle.bottom().y(), currentY);
     }
 
     private static boolean areUniqueLetters(Site pI, Site pJ, Site pK) {
@@ -221,7 +225,8 @@ public class SweepLine {
         if (p) {
             return;
         }
-        Neighbors<SiteNode> neighborNodes = status.remove(center.x(), currentY);
+        double targetX = center.x();
+        Neighbors<SiteNode> neighborNodes = status.remove(targetX, currentY);
         VoronoiVertex vertex = diagramBuilder.generateVoronoiVertex(center);
         sitesToIgnore.add(e.pJ());
 

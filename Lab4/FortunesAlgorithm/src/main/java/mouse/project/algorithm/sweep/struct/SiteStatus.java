@@ -59,7 +59,7 @@ public class SiteStatus {
             if (Numbers.dLessOrEquals(breakPoint1 ,x) && Numbers.dLessOrEquals(x , breakPoint2)) {
                 return mid;
             }
-            if (breakPoint1 < x) {
+            if (Numbers.dLess(breakPoint1, x)) {
                 low = mid;
             } else {
                 high = mid;
