@@ -172,7 +172,7 @@ public class SweepLine {
         assert prev.isPresent();
         Site pJ2 = prev.get().getSite();
         Optional<SiteNode> pK2 = prev.get().prev();
-        pK2.ifPresent(pk -> generateCircleEvent(pI, pJ2, pk.getSite()));
+        pK2.ifPresent(pk -> generateCircleEvent(pk.getSite(), pJ, pI));
     }
 
     private void generateCircleEvent(Site pI, Site pJ, Site pK) {
@@ -221,10 +221,10 @@ public class SweepLine {
 
     private void handleCircleEvent(CircleEvent e) {
         FPosition center = e.circle().center();
-        boolean p = false;
-        if (p) {
+        if (!checkBreakpointsConverge(e)) {
             return;
         }
+
         double targetX = center.x();
         Neighbors<SiteNode> neighborNodes = status.remove(targetX, currentY);
         VoronoiVertex vertex = diagramBuilder.generateVoronoiVertex(center);
@@ -247,6 +247,18 @@ public class SweepLine {
             pZNode.ifPresent(pZ -> generateCircleEvent(e.pI(), e.pK(), pZ.getSite()));
         }
 
+    }
+
+    private boolean checkBreakpointsConverge(CircleEvent e) {
+        Site pI = e.pI;
+        Site pJ = e.pJ;
+        Site pK = e.pK;
+        double breakpoint1 = status.calculateBreakpoint(pI, pJ, currentY);
+        double breakpoint2 = status.calculateBreakpoint(pJ, pK, currentY);
+        boolean converge = Numbers.dEquals(breakpoint1, breakpoint2);
+        if (converge) logger.debug("Converge: " + pI + ", " + pJ + ", " + pK);
+        else logger.debug("Diverge: " + pI + ", " + pJ + ", " + pK);
+        return converge;
     }
 
     private void determineWhichEdgesStartAndWhichEnd(CircleEvent e, VoronoiVertex vertex) {

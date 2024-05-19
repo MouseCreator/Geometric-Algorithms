@@ -67,7 +67,7 @@ public class SiteStatus {
         }
     }
 
-    private double calculateBreakpoint(Site s0, Site s1, double y) {
+    public double calculateBreakpoint(Site s0, Site s1, double y) {
         Parabola p0 = parabolaService.getParabolaFromSiteAndLine(s0, y);
         Parabola p1 = parabolaService.getParabolaFromSiteAndLine(s1, y);
         FPosition intersection = parabolaService.findIntersection(p0, p1);
