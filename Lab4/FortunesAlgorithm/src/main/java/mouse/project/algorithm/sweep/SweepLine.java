@@ -172,7 +172,7 @@ public class SweepLine {
         assert prev.isPresent();
         Site pJ2 = prev.get().getSite();
         Optional<SiteNode> pK2 = prev.get().prev();
-        pK2.ifPresent(pk -> generateCircleEvent(pk.getSite(), pJ, pI));
+        pK2.ifPresent(pk -> generateCircleEvent(pk.getSite(), pJ2, pI));
     }
 
     private void generateCircleEvent(Site pI, Site pJ, Site pK) {
