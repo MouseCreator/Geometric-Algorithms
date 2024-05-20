@@ -39,6 +39,9 @@ public class Numbers {
     public static boolean dLess(double x, double x1) {
         return x1 - x > TOLERANCE;
     }
+    public static boolean dLess(double x, double x1, double th) {
+        return x1 - x > th;
+    }
     public static boolean dGreater(double x, double x1) {
         return x - x1 > TOLERANCE;
     }

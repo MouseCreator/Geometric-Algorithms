@@ -67,9 +67,9 @@ public class SiteStatus {
         }
     }
 
-    public double calculateBreakpoint(Site s0, Site s1, double y) {
-        Parabola p0 = parabolaService.getParabolaFromSiteAndLine(s0, y);
-        Parabola p1 = parabolaService.getParabolaFromSiteAndLine(s1, y);
+    public double calculateBreakpoint(Site left, Site right, double y) {
+        Parabola p0 = parabolaService.getParabolaFromSiteAndLine(left, y);
+        Parabola p1 = parabolaService.getParabolaFromSiteAndLine(right, y);
         FPosition intersection = parabolaService.findIntersection(p0, p1);
         return intersection.x();
     }
@@ -110,5 +110,27 @@ public class SiteStatus {
 
     public String print() {
         return sites.stream().map(Site::getLetter).toList().toString();
+    }
+
+
+    public double calculateLeftBreakpoint(Site left, Site right, double y) {
+        Parabola p0 = parabolaService.getParabolaFromSiteAndLine(left, y);
+        Parabola p1 = parabolaService.getParabolaFromSiteAndLine(right, y);
+        FPosition intersection = parabolaService.findLeftIntersection(p0, p1);
+        return intersection.x();
+    }
+    public double calculateRightBreakpoint(Site left, Site right, double y) {
+        Parabola p0 = parabolaService.getParabolaFromSiteAndLine(left, y);
+        Parabola p1 = parabolaService.getParabolaFromSiteAndLine(right, y);
+        FPosition intersection = parabolaService.findRightIntersection(p0, p1);
+        return intersection.x();
+    }
+
+    public double[] calculateBreakpoints(Site pI, Site pJ, double y) {
+        Parabola p0 = parabolaService.getParabolaFromSiteAndLine(pI, y);
+        Parabola p1 = parabolaService.getParabolaFromSiteAndLine(pJ, y);
+        FPosition left = parabolaService.findLeftIntersection(p0, p1);
+        FPosition right = parabolaService.findRightIntersection(p0, p1);
+        return new double[]{left.x(), right.x()};
     }
 }

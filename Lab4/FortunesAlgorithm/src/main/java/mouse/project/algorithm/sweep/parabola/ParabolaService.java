@@ -11,7 +11,7 @@ public class ParabolaService {
         double dc = t.c() - o.c();
         double[] solution = Solver.solveQuadratic(da, db, dc);
         if (solution.length == 0) {
-            throw new IllegalStateException("Parabolas " + this + " and " + o + " do not intersect");
+            throw new IllegalStateException("Parabolas " + t + " and " + o + " do not intersect");
         }
         if (solution.length == 1) {
             double x = solution[0];
@@ -24,7 +24,7 @@ public class ParabolaService {
             double sol1 = solution[0];
             double sol2 = solution[1];
             double sol;
-            boolean tIsNarrow = Numbers.dLess(Math.abs(a1), Math.abs(a2));
+            boolean tIsNarrow = Numbers.dLess(Math.abs(a1), Math.abs(a2), 0.0000000001);
             if (tIsNarrow) {
                 sol = Math.min(sol1, sol2);
             } else {
@@ -49,5 +49,51 @@ public class ParabolaService {
                 xS / (yL - yS),
                 (xS * xS + yS * yS - yL * yL)/(2.0 * (yS - yL))
         );
+    }
+
+    public FPosition findRightIntersection(Parabola t, Parabola o) {
+        double da = t.a() - o.a();
+        double db = t.b() - o.b();
+        double dc = t.c() - o.c();
+        double[] solution = Solver.solveQuadratic(da, db, dc);
+        if (solution.length == 0) {
+            throw new IllegalStateException("Parabolas " + t + " and " + o + " do not intersect");
+        }
+        if (solution.length == 1) {
+            double x = solution[0];
+            double y = t.yAt(x);
+            return FPosition.of(x, y);
+        }
+        if (solution.length == 2) {
+            double sol1 = solution[0];
+            double sol2 = solution[1];
+            double sol;
+            sol = Math.max(sol1, sol2);
+            return FPosition.of(sol, t.yAt(sol));
+        }
+        throw new IllegalStateException("Unexpected number of solutions: " + solution.length);
+    }
+
+    public FPosition findLeftIntersection(Parabola t, Parabola o) {
+        double da = t.a() - o.a();
+        double db = t.b() - o.b();
+        double dc = t.c() - o.c();
+        double[] solution = Solver.solveQuadratic(da, db, dc);
+        if (solution.length == 0) {
+            throw new IllegalStateException("Parabolas " + t + " and " + o + " do not intersect");
+        }
+        if (solution.length == 1) {
+            double x = solution[0];
+            double y = t.yAt(x);
+            return FPosition.of(x, y);
+        }
+        if (solution.length == 2) {
+            double sol1 = solution[0];
+            double sol2 = solution[1];
+            double sol;
+            sol = Math.min(sol1, sol2);
+            return FPosition.of(sol, t.yAt(sol));
+        }
+        throw new IllegalStateException("Unexpected number of solutions: " + solution.length);
     }
 }

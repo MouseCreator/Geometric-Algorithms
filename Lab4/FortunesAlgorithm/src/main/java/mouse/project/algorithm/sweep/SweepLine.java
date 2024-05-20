@@ -203,7 +203,11 @@ public class SweepLine {
         if (isStepBack(circle)) {
             return;
         }
-        eventHeap.insert(new CircleEvent(circle, pI, pJ, pK));
+        CircleEvent circleEvent = new CircleEvent(circle, pI, pJ, pK);
+        if (!checkBreakpointsConverge(circleEvent)) {
+            return;
+        }
+        eventHeap.insert(circleEvent);
     }
 
     private boolean isStepBack(Circle circle) {
@@ -221,9 +225,7 @@ public class SweepLine {
 
     private void handleCircleEvent(CircleEvent e) {
         FPosition center = e.circle().center();
-        if (!checkBreakpointsConverge(e)) {
-            return;
-        }
+
 
         double targetX = center.x();
         Neighbors<SiteNode> neighborNodes = status.remove(targetX, currentY);
@@ -248,16 +250,24 @@ public class SweepLine {
         }
 
     }
-
+    private int count = 0;
+    private static int STOP = 3;
     private boolean checkBreakpointsConverge(CircleEvent e) {
-        Site pI = e.pI;
-        Site pJ = e.pJ;
-        Site pK = e.pK;
-        double breakpoint1 = status.calculateBreakpoint(pI, pJ, currentY);
-        double breakpoint2 = status.calculateBreakpoint(pJ, pK, currentY);
-        boolean converge = Numbers.dEquals(breakpoint1, breakpoint2);
-        if (converge) logger.debug("Converge: " + pI + ", " + pJ + ", " + pK);
-        else logger.debug("Diverge: " + pI + ", " + pJ + ", " + pK);
+        Site pI = e.pI();
+        Site pJ = e.pJ();
+        Site pK = e.pK();
+
+        count++;
+        double targetY = e.circle().bottom().y();
+        if (count == STOP) {
+            System.out.println(count);
+        }
+        double b1 = status.calculateBreakpoint(pI, pJ, targetY);
+        double b2 = status.calculateBreakpoint(pJ, pK, targetY);
+        boolean converge = Numbers.dEquals(b1, b2);
+        String message = converge ? "Converge" : "Diverge";
+        message = message + ": " + pI + ", " + pJ + ", " + pK;
+        logger.debug(message);
         return converge;
     }
 
