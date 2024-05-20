@@ -16,7 +16,21 @@ public class ParabolaService {
         if (solution.length == 1) {
             double x = solution[0];
             double y = t.yAt(x);
-            return FPosition.of(x, y);
+            double tx = t.lowestPoint().x();
+            double ox = o.lowestPoint().x();
+            if (Numbers.dLess(tx, ox)) {
+                if (Numbers.dLess(tx, x)) {
+                    return FPosition.of(x, y);
+                } else {
+                    return FPosition.of(Double.MAX_VALUE, Double.MAX_VALUE);
+                }
+            } else {
+                if (Numbers.dLess(tx, x)) {
+                    return FPosition.of(Double.MIN_VALUE, Double.MIN_VALUE);
+                } else {
+                    return FPosition.of(x, y);
+                }
+            }
         }
         if (solution.length == 2) {
             double a1 = t.a();

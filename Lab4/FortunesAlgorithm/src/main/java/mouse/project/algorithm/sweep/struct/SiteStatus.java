@@ -18,12 +18,31 @@ public class SiteStatus {
         sites = new ArrayList<>();
         parabolaService = new ParabolaService();
     }
+    public Optional<SiteNode> onSameLineCase(Site pI, double y) {
+        if (!sameLineCase(y)) {
+            return Optional.empty();
+        }
+        Comparator<Site> order = (o1, o2) -> Numbers.dCompare(o1.getPosition().x(), o2.getPosition().x());
+        int index = Collections.binarySearch(sites, pI, order);
+        assert index < 0;
+        index = - index - 1;
+        sites.add(index, new Site(pI.getPosition(), pI.getLetter(), idCount++));
+        return Optional.of(new SiteNode(this, pI ,index));
+    }
     public SiteNode insertAndSplit(Site pI, double y) {
+        if (sites.isEmpty()) {
+            throw new IllegalStateException("Status is empty. Cannot do insert and split for " + pI);
+        }
         int index = findSiteAbove(pI.getPosition().x(), y);
         Site pJ = sites.get(index);
         sites.add(index+1, new Site(pI.getPosition(), pI.getLetter(), idCount++));
         sites.add(index+2, new Site(pJ.getPosition(), pJ.getLetter(), idCount++));
         return new SiteNode(this, pI ,index+1);
+    }
+
+
+    private boolean sameLineCase(double y) {
+        return sites.stream().allMatch(site -> Numbers.dEquals(site.getPosition().y(), y));
     }
 
     private int findSiteAbove(double x, double y) {
@@ -71,7 +90,20 @@ public class SiteStatus {
         Parabola p0 = parabolaService.getParabolaFromSiteAndLine(left, y);
         Parabola p1 = parabolaService.getParabolaFromSiteAndLine(right, y);
         FPosition intersection = parabolaService.findIntersection(p0, p1);
-        return intersection.x();
+        double result = intersection.x();
+        if (Double.isNaN(result)) {
+            if (Numbers.dEquals(left.getPosition().y(), y) && Numbers.dEquals(right.getPosition().y(), y)) {
+                return (left.getPosition().x() + right.getPosition().x()) / 2.0;
+            }
+            if (Numbers.dEquals(left.getPosition().y(), y)) {
+                return left.getPosition().x();
+            }
+            if (Numbers.dEquals(right.getPosition().y(), y)) {
+                return right.getPosition().x();
+            }
+            throw new IllegalStateException("Unexpected Nan: " + left + ", " + right + ", y: " + y);
+        }
+        return result;
     }
 
     public Optional<SiteNode> get(int index) {

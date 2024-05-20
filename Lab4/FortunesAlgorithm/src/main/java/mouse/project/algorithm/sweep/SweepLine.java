@@ -146,15 +146,21 @@ public class SweepLine {
         }
         else if (e instanceof CircleEvent) {
             handleCircleEvent((CircleEvent) e);
-        } else {
+        }  else {
             throw new IllegalArgumentException("Cannot handle event: " + e);
         }
     }
+
     private void handleSiteEvent(SiteEvent e) {
         Site origin = e.getOrigin();
 
         if (status.isEmpty()) {
             status.insertFirst(origin);
+            return;
+        }
+        Optional<SiteNode> sameLineCase = status.onSameLineCase(origin, currentY);
+        if (sameLineCase.isPresent()) {
+            handleSameLineCase(sameLineCase);
             return;
         }
         SiteNode siteNode = status.insertAndSplit(origin, currentY);
@@ -175,6 +181,21 @@ public class SweepLine {
         pK2.ifPresent(pk -> generateCircleEvent(pk.getSite(), pJ2, pI));
     }
 
+    private void handleSameLineCase(Optional<SiteNode> sameLineCase) {
+        SiteNode siteNode = sameLineCase.get();
+        Site pJ = siteNode.getSite();
+        Optional<SiteNode> next = siteNode.next();
+        if (next.isPresent()) {
+            Site pI = next.get().getSite();
+            diagramBuilder.withConnectedEdge(pI, pJ);
+        }
+        Optional<SiteNode> prev = siteNode.prev();
+        if (prev.isPresent()) {
+            Site pK = prev.get().getSite();;
+            diagramBuilder.withConnectedEdge(pJ, pK);
+        }
+    }
+
     private void generateCircleEvent(Site pI, Site pJ, Site pK) {
         if (!areUniqueLetters(pI, pJ, pK))
             return;
@@ -183,8 +204,9 @@ public class SweepLine {
         GenLine bisector1 = s1.bisector();
         GenLine bisector2 = s2.bisector();
 
-        if(bisector1.overlaps(bisector2)) {
-            throw new IllegalArgumentException("Sites are on one line: " + List.of(pI, pJ, pK));
+        if(bisector1.isParallelTo(bisector2)) {
+            generateLineEvents(pI, pJ, pK);
+            return;
         }
 
         Optional<FPosition> centerOpt = bisector1.intersectionPoint(bisector2);
@@ -208,6 +230,26 @@ public class SweepLine {
             return;
         }
         eventHeap.insert(circleEvent);
+    }
+
+    private void generateLineEvents(Site pI, Site pJ, Site pK) {
+        List<Site> list = new ArrayList<>(List.of(pI, pJ, pK));
+        Comparator<Site> order = (o1, o2) -> {
+            int xDiff = Numbers.dCompare(o1.getPosition().x(), o2.getPosition().x());
+            if (xDiff != 0) {
+                return xDiff;
+            }
+            return Numbers.dCompare(o1.getPosition().y(), o2.getPosition().y());
+        };
+        list.sort(order);
+        Site leftmost = list.get(0);
+        Site center = list.get(1);
+        Site rightmost = list.get(2);
+        logger.debug("Unable to create a circle: " + pI + ", " + pJ + ", " + pK);
+        logger.debug("Creating line between " + leftmost + " and " + center);
+        diagramBuilder.withConnectedEdge(leftmost, center);
+        logger.debug("Creating line between " + center + " and " + rightmost);
+        diagramBuilder.withConnectedEdge(center, rightmost);
     }
 
     private boolean isStepBack(Circle circle) {
