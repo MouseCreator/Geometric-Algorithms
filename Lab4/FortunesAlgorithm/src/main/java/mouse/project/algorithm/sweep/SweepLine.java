@@ -111,7 +111,7 @@ public class SweepLine {
     private void scanEvents() {
         while (!eventHeap.isEmpty()) {
             Event nextEvent = eventHeap.extractMin();
-
+            int eventsHandled = 0;
             currentY = nextEvent.position().y();
             List<Event> eventList = new ArrayList<>();
             eventList.add(nextEvent);
@@ -122,9 +122,12 @@ public class SweepLine {
                 if (ignoreEvent(nextEvent))
                     continue;
                 logger.debug("Handling event: " + e);
+                eventsHandled++;
                 handleEvent(e);
             }
-            logger.debug(status.print());
+            if (eventsHandled > 0) {
+                logger.debug(status.print());
+            }
         }
     }
 
@@ -292,18 +295,13 @@ public class SweepLine {
         }
 
     }
-    private int count = 0;
-    private static int STOP = 3;
     private boolean checkBreakpointsConverge(CircleEvent e) {
         Site pI = e.pI();
         Site pJ = e.pJ();
         Site pK = e.pK();
 
-        count++;
         double targetY = e.circle().bottom().y();
-        if (count == STOP) {
-            System.out.println(count);
-        }
+
         double b1 = status.calculateBreakpoint(pI, pJ, targetY);
         double b2 = status.calculateBreakpoint(pJ, pK, targetY);
         boolean converge = Numbers.dEquals(b1, b2);
